@@ -48,7 +48,7 @@ Frontmatter schema and loaders: `src/lib/content.ts`.
 ## Before deploying
 
 - Fill in every remaining `TODO:`-prefixed value in `src/config/site.ts` (site
-  URL, OG image, GitHub, CV) — until then they render as plain text, not links.
+  URL, GitHub, CV) — until then they render as plain text, not links.
   Email and LinkedIn are set.
 - Add the consulting services in `src/config/services.ts`; `/consulting`
   currently renders an empty state.
@@ -56,4 +56,7 @@ Frontmatter schema and loaders: `src/lib/content.ts`.
   production build fails without it rather than silently shipping localhost
   canonicals and a localhost sitemap. To run a local production build before a
   domain is chosen: `ALLOW_PLACEHOLDER_SITE_URL=1 npm run build`.
-- Add `public/images/og-default.png`.
+- Favicon, Apple touch icon and the social share card are generated at build
+  time from the design tokens (`src/app/{icon,apple-icon,opengraph-image}.tsx`).
+  No asset to add; set `siteConfig.ogImage` only to override the card with a
+  hand-designed image.

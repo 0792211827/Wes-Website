@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { isPlaceholder, siteConfig } from "@/config/site";
+import { isPlaceholder, ogCard, siteConfig } from "@/config/site";
 import type { ContentItem } from "@/lib/content";
 
 /**
@@ -79,8 +79,14 @@ export function absoluteUrl(pathname: string): string {
   return new URL(pathname, `${getSiteUrl()}/`).toString();
 }
 
-/** The share image, or `null` while it is still a placeholder — better to emit
- * no `og:image` than one pointing at a missing asset. */
+/**
+ * An explicit share image, or `null` to fall through to the generated one.
+ *
+ * `null` is not "no image": src/app/opengraph-image.tsx supplies a generated
+ * card for every route, and Next only skips it when `openGraph.images` is set
+ * explicitly. So returning `null` here is what *enables* the default card —
+ * this function exists to let a content item override it with its own asset.
+ */
 function resolveOgImage(image?: string): string | null {
   const resolved = firstRealValue(image, siteConfig.ogImage);
   return resolved ? absoluteUrl(resolved) : null;
@@ -144,8 +150,21 @@ export function buildMetadata({
   noIndex = false,
 }: PageMetadataInput): Metadata {
   const canonical = absoluteUrl(pathname);
-  const ogImage = resolveOgImage(image);
-  const images = ogImage ? [{ url: ogImage, alt: title }] : undefined;
+  // Next shallowly merges metadata, so the `openGraph` object set below
+  // *replaces* the one the root segment's opengraph-image.tsx contributes —
+  // which silently stripped og:image from every page except `/`. Setting the
+  // images explicitly here is what keeps the generated card on all routes.
+  const explicitImage = resolveOgImage(image);
+  const images = explicitImage
+    ? [{ url: explicitImage, alt: title }]
+    : [
+        {
+          url: absoluteUrl(ogCard.route),
+          alt: `${siteConfig.name} — ${siteConfig.tagline}`,
+          width: ogCard.width,
+          height: ogCard.height,
+        },
+      ];
   // A `TODO:` description is worse than none — it would ship as the search
   // snippet. Omit it until it is written.
   const copy = firstRealValue(description) ?? undefined;
@@ -166,15 +185,17 @@ export function buildMetadata({
       ...(noIndex ? {} : { url: canonical }),
       siteName: siteConfig.name,
       locale: siteConfig.locale,
-      ...(images ? { images } : {}),
+      images,
       ...(type === "article" && publishedTime ? { publishedTime } : {}),
       ...(type === "article" && tags ? { tags } : {}),
     },
     twitter: {
-      card: ogImage ? "summary_large_image" : "summary",
+      // Always large: whether or not an item overrides it, a 1200x630 card is
+      // served (src/app/twitter-image.tsx). "summary" would crop it to a square.
+      card: "summary_large_image",
       title: shareTitle,
       description: copy,
-      ...(ogImage ? { images: [ogImage] } : {}),
+      images,
     },
   };
 }

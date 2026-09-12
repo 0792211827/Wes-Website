@@ -19,13 +19,31 @@ export const siteConfig = {
   /** Canonical origin, no trailing slash. Required for canonical URLs + sitemap. */
   url: "TODO: https://example.com",
   locale: "en_US",
-  /** Default social share image, relative to /public. Kept `TODO:`-prefixed
-   * so `isPlaceholder` suppresses the `og:image` tag until the asset exists. */
-  ogImage: "TODO: /images/og-default.png",
+  /**
+   * Optional override for the default share card. Leave empty: the card is
+   * generated from these very tokens at build time by
+   * src/app/opengraph-image.tsx. Only set this to ship a hand-designed asset
+   * instead, as a path under /public or an absolute URL.
+   */
+  ogImage: "",
   author: {
     name: "Wesley Nyamosi",
     email: "nyamosiwesley02@gmail.com",
   },
+} as const;
+
+/**
+ * The generated default share card.
+ *
+ * Single source of truth for both producer and consumer:
+ * src/app/opengraph-image.tsx renders at these dimensions, and src/lib/seo.ts
+ * points `og:image` at this route. Next serves it with a cache-busting query,
+ * but the bare path is stable and is what the metadata references.
+ */
+export const ogCard = {
+  route: "/opengraph-image",
+  width: 1200,
+  height: 630,
 } as const;
 
 /** Primary navigation, in header order. */
