@@ -1,0 +1,17 @@
+---
+title: Approach
+---
+
+I start with the baseline. Before any model, the question is what the simplest
+defensible approach achieves — a mean, a rule, a linear fit. That number is what
+everything afterwards has to beat, and often enough it survives, which saves
+everyone the cost of maintaining something more complicated.
+
+From there I care about three things. **Can it be re-run?** Pinned environments,
+deterministic preprocessing, tracked experiments. **Does the evaluation reflect
+reality?** Splits that respect time and grouping, metrics chosen for the
+decision being made rather than the one that looks best. **Can someone else run
+it?** A documented path from raw data to deployed artefact.
+
+I'd rather say a result is uncertain than overstate it. If a model isn't ready,
+the useful output is knowing that — and knowing what would have to change.
