@@ -72,11 +72,13 @@ function sessionId(): string {
         </div>
       }
     </div>
-    <div class="suggest">
-      @for (q of suggestions; track q) {
-        <button type="button" (click)="ask(q)" [disabled]="busy()">{{ q }}</button>
-      }
-    </div>
+    @if (!busy()) {
+      <div class="suggest">
+        @for (q of suggestions; track q) {
+          <button type="button" (click)="ask(q)">{{ q }}</button>
+        }
+      </div>
+    }
     <form class="composer" (ngSubmit)="ask(draft)">
       <label class="sr" [attr.for]="inputId">Ask a question</label>
       <textarea #box [id]="inputId" name="question" rows="1" maxlength="500" [(ngModel)]="draft"

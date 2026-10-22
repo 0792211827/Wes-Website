@@ -13,13 +13,12 @@ import { AssistantFabComponent } from './layout/assistant-fab.component';
 import { BootComponent } from './layout/boot.component';
 import { CommandPaletteComponent } from './layout/command-palette.component';
 import { FooterComponent } from './layout/footer.component';
-import { ToTopComponent } from './layout/to-top.component';
 import { TopbarComponent } from './layout/topbar.component';
 
 /** App shell: top bar, page outlet, footer and the global overlays. */
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, TopbarComponent, FooterComponent, BootComponent, CommandPaletteComponent, AssistantFabComponent, ToTopComponent],
+  imports: [RouterOutlet, TopbarComponent, FooterComponent, BootComponent, CommandPaletteComponent, AssistantFabComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './app.html'
 })

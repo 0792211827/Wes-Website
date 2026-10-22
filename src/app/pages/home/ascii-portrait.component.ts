@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, ElementRef, afterNextRender, inject, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, ElementRef, afterNextRender, inject, signal, viewChild } from '@angular/core';
 
 import { SITE } from '../../core/data/site.data';
 import { MotionService } from '../../core/motion.service';
@@ -8,15 +8,26 @@ const RAMP = ' .\'`^",:;Il!i~+_-?][}{1)(|/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B
 let shownOnce = false;
 
 /**
- * Wesley's photo (public/assets/wesley.jpg) drawn as ASCII art on a canvas.
- * Rows type in on first view; characters near the pointer light up in the accent colour.
- * Without a photo a neutral silhouette is used.
+ * Wesley's photo (public/assets/wesley.jpg), first drawn as ASCII art that types in row by row,
+ * then a scan line sweeps down and reveals the real photo. Hovering the photo flips it back to
+ * the ASCII version, where characters near the pointer light up.
+ * Without a photo a neutral silhouette is drawn in ASCII and stays that way.
  */
 @Component({
   selector: 'app-ascii-portrait',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'host-contents' },
-  template: `<div class="ascii" #box role="img" aria-label="ASCII-art portrait of Wesley Nyamosi"><canvas #cv></canvas></div>`
+  template: `
+    <div class="ascii" #box role="img" aria-label="Portrait of Wesley Nyamosi"
+      [class.photo-on]="photoShown()" [class.revealing]="revealing()"
+      (pointerenter)="hover(true)" (pointerleave)="hover(false)">
+      <canvas #cv></canvas>
+      @if (photoOk()) {
+        <img class="ascii-photo" [class.show]="photoShown()" [src]="photo" alt="" decoding="async">
+      }
+      <span class="ascii-scan" aria-hidden="true"></span>
+    </div>
+  `
 })
 export class AsciiPortraitComponent {
   private box = viewChild.required<ElementRef<HTMLElement>>('box');
@@ -24,6 +35,31 @@ export class AsciiPortraitComponent {
   private motion = inject(MotionService);
   private theme = inject(ThemeService);
   private stop: (() => void) | null = null;
+  readonly photo = SITE.photo;
+  /** The real photo exists and loaded. */
+  readonly photoOk = signal(false);
+  /** The real photo is currently showing over the ASCII art. */
+  readonly photoShown = signal(false);
+  readonly revealing = signal(false);
+  private revealed = false;
+  private revealTimer: ReturnType<typeof setTimeout> | undefined;
+
+  /** Hover flips back to the ASCII art (desktop); leaving shows the photo again. */
+  hover(on: boolean): void {
+    if (!this.revealed || this.motion.reduced) return;
+    this.photoShown.set(!on);
+  }
+
+  private reveal(delay: number): void {
+    clearTimeout(this.revealTimer);
+    if (!this.photoOk() || this.revealed) return;
+    this.revealTimer = setTimeout(() => {
+      this.revealed = true;
+      this.revealing.set(true);
+      this.photoShown.set(true);
+      setTimeout(() => this.revealing.set(false), 1300);
+    }, delay);
+  }
 
   constructor() {
     const destroy = inject(DestroyRef);
@@ -37,6 +73,7 @@ export class AsciiPortraitComponent {
       destroy.onDestroy(() => {
         window.removeEventListener('resize', onResize);
         offTheme();
+        clearTimeout(this.revealTimer);
         this.stop?.();
       });
     });
@@ -112,15 +149,26 @@ export class AsciiPortraitComponent {
       }
       ctx.globalAlpha = 1;
     };
-    const start = () => {
+    const start = (isPhoto: boolean) => {
       sample();
-      if (reduced || shownOnce) { draw(rows); shownOnce = true; return; }
+      if (isPhoto) this.photoOk.set(true);
+      if (reduced) {
+        draw(rows);
+        shownOnce = true;
+        if (isPhoto) { this.revealed = true; this.photoShown.set(true); }
+        return;
+      }
+      if (shownOnce) { draw(rows); if (isPhoto) this.reveal(400); return; }
       let row = 0;
       const step = () => {
         row += 2;
         draw(row);
         if (row < rows) raf = requestAnimationFrame(step);
-        else shownOnce = true;
+        else {
+          shownOnce = true;
+          /* hold the ASCII art for a moment, then sweep in the real photo */
+          if (isPhoto) this.reveal(1400);
+        }
       };
       raf = requestAnimationFrame(step);
     };
@@ -144,9 +192,9 @@ export class AsciiPortraitComponent {
       const dw = img.width * s, dh = img.height * s;
       o.fillStyle = '#000'; o.fillRect(0, 0, W, H);
       o.drawImage(img, (W - dw) / 2, (H - dh) / 2, dw, dh);
-      start();
+      start(true);
     };
-    img.onerror = () => { silhouette(); start(); };
+    img.onerror = () => { silhouette(); start(false); };
     img.src = SITE.photo;
 
     this.stop = () => {
