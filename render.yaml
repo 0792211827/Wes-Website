@@ -1,0 +1,49 @@
+# Render Blueprint: API + PostgreSQL. In Render: New > Blueprint > pick this repo.
+# (Or create a Web Service with Runtime "Docker" and set the env vars by hand.)
+services:
+  - type: web
+    name: wesportfolio-api
+    runtime: docker
+    plan: starter
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/health
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: wesportfolio-db
+          property: connectionString
+      - key: ADMIN_USERNAME
+        value: admin
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: TOKEN_SECRET
+        generateValue: true
+      - key: IP_SALT
+        generateValue: true
+      - key: CORS_ORIGINS
+        value: https://wesleynyamosi.com,https://www.wesleynyamosi.com,https://*.vercel.app,http://localhost:4200
+      - key: GITHUB_USERNAME
+        value: wesleynyamosi
+      - key: GITHUB_TOKEN
+        sync: false
+      - key: MAIL_HOST
+        sync: false
+      - key: MAIL_PORT
+        value: "587"
+      - key: MAIL_USERNAME
+        sync: false
+      - key: MAIL_PASSWORD
+        sync: false
+      - key: NOTIFY_EMAIL
+        sync: false
+      - key: AI_API_KEY
+        sync: false
+      - key: AI_BASE_URL
+        value: https://api.groq.com/openai/v1
+      - key: AI_MODEL
+        value: llama-3.3-70b-versatile
+
+databases:
+  - name: wesportfolio-db
+    databaseName: wesportfolio
+    plan: free
