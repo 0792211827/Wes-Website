@@ -1,14 +1,13 @@
 import { ChangeDetectionStrategy, Component, computed, effect, inject, input } from '@angular/core';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { RouterLink } from '@angular/router';
 
 import { ContentService } from '../core/content.service';
 import { SeoService } from '../core/seo.service';
 import { ToastService } from '../core/toast.service';
 import { pad2 } from '../core/util';
-import { archFigure } from '../shared/art';
 import { CountUpDirective } from '../shared/count-up.directive';
 import { CtaBandComponent } from '../shared/cta-band.component';
+import { HowItWorksComponent } from '../shared/how-it-works.component';
 import { PageHeadComponent } from '../shared/page-head.component';
 import { TocComponent, TocItem } from '../shared/toc.component';
 import { NotFoundPage } from './not-found.page';
@@ -24,7 +23,7 @@ const SECTIONS: TocItem[] = [
 /** Case study in the spec's 12-section structure. */
 @Component({
   selector: 'app-work-detail-page',
-  imports: [RouterLink, PageHeadComponent, TocComponent, CtaBandComponent, CountUpDirective, NotFoundPage],
+  imports: [RouterLink, PageHeadComponent, TocComponent, CtaBandComponent, CountUpDirective, NotFoundPage, HowItWorksComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'page' },
   template: `
@@ -49,8 +48,8 @@ const SECTIONS: TocItem[] = [
             <ul class="bullets">@for (r of p.requirements; track $index) {<li>{{ r }}</li>}</ul>
           </section>
           <section id="architecture"><h2><span class="num">{{ n(4) }}</span>Architecture</h2>
-            <p>High-level flow of the system.</p>
-            <figure class="card arch reveal" [innerHTML]="arch()"></figure>
+            <p>How a request moves through the system. It plays by itself; pause it, step through it, or click any step.</p>
+            <app-how-it-works class="reveal" [project]="p" />
           </section>
           <section id="implementation"><h2><span class="num">{{ n(5) }}</span>Technical Implementation</h2><p>{{ p.implementation }}</p></section>
           <section id="challenges"><h2><span class="num">{{ n(6) }}</span>Engineering Challenges</h2>
@@ -95,7 +94,6 @@ const SECTIONS: TocItem[] = [
 })
 export class WorkDetailPage {
   private content = inject(ContentService);
-  private sanitizer = inject(DomSanitizer);
   private seo = inject(SeoService);
   readonly toast = inject(ToastService);
   readonly slug = input.required<string>();
@@ -110,10 +108,6 @@ export class WorkDetailPage {
   readonly next = computed(() => {
     const list = this.content.projects();
     return list[(this.index() + 1) % list.length];
-  });
-  readonly arch = computed<SafeHtml>(() => {
-    const p = this.project();
-    return this.sanitizer.bypassSecurityTrustHtml(p ? archFigure(p.arch, 'fig. 1 — ' + p.title.toLowerCase() + ', simplified') : '');
   });
 
   constructor() {

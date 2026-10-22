@@ -3,8 +3,13 @@ import { ChangeDetectionStrategy, Component, DestroyRef, ElementRef, afterNextRe
 import { SITE } from '../../core/data/site.data';
 import { MotionService } from '../../core/motion.service';
 import { ThemeService } from '../../core/theme.service';
+import { UiStateService } from '../../core/ui-state.service';
 
 const RAMP = ' .\'`^",:;Il!i~+_-?][}{1)(|/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$';
+/** How long the slow-motion ASCII decode takes before the photo is revealed. */
+const DECODE_MS = 3000;
+/** Rows below the reveal line that flicker with random characters while "decoding". */
+const BAND = 7;
 let shownOnce = false;
 
 /**
@@ -34,6 +39,7 @@ export class AsciiPortraitComponent {
   private cv = viewChild.required<ElementRef<HTMLCanvasElement>>('cv');
   private motion = inject(MotionService);
   private theme = inject(ThemeService);
+  private ui = inject(UiStateService);
   private stop: (() => void) | null = null;
   readonly photo = SITE.photo;
   /** The real photo exists and loaded. */
@@ -104,7 +110,7 @@ export class AsciiPortraitComponent {
     if (!o) return;
     o.setTransform(1 / cw, 0, 0, 1 / fs, 0, 0);
     let lum: Float32Array | null = null;
-    let raf = 0, hoverRaf = 0, hx = -999, hy = -999;
+    let raf = 0, hoverRaf = 0, hx = -999, hy = -999, cancelled = false;
 
     const silhouette = () => {
       o.fillStyle = '#000'; o.fillRect(0, 0, W, H);
@@ -125,7 +131,12 @@ export class AsciiPortraitComponent {
         lum[k] = Math.min(1, Math.max(0, (v - 0.5) * 1.35 + 0.5));
       }
     };
-    const draw = (upTo: number) => {
+    /*
+     * upTo = reveal line in rows (may be fractional). Rows above it are final; the BAND rows
+     * just above the line flicker with random characters in the accent colour, so the portrait
+     * "decodes" from top to bottom; a thin scan line marks the edge.
+     */
+    const draw = (upTo: number, decoding = false) => {
       if (!lum) return;
       const st = getComputedStyle(document.documentElement);
       const light = document.documentElement.getAttribute('data-theme') === 'light';
@@ -133,11 +144,20 @@ export class AsciiPortraitComponent {
       const acc = st.getPropertyValue('--accent').trim() || '#8fbf7a';
       ctx.clearRect(0, 0, W, H);
       ctx.textBaseline = 'top';
-      for (let y = 0; y < Math.min(rows, upTo); y++) {
+      for (let y = 0; y < Math.min(rows, Math.ceil(upTo)); y++) {
+        const inBand = decoding && y >= upTo - BAND;
         for (let x = 0; x < cols; x++) {
           let v = lum[y * cols + x];
           if (v < 0.08) continue;
           if (light) v = 0.25 + (1 - v) * 0.75;
+          if (inBand) {
+            const depth = 1 - (upTo - y) / BAND;
+            if (Math.random() < depth * 0.5) continue;
+            ctx.globalAlpha = 0.25 + Math.random() * 0.55;
+            ctx.fillStyle = acc;
+            ctx.fillText(RAMP[1 + Math.floor(Math.random() * (RAMP.length - 2))], x * cw, y * fs);
+            continue;
+          }
           const dx = x * cw - hx, dy = y * fs - hy, dist = Math.sqrt(dx * dx + dy * dy);
           const near = dist < 46;
           if (near) v = Math.min(1, v + (1 - dist / 46) * 0.45);
@@ -146,6 +166,11 @@ export class AsciiPortraitComponent {
           ctx.fillStyle = near || ((x + y * 3) % 23 === 0 && v > 0.55) ? acc : ink;
           ctx.fillText(ch, x * cw, y * fs);
         }
+      }
+      if (decoding && upTo < rows) {
+        ctx.globalAlpha = 0.9;
+        ctx.fillStyle = acc;
+        ctx.fillRect(0, upTo * fs, W, 1.5);
       }
       ctx.globalAlpha = 1;
     };
@@ -159,18 +184,24 @@ export class AsciiPortraitComponent {
         return;
       }
       if (shownOnce) { draw(rows); if (isPhoto) this.reveal(400); return; }
-      let row = 0;
-      const step = () => {
-        row += 2;
-        draw(row);
-        if (row < rows) raf = requestAnimationFrame(step);
-        else {
-          shownOnce = true;
-          /* hold the ASCII art for a moment, then sweep in the real photo */
-          if (isPhoto) this.reveal(1400);
-        }
-      };
-      raf = requestAnimationFrame(step);
+      /* slow-motion decode over DECODE_MS, starting once the boot intro has finished */
+      this.ui.bootDone.then(() => {
+        if (cancelled) return;
+        const t0 = performance.now();
+        const step = (t: number) => {
+          const k = Math.min(1, (t - t0) / DECODE_MS);
+          const eased = k < 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
+          draw(eased * (rows + BAND), k < 1);
+          if (k < 1) raf = requestAnimationFrame(step);
+          else {
+            shownOnce = true;
+            draw(rows);
+            /* hold the finished ASCII portrait for a moment, then sweep in the real photo */
+            if (isPhoto) this.reveal(900);
+          }
+        };
+        raf = requestAnimationFrame(step);
+      });
     };
     this.redraw = () => draw(rows);
 
@@ -198,6 +229,7 @@ export class AsciiPortraitComponent {
     img.src = SITE.photo;
 
     this.stop = () => {
+      cancelled = true;
       cancelAnimationFrame(raf);
       cancelAnimationFrame(hoverRaf);
       img.onload = null;

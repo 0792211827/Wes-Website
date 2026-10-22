@@ -8,7 +8,9 @@ import { SeoService } from '../../core/seo.service';
 import { UiStateService } from '../../core/ui-state.service';
 import { esc } from '../../core/util';
 import { LabCardComponent, PostRowComponent, WorkCardComponent } from '../../shared/cards';
+import { CountUpDirective } from '../../shared/count-up.directive';
 import { CtaBandComponent } from '../../shared/cta-band.component';
+import { HowItWorksComponent } from '../../shared/how-it-works.component';
 import { IconComponent } from '../../shared/icon.component';
 import { SectionHeadComponent } from '../../shared/section-head.component';
 import { SplitDirective } from '../../shared/split.directive';
@@ -29,7 +31,8 @@ const TECH = ['Python', 'FastAPI', 'PostgreSQL', 'pgvector', 'vLLM', 'Kubernetes
   selector: 'app-home-page',
   imports: [
     RouterLink, IconComponent, SplitDirective, SectionHeadComponent, CtaBandComponent, WorkCardComponent, LabCardComponent,
-    PostRowComponent, AsciiPortraitComponent, SystemTraceComponent, GithubActivityComponent, PipelineComponent
+    PostRowComponent, AsciiPortraitComponent, SystemTraceComponent, GithubActivityComponent, PipelineComponent,
+    HowItWorksComponent, CountUpDirective
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'page' },
@@ -97,6 +100,21 @@ const TECH = ['Python', 'FastAPI', 'PostgreSQL', 'pgvector', 'vLLM', 'Kubernetes
       </div>
     </section>
 
+    <!-- ================= NUMBERS ================= -->
+    <section class="section" style="padding-top:56px;padding-bottom:56px">
+      <div class="wrap">
+        <div class="stats">
+          @for (s of stats(); track s.label) {
+            <div class="card stat-card reveal">
+              <b [appCountUp]="s.value"></b>
+              <span>{{ s.label }}</span>
+              <i aria-hidden="true"></i>
+            </div>
+          }
+        </div>
+      </div>
+    </section>
+
     <!-- ================= PHILOSOPHY ================= -->
     <section class="section" id="philosophy">
       <div class="wrap philo">
@@ -152,6 +170,28 @@ const TECH = ['Python', 'FastAPI', 'PostgreSQL', 'pgvector', 'vLLM', 'Kubernetes
             <app-work-card [project]="p" [index]="i" />
           }
         </div>
+      </div>
+    </section>
+
+    <!-- ================= HOW THE WORK WORKS ================= -->
+    <section class="section" id="how-it-works">
+      <div class="wrap">
+        <app-section-head eyebrow="how it works" title="See each system work, step by step"
+          text="Pick a project. A request travels through the system while each step explains what happens and why it matters." />
+        <div class="hiw-tabs reveal" role="group" aria-label="Choose a project">
+          @for (p of allProjects(); track p.slug; let i = $index) {
+            <button class="filter" type="button" [attr.aria-pressed]="i === hiwIndex()" (click)="hiwIndex.set(i)">{{ p.title }}</button>
+          }
+        </div>
+        @if (hiwProject(); as hp) {
+          <div class="reveal">
+            <app-how-it-works [project]="hp" (finished)="nextProject()" />
+            <div class="hiw-foot">
+              <p><b style="color:var(--cream)">{{ hp.metric.value }}</b> {{ hp.metric.label }} · {{ hp.outcome }}</p>
+              <a class="link-more" [routerLink]="['/work', hp.slug]">Read the full case study</a>
+            </div>
+          </div>
+        }
       </div>
     </section>
 
@@ -225,6 +265,25 @@ export class HomePage {
   readonly featured = computed(() => this.content.projects().filter((p) => p.featured).slice(0, 4));
   readonly lab = computed(() => this.content.lab().slice(0, 3));
   readonly posts = computed(() => this.content.posts().slice(0, 4));
+  readonly allProjects = computed(() => this.content.projects());
+  readonly hiwIndex = signal(0);
+  readonly hiwProject = computed(() => {
+    const list = this.allProjects();
+    return list.length ? list[this.hiwIndex() % list.length] : undefined;
+  });
+  readonly stats = computed(() => [
+    { value: String(this.content.projects().length), label: 'case studies, problem to production' },
+    { value: String(this.content.lab().length), label: 'AI Lab experiments & benchmarks' },
+    { value: String(this.content.posts().length), label: 'articles for engineers & leaders' },
+    { value: '9', label: 'stages from problem to production' },
+    { value: '7', label: 'steps in every engagement' }
+  ]);
+
+  /** After a walkthrough plays to the end, move on to the next project. */
+  nextProject(): void {
+    const n = this.allProjects().length;
+    if (n) this.hiwIndex.set((this.hiwIndex() + 1) % n);
+  }
 
   constructor() {
     inject(SeoService).set('Wesley Nyamosi — AI Engineering & Consulting',

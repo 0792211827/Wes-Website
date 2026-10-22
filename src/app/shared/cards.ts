@@ -5,11 +5,12 @@ import { RouterLink } from '@angular/router';
 import { LabEntry, Post, Project } from '../core/models';
 import { fmtDate, fmtVal, pad2 } from '../core/util';
 import { workArt } from './art';
+import { CountUpDirective } from './count-up.directive';
 
 /** Selected-work card: illustration, category, problem, outcome, tech and headline metric. */
 @Component({
   selector: 'app-work-card',
-  imports: [RouterLink],
+  imports: [RouterLink, CountUpDirective],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'host-contents' },
   template: `
@@ -31,7 +32,7 @@ import { workArt } from './art';
           }
         </div>
         <div class="work-foot">
-          <span class="outcome"><b>{{ project().metric.value }}</b> {{ project().metric.label }}</span>
+          <span class="outcome"><b [appCountUp]="project().metric.value"></b> {{ project().metric.label }}</span>
           <a class="link-more" [routerLink]="['/work', project().slug]">View Case Study</a>
         </div>
       </div>

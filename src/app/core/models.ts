@@ -78,6 +78,13 @@ export interface Post {
   body: string;
 }
 
+/** One step of an animated "How it works" walkthrough. */
+export interface HowStep {
+  title: string;
+  text: string;
+  stat?: string;
+}
+
 export interface KnowledgeEntry {
   key: string;
   title: string;
