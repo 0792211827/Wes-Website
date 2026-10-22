@@ -1,18 +1,25 @@
 # ---------- build ----------
-FROM eclipse-temurin:17-jdk AS build
+FROM maven:3.9.6-eclipse-temurin-21 AS build
 WORKDIR /app
-COPY .mvn/ .mvn/
-COPY mvnw pom.xml ./
-RUN chmod +x mvnw && ./mvnw -q -B dependency:go-offline
-COPY src/ src/
-RUN ./mvnw -q -B -DskipTests package
+
+# Cache dependencies first so rebuilds are faster
+COPY pom.xml .
+RUN mvn dependency:go-offline -B
+
+COPY src ./src
+RUN mvn clean package -DskipTests -B
 
 # ---------- run ----------
-FROM eclipse-temurin:17-jre
+FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
-RUN useradd --system --uid 1001 spring
-COPY --from=build /app/target/WesPortfolio-0.0.1-SNAPSHOT.jar app.jar
-USER spring
-ENV JAVA_OPTS="-XX:MaxRAMPercentage=75 -XX:+UseSerialGC"
-EXPOSE 8080
-ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
+
+RUN addgroup -S app && adduser -S app -G app
+COPY --from=build /app/target/*.jar app.jar
+USER app
+
+EXPOSE 10000
+
+# Fits Render's free 512 MB instance; Render sets PORT itself.
+ENV JAVA_OPTS="-XX:MaxRAMPercentage=70 -XX:+UseSerialGC -Xss512k -XX:TieredStopAtLevel=1"
+
+ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar --server.port=${PORT:-10000}"]
