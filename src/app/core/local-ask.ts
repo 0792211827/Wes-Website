@@ -37,7 +37,8 @@ export function answerLocally(question: string, remaining: number): AskResponse 
     return {
       answer: 'I can only share Wesley\'s public, professional information, so I can\'t help with that. For anything else, you can reach him directly.',
       sources: [{ label: 'Contact', url: '/contact' }, { label: 'Privacy notice', url: '/privacy' }],
-      grounded: false, fallback: true, mode: 'refusal', trace: 'privacy filter · no retrieval', remaining
+      grounded: false, fallback: true, mode: 'refusal', trace: 'privacy filter · no retrieval', remaining,
+      followUps: followUpsFor('contact', question)
     };
   }
   const hits = retrieve(question);
@@ -45,7 +46,8 @@ export function answerLocally(question: string, remaining: number): AskResponse 
     return {
       answer: 'I couldn\'t find anything about that in Wesley\'s public content, and I\'d rather not guess. Try one of the suggested questions, or ask Wesley directly.',
       sources: [{ label: 'Contact', url: '/contact' }],
-      grounded: false, fallback: true, mode: 'fallback', trace: 'retrieved 0 relevant documents · fallback answer', remaining
+      grounded: false, fallback: true, mode: 'fallback', trace: 'retrieved 0 relevant documents · fallback answer', remaining,
+      followUps: followUpsFor(null, question)
     };
   }
   const best = hits[0];
@@ -54,6 +56,40 @@ export function answerLocally(question: string, remaining: number): AskResponse 
     sources: best.e.sources,
     grounded: true, fallback: false, mode: 'extractive',
     trace: 'retrieved ' + Math.min(hits.length, 5) + ' documents · top score ' + Math.min(0.99, best.score / 2 + 0.45).toFixed(2) + ' · grounded (offline)',
-    remaining
+    remaining,
+    followUps: followUpsFor(best.e.key, question)
   };
+}
+
+/* Two suggested next questions per topic (same lists as the API's FollowUps). */
+const GENERAL = [
+  'What kind of AI systems does Wesley build?', 'How does an engagement with Wesley work?', 'Show me his work with RAG.',
+  'Can Wesley help us evaluate our AI system?', 'Does Wesley deploy open-weight models?', 'How can I contact Wesley?'
+];
+const BY_KEY: Record<string, string[]> = {
+  'what-build': ['Show me his work with RAG.', 'How does an engagement with Wesley work?'],
+  rag: ['How does Wesley evaluate RAG quality?', 'Can the assistant respect document permissions?'],
+  evaluate: ['What metrics does Wesley use?', 'How long does an evaluation sprint take?'],
+  philosophy: ['What kind of AI systems does Wesley build?', 'How does an engagement with Wesley work?'],
+  infra: ['How much can self-hosting save?', 'Which serving engine does Wesley use?'],
+  voice: ['How fast does the voice agent respond?', 'Can a voice agent hand off to a human?'],
+  agents: ['How are agent actions kept safe?', 'Show me the Agentic Operations Copilot.'],
+  engage: ['How quickly can we start?', 'How can I contact Wesley?'],
+  contact: ['How does an engagement with Wesley work?', 'What kind of AI systems does Wesley build?'],
+  stack: ['Does Wesley deploy open-weight models?', 'Show me his work with RAG.'],
+  training: ['How does an engagement with Wesley work?', 'How can I contact Wesley?'],
+  lab: ['Which serving engine is faster, vLLM or TGI?', 'Does quantization hurt quality?'],
+  writing: ['Why do AI projects fail in production?', 'How should LLM apps be evaluated?'],
+  about: ['What kind of AI systems does Wesley build?', 'What does Wesley believe about production AI?'],
+  portfolio: ['Show me his work with RAG.', 'Tell me about the voice agent project.']
+};
+
+export function followUpsFor(key: string | null, question: string): string[] {
+  const q = question.trim().toLowerCase();
+  const out: string[] = [];
+  for (const s of [...(key ? BY_KEY[key] ?? GENERAL : GENERAL), ...GENERAL]) {
+    if (out.length >= 2) break;
+    if (s.toLowerCase() !== q && !out.includes(s)) out.push(s);
+  }
+  return out;
 }

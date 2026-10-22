@@ -4,7 +4,7 @@ import {
 import { Router } from '@angular/router';
 
 import { ContentService } from '../core/content.service';
-import { SITE } from '../core/data/site.data';
+import { SiteService } from '../core/site.service';
 import { ThemeService } from '../core/theme.service';
 import { ToastService } from '../core/toast.service';
 import { UiStateService } from '../core/ui-state.service';
@@ -52,6 +52,7 @@ export class CommandPaletteComponent {
   private theme = inject(ThemeService);
   private toast = inject(ToastService);
   private content = inject(ContentService);
+  private site = inject(SiteService);
   private input = viewChild<ElementRef<HTMLInputElement>>('input');
   private lastFocus: Element | null = null;
 
@@ -67,8 +68,8 @@ export class CommandPaletteComponent {
     { label: 'Toggle theme', kind: 'action', target: 'action:theme' },
     { label: 'Copy email address', kind: 'action', target: 'action:email' },
     { label: 'Download CV', kind: 'action', target: 'action:cv' },
-    { label: 'Open GitHub', kind: 'link', target: SITE.github },
-    { label: 'Open LinkedIn', kind: 'link', target: SITE.linkedin }
+    { label: 'Open GitHub', kind: 'link', target: this.site.github() },
+    { label: 'Open LinkedIn', kind: 'link', target: this.site.linkedin() }
   ]);
 
   readonly results = computed(() => {
@@ -126,10 +127,12 @@ export class CommandPaletteComponent {
   run(it: Item): void {
     this.close();
     if (it.target === 'action:theme') this.theme.toggle();
-    else if (it.target === 'action:email') this.toast.copy(SITE.email, 'Email copied: ' + SITE.email);
+    else if (it.target === 'action:email') this.toast.copy(this.site.email(), 'Email copied: ' + this.site.email());
     else if (it.target === 'action:cv') {
       const a = document.createElement('a');
-      a.href = SITE.cv; a.download = '';
+      const cv = this.site.cvUrl();
+      if (!cv) { this.toast.show('The CV will be available soon. Use the contact form meanwhile.'); return; }
+      a.href = cv;
       document.body.appendChild(a); a.click(); a.remove();
     } else if (it.kind === 'link') window.open(it.target, '_blank', 'noopener');
     else this.router.navigateByUrl(it.target);

@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, ElementRef, afterNextRender, inject, signal, viewChild } from '@angular/core';
 
-import { SITE } from '../../core/data/site.data';
 import { MotionService } from '../../core/motion.service';
+import { SiteService } from '../../core/site.service';
 import { ThemeService } from '../../core/theme.service';
 import { UiStateService } from '../../core/ui-state.service';
 
@@ -13,7 +13,7 @@ const BAND = 7;
 let shownOnce = false;
 
 /**
- * Wesley's photo (public/assets/wesley.jpg), first drawn as ASCII art that types in row by row,
+ * Wesley's photo (uploaded in the admin, or public/assets/wesley.jpg), first drawn as ASCII art that types in row by row,
  * then a scan line sweeps down and reveals the real photo. Hovering the photo flips it back to
  * the ASCII version, where characters near the pointer light up.
  * Without a photo a neutral silhouette is drawn in ASCII and stays that way.
@@ -28,7 +28,7 @@ let shownOnce = false;
       (pointerenter)="hover(true)" (pointerleave)="hover(false)">
       <canvas #cv></canvas>
       @if (photoOk()) {
-        <img class="ascii-photo" [class.show]="photoShown()" [src]="photo" alt="" decoding="async">
+        <img class="ascii-photo" [class.show]="photoShown()" [src]="photo()" alt="" decoding="async">
       }
       <span class="ascii-scan" aria-hidden="true"></span>
     </div>
@@ -41,7 +41,8 @@ export class AsciiPortraitComponent {
   private theme = inject(ThemeService);
   private ui = inject(UiStateService);
   private stop: (() => void) | null = null;
-  readonly photo = SITE.photo;
+  private site = inject(SiteService);
+  readonly photo = signal('');
   /** The real photo exists and loaded. */
   readonly photoOk = signal(false);
   /** The real photo is currently showing over the ASCII art. */
@@ -70,12 +71,14 @@ export class AsciiPortraitComponent {
   constructor() {
     const destroy = inject(DestroyRef);
     afterNextRender(() => {
-      this.init();
+      /* wait for the saved settings so the uploaded photo is used from the start */
+      let ready = false;
+      this.site.ready.then(() => { ready = true; this.init(); });
       let t: ReturnType<typeof setTimeout> | undefined;
       const onResize = () => { clearTimeout(t); t = setTimeout(() => this.init(), 200); };
       window.addEventListener('resize', onResize);
       const offTheme = this.theme.onChange(() => this.redraw?.());
-      if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => this.init());
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if (ready) this.init(); });
       destroy.onDestroy(() => {
         window.removeEventListener('resize', onResize);
         offTheme();
@@ -226,7 +229,9 @@ export class AsciiPortraitComponent {
       start(true);
     };
     img.onerror = () => { silhouette(); start(false); };
-    img.src = SITE.photo;
+    const src = this.site.photoUrl();
+    this.photo.set(src);
+    img.src = src;
 
     this.stop = () => {
       cancelled = true;

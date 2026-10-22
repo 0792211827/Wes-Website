@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, computed, effect, inject, input } f
 import { ContentService } from '../core/content.service';
 import { SITE } from '../core/data/site.data';
 import { SeoService } from '../core/seo.service';
+import { SiteService } from '../core/site.service';
 import { ToastService } from '../core/toast.service';
 import { fmtDate, markdown } from '../core/util';
 import { PostRowComponent } from '../shared/cards';
@@ -18,7 +19,7 @@ import { NotFoundPage } from './not-found.page';
   template: `
     @if (post(); as p) {
       <app-page-head [crumbs]="[{ label: 'home', link: '/' }, { label: 'writing', link: '/writing' }, { label: p.title }]"
-        [eyebrow]="p.track" [title]="p.title" [lede]="p.excerpt" note="Sample article: replace with the full text.">
+        [eyebrow]="p.track" [title]="p.title" [lede]="p.excerpt" [note]="site.flag('showSampleNotes') ? 'Sample article: replace with the full text.' : ''">
         <div class="article-meta">
           <span>{{ date() }}</span>
           <span>{{ p.readMinutes }} min read</span>
@@ -50,6 +51,7 @@ import { NotFoundPage } from './not-found.page';
   `
 })
 export class PostPage {
+  readonly site = inject(SiteService);
   private content = inject(ContentService);
   private seo = inject(SeoService);
   readonly toast = inject(ToastService);

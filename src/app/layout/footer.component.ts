@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
-import { SITE } from '../core/data/site.data';
+import { SiteService } from '../core/site.service';
 import { MotionService } from '../core/motion.service';
 
 @Component({
@@ -15,7 +15,7 @@ import { MotionService } from '../core/motion.service';
         <div class="foot-grid">
           <div>
             <a class="brand" routerLink="/">wesley<span class="cursor" aria-hidden="true"></span></a>
-            <p class="about-line">AI engineering &amp; consulting. I design and build production-ready AI systems that solve real business problems. Production matters more than demos.</p>
+            <p class="about-line">{{ site.text('footerText') }}</p>
           </div>
           <div>
             <h4>Explore</h4>
@@ -33,10 +33,12 @@ import { MotionService } from '../core/motion.service';
           </div>
           <div>
             <h4>Elsewhere</h4>
-            <a [href]="site.github" target="_blank" rel="noopener">GitHub ↗</a>
-            <a [href]="site.linkedin" target="_blank" rel="noopener">LinkedIn ↗</a>
-            <a [href]="site.cv" download>Download CV ↓</a>
-            <a [href]="'mailto:' + site.email">{{ site.email }}</a>
+            <a [href]="site.github()" target="_blank" rel="noopener">GitHub ↗</a>
+            <a [href]="site.linkedin()" target="_blank" rel="noopener">LinkedIn ↗</a>
+            @if (site.cvUrl(); as cv) {
+              <a [href]="cv">Download CV ↓</a>
+            }
+            <a [href]="'mailto:' + site.email()">{{ site.email() }}</a>
           </div>
         </div>
         <div class="foot-bottom">
@@ -48,7 +50,7 @@ import { MotionService } from '../core/motion.service';
   `
 })
 export class FooterComponent {
-  readonly site = SITE;
+  readonly site = inject(SiteService);
   readonly year = new Date().getFullYear();
   readonly uptime = signal('00:00:00');
 

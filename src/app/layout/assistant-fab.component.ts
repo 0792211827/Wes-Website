@@ -12,16 +12,20 @@ import { IconComponent } from '../shared/icon.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'host-contents' },
   template: `
-    <button class="fab" type="button" aria-controls="miniChat" [attr.aria-expanded]="ui.miniChatOpen()" (click)="toggle()">
-      <app-icon name="chat" />
-      <span class="lbl">Ask my AI</span>
+    <button class="fab" [class.fab-open]="ui.miniChatOpen()" type="button" aria-controls="miniChat"
+      [attr.aria-expanded]="ui.miniChatOpen()" (click)="toggle()">
+      <app-icon [name]="ui.miniChatOpen() ? 'close' : 'chat'" />
+      <span class="lbl">{{ ui.miniChatOpen() ? 'Close' : 'Ask my AI' }}</span>
     </button>
     <section class="window mini-chat" id="miniChat" [class.open]="ui.miniChatOpen()" aria-label="Ask Wesley's AI">
-      <div class="window-bar">
-        <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
-        <span class="grow">ask-wesley.ai — grounded on this site</span>
-        <a class="copy-btn" routerLink="/ask" (click)="ui.miniChatOpen.set(false)">expand</a>
-        <button class="copy-btn" type="button" aria-label="Close assistant" (click)="ui.miniChatOpen.set(false)">esc</button>
+      <div class="mc-head">
+        <span class="mc-av" aria-hidden="true"><app-icon name="bot" /></span>
+        <div class="mc-title">
+          <b>Ask about Wesley</b>
+          <span class="mc-status"><i aria-hidden="true"></i> Online now · replies instantly</span>
+        </div>
+        <a class="mc-btn" routerLink="/ask" (click)="ui.miniChatOpen.set(false)" title="Open full page" aria-label="Open the full chat page">⤢</a>
+        <button class="mc-btn" type="button" aria-label="Close assistant" (click)="ui.miniChatOpen.set(false)"><app-icon name="close" /></button>
       </div>
       @if (opened()) {
         <app-chat [compact]="true" (navigated)="ui.miniChatOpen.set(false)" />

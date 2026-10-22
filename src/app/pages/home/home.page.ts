@@ -2,9 +2,10 @@ import { ChangeDetectionStrategy, Component, DestroyRef, afterNextRender, comput
 import { RouterLink } from '@angular/router';
 
 import { ContentService } from '../../core/content.service';
-import { BUILDING, CAPS, HERO_TAGS, SITE, SUGGESTED } from '../../core/data/site.data';
+import { BUILDING, CAPS, SUGGESTED } from '../../core/data/site.data';
 import { MotionService } from '../../core/motion.service';
 import { SeoService } from '../../core/seo.service';
+import { SiteService } from '../../core/site.service';
 import { UiStateService } from '../../core/ui-state.service';
 import { esc } from '../../core/util';
 import { LabCardComponent, PostRowComponent, WorkCardComponent } from '../../shared/cards';
@@ -19,10 +20,6 @@ import { GithubActivityComponent } from './github-activity.component';
 import { PipelineComponent } from './pipeline.component';
 import { SystemTraceComponent } from './system-trace.component';
 
-const TABS: Record<'tldr' | 'now', string[]> = {
-  tldr: ['AI engineer & consultant', 'RAG, agents, voice & open-weight LLMs', 'evaluation before opinions', 'open to consulting engagements'],
-  now: ['building: ' + BUILDING[0], 'writing: Evaluating LLM applications', 'testing: prefix caching on vLLM', 'updated monthly']
-};
 
 const TECH = ['Python', 'FastAPI', 'PostgreSQL', 'pgvector', 'vLLM', 'Kubernetes', 'Docker', 'Prometheus', 'Grafana', 'LangGraph',
   'Langfuse', 'Hugging Face', 'AWQ', 'BM25', 'Cross-encoders', 'WebRTC', 'Temporal', 'Spring Boot', 'Angular', 'Terraform'];
@@ -56,23 +53,27 @@ const TECH = ['Python', 'FastAPI', 'PostgreSQL', 'pgvector', 'vLLM', 'Kubernetes
         </div>
 
         <div class="hero-copy">
-          <span class="stamp" [class.land]="landed()" aria-hidden="true">open to engagements</span>
+          @if (site.flag('showStamp')) {
+            <span class="stamp" [class.land]="landed()" aria-hidden="true">{{ site.text('availability') }}</span>
+          }
           <p class="whoami">whoami</p>
-          <h1 class="scramble" aria-label="Wesley Nyamosi" [innerHTML]="nameHtml()"></h1>
-          <p class="positioning">AI Engineering &amp; Consulting</p>
-          <p class="headline" [appSplit]="'Building AI systems that [[work beyond the demo.]]'"></p>
-          <p class="support">I design and build production-ready AI systems and applications that solve real business problems, from strategy and architecture to evaluation, deployment and the infrastructure underneath.</p>
+          <h1 class="scramble" [attr.aria-label]="site.text('name')" [innerHTML]="decoded() ? site.text('name') : nameHtml()"></h1>
+          <p class="positioning">{{ site.text('role') }}</p>
+          <p class="headline" [appSplit]="site.text('headline')"></p>
+          <p class="support">{{ site.text('support') }}</p>
           <p class="building" aria-live="off">currently building <b>{{ typed() }}</b><span class="type-caret" aria-hidden="true"></span></p>
           <div class="chips">
-            @for (t of tags; track t.label) {
+            @for (t of site.heroTags(); track t.label) {
               <span [class]="'chip ' + t.color">{{ t.label }}</span>
             }
           </div>
           <div class="socials">
-            <a [href]="site.github" target="_blank" rel="noopener" aria-label="GitHub"><app-icon name="github" /></a>
-            <a [href]="site.linkedin" target="_blank" rel="noopener" aria-label="LinkedIn"><app-icon name="linkedin" /></a>
-            <a [href]="'mailto:' + site.email" aria-label="Email"><app-icon name="mail" /></a>
-            <a [href]="site.cv" download aria-label="Download CV"><app-icon name="file" /></a>
+            <a [href]="site.github()" target="_blank" rel="noopener" aria-label="GitHub"><app-icon name="github" /></a>
+            <a [href]="site.linkedin()" target="_blank" rel="noopener" aria-label="LinkedIn"><app-icon name="linkedin" /></a>
+            <a [href]="'mailto:' + site.email()" aria-label="Email"><app-icon name="mail" /></a>
+            @if (site.cvUrl(); as cv) {
+              <a [href]="cv" aria-label="Download CV"><app-icon name="file" /></a>
+            }
           </div>
           <div class="hero-ctas">
             <a class="btn btn-primary" routerLink="/contact">Work With Me <app-icon name="arrow" /></a>
@@ -81,14 +82,19 @@ const TECH = ['Python', 'FastAPI', 'PostgreSQL', 'pgvector', 'vLLM', 'Kubernetes
         </div>
       </div>
 
-      <div class="wrap system reveal">
-        <app-system-trace />
-      </div>
+      @if (site.show('system')) {
+        <div class="wrap system reveal">
+          <app-system-trace />
+        </div>
+      }
 
-      <div class="wrap" style="margin-top:28px">
-        <app-github-activity />
-      </div>
+      @if (site.show('github')) {
+        <div class="wrap" style="margin-top:28px">
+          <app-github-activity />
+        </div>
+      }
 
+      @if (site.show('marquee')) {
       <div class="marquee" aria-label="Tools and technologies">
         <div class="marquee-track">
           @for (t of techLoop; track $index) {
@@ -98,9 +104,11 @@ const TECH = ['Python', 'FastAPI', 'PostgreSQL', 'pgvector', 'vLLM', 'Kubernetes
           }
         </div>
       </div>
+      }
     </section>
 
     <!-- ================= NUMBERS ================= -->
+    @if (site.show('stats')) {
     <section class="section" style="padding-top:56px;padding-bottom:56px">
       <div class="wrap">
         <div class="stats">
@@ -114,8 +122,10 @@ const TECH = ['Python', 'FastAPI', 'PostgreSQL', 'pgvector', 'vLLM', 'Kubernetes
         </div>
       </div>
     </section>
+    }
 
     <!-- ================= PHILOSOPHY ================= -->
+    @if (site.show('philosophy')) {
     <section class="section" id="philosophy">
       <div class="wrap philo">
         <div class="reveal">
@@ -133,8 +143,10 @@ const TECH = ['Python', 'FastAPI', 'PostgreSQL', 'pgvector', 'vLLM', 'Kubernetes
         <app-pipeline />
       </div>
     </section>
+    }
 
     <!-- ================= WHAT I BUILD ================= -->
+    @if (site.show('build')) {
     <section class="section" id="build">
       <div class="wrap">
         <app-section-head eyebrow="expertise" title="What I Build" text="Six areas where I help teams go from an AI idea to a system people rely on."
@@ -159,8 +171,10 @@ const TECH = ['Python', 'FastAPI', 'PostgreSQL', 'pgvector', 'vLLM', 'Kubernetes
         </div>
       </div>
     </section>
+    }
 
     <!-- ================= SELECTED WORK ================= -->
+    @if (site.show('work')) {
     <section class="section" id="work">
       <div class="wrap">
         <app-section-head eyebrow="selected work" title="Problems solved, not just models shipped"
@@ -172,8 +186,10 @@ const TECH = ['Python', 'FastAPI', 'PostgreSQL', 'pgvector', 'vLLM', 'Kubernetes
         </div>
       </div>
     </section>
+    }
 
     <!-- ================= HOW THE WORK WORKS ================= -->
+    @if (site.show('howItWorks')) {
     <section class="section" id="how-it-works">
       <div class="wrap">
         <app-section-head eyebrow="how it works" title="See each system work, step by step"
@@ -194,8 +210,10 @@ const TECH = ['Python', 'FastAPI', 'PostgreSQL', 'pgvector', 'vLLM', 'Kubernetes
         }
       </div>
     </section>
+    }
 
     <!-- ================= LAB ================= -->
+    @if (site.show('lab')) {
     <section class="section">
       <div class="wrap">
         <app-section-head eyebrow="ai lab" title="Experiments, benchmarks and research"
@@ -207,8 +225,10 @@ const TECH = ['Python', 'FastAPI', 'PostgreSQL', 'pgvector', 'vLLM', 'Kubernetes
         </div>
       </div>
     </section>
+    }
 
     <!-- ================= WRITING ================= -->
+    @if (site.show('writing')) {
     <section class="section">
       <div class="wrap">
         <app-section-head eyebrow="writing" title="Notes for engineers and leaders"
@@ -220,8 +240,10 @@ const TECH = ['Python', 'FastAPI', 'PostgreSQL', 'pgvector', 'vLLM', 'Kubernetes
         </div>
       </div>
     </section>
+    }
 
     <!-- ================= ASK TEASER ================= -->
+    @if (site.show('ask')) {
     <section class="section">
       <div class="wrap ask-teaser">
         <div class="reveal">
@@ -240,8 +262,11 @@ const TECH = ['Python', 'FastAPI', 'PostgreSQL', 'pgvector', 'vLLM', 'Kubernetes
         </div>
       </div>
     </section>
+    }
 
-    <app-cta-band />
+    @if (site.show('cta')) {
+      <app-cta-band />
+    }
   `
 })
 export class HomePage {
@@ -249,17 +274,18 @@ export class HomePage {
   private motion = inject(MotionService);
   private ui = inject(UiStateService);
 
-  readonly site = SITE;
-  readonly tags = HERO_TAGS;
+  readonly site = inject(SiteService);
   readonly caps = CAPS;
   readonly suggested = SUGGESTED;
   readonly tech = TECH;
   readonly techLoop = [...TECH, ...TECH];
 
   readonly tab = signal<'tldr' | 'now'>('tldr');
-  readonly tabItems = computed(() => TABS[this.tab()]);
+  readonly tabItems = computed(() => this.site.lines(this.tab()));
   readonly typed = signal(BUILDING[0]);
-  readonly nameHtml = signal('Wesley Nyamosi');
+  readonly nameHtml = signal('&nbsp;');
+  /** After the decode animation the name follows the saved setting directly. */
+  readonly decoded = signal(false);
   readonly landed = signal(false);
 
   readonly featured = computed(() => this.content.projects().filter((p) => p.featured).slice(0, 4));
@@ -293,14 +319,14 @@ export class HomePage {
     destroy.onDestroy(() => timers.forEach((t) => clearTimeout(t)));
 
     if (this.motion.reduced) {
+      this.decoded.set(true);
       this.landed.set(true);
       return;
     }
 
     /* name decodes from random glyphs once the boot intro is finished */
-    this.nameHtml.set('&nbsp;');
     this.ui.bootDone.then(() => {
-      const final = 'Wesley Nyamosi';
+      const final = this.site.text('name');
       const glyphs = '!<>-_/[]{}=+*^?#01ABCDEFGHIJKLMNOPQRSTUVWXYZ';
       const t0 = performance.now();
       const step = (t: number) => {
@@ -312,28 +338,40 @@ export class HomePage {
         }
         this.nameHtml.set(html);
         if (k < 1) requestAnimationFrame(step);
-        else { this.nameHtml.set(final); this.landed.set(true); }
+        else { this.decoded.set(true); this.landed.set(true); }
       };
       requestAnimationFrame(step);
     });
 
-    /* "currently building …" types, pauses, deletes and moves on */
+    /* "currently building …" types, pauses, deletes and moves on (list editable in the admin) */
+    const words = () => {
+      const list = this.site.lines('building');
+      return list.length ? list : BUILDING;
+    };
     let i = 0, j = BUILDING[0].length, deleting = true;
     const tick = () => {
-      const word = BUILDING[i];
+      const list = words();
+      const word = list[i % list.length];
       if (deleting) {
         j--;
-        this.typed.set(word.slice(0, j));
-        if (j <= 0) { deleting = false; i = (i + 1) % BUILDING.length; timers.push(setTimeout(tick, 350)); return; }
+        this.typed.set(word.slice(0, Math.max(0, j)));
+        if (j <= 0) { deleting = false; i = (i + 1) % list.length; timers.push(setTimeout(tick, 350)); return; }
         timers.push(setTimeout(tick, 22));
       } else {
         j++;
-        this.typed.set(BUILDING[i].slice(0, j));
-        if (j >= BUILDING[i].length) { deleting = true; timers.push(setTimeout(tick, 2600)); return; }
+        this.typed.set(word.slice(0, j));
+        if (j >= word.length) { deleting = true; timers.push(setTimeout(tick, 2600)); return; }
         timers.push(setTimeout(tick, 42));
       }
     };
-    afterNextRender(() => timers.push(setTimeout(tick, 3200)));
+    afterNextRender(() => {
+      this.site.ready.then(() => {
+        const first = words()[0];
+        this.typed.set(first);
+        j = first.length;
+        timers.push(setTimeout(tick, 3200));
+      });
+    });
   }
 
   workCat(id: string): string {

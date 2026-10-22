@@ -8,17 +8,32 @@ import { AdminStats, AskLog, Lead, LeadStatus } from '../../core/models';
 import { SeoService } from '../../core/seo.service';
 import { ToastService } from '../../core/toast.service';
 import { IconComponent } from '../../shared/icon.component';
+import { AdminContentComponent } from './admin-content.component';
+import { AdminFilesComponent } from './admin-files.component';
+import { AdminSiteComponent } from './admin-site.component';
+import { AdminWorkspaceComponent } from './admin-workspace.component';
 
 const STATUSES: LeadStatus[] = ['NEW', 'CONTACTED', 'QUALIFIED', 'PROPOSAL', 'WON', 'LOST', 'ARCHIVED'];
+
+type Tab = 'workspace' | 'leads' | 'ask' | 'site' | 'files' | 'content';
+
+const TABS: Array<{ id: Tab; label: string }> = [
+  { id: 'workspace', label: 'workspace' },
+  { id: 'leads', label: 'leads' },
+  { id: 'ask', label: 'ai questions' },
+  { id: 'site', label: 'website' },
+  { id: 'files', label: 'photo & cv' },
+  { id: 'content', label: 'content' }
+];
 
 /**
  * Private dashboard at /admin (not linked from the site, blocked in robots.txt).
  * Wesley signs in with ADMIN_USERNAME / ADMIN_PASSWORD from the API settings to see
- * consulting leads and what visitors ask the AI assistant.
+ * the visitor workspace, consulting leads, AI questions, and to edit the website, photo, CV and content.
  */
 @Component({
   selector: 'app-admin-page',
-  imports: [FormsModule, DatePipe, IconComponent],
+  imports: [FormsModule, DatePipe, IconComponent, AdminWorkspaceComponent, AdminSiteComponent, AdminFilesComponent, AdminContentComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'page' },
   template: `
@@ -63,12 +78,24 @@ const STATUSES: LeadStatus[] = ['NEW', 'CONTACTED', 'QUALIFIED', 'PROPOSAL', 'WO
           </div>
         }
 
-        <div class="tabs admin-tabs" role="tablist">
-          <button type="button" role="tab" [attr.aria-selected]="tab() === 'leads'" (click)="tab.set('leads')">leads</button>
-          <button type="button" role="tab" [attr.aria-selected]="tab() === 'ask'" (click)="tab.set('ask')">ai questions</button>
+        <div class="tabs admin-tabs ad-main-tabs" role="tablist">
+          @for (t of tabs; track t.id) {
+            <button type="button" role="tab" [attr.aria-selected]="tab() === t.id" (click)="go(t.id)">
+              {{ t.label }}
+              @if (t.id === 'leads' && stats()?.newLeads) { <span class="ad-badge">{{ stats()?.newLeads }}</span> }
+            </button>
+          }
         </div>
 
-        @if (tab() === 'leads') {
+        @if (tab() === 'workspace') {
+          <app-admin-workspace />
+        } @else if (tab() === 'site') {
+          <app-admin-site />
+        } @else if (tab() === 'files') {
+          <app-admin-files />
+        } @else if (tab() === 'content') {
+          <app-admin-content />
+        } @else if (tab() === 'leads') {
           <div class="card admin-scroll" style="padding:0">
             <table class="admin-table">
               <thead><tr><th>received</th><th>who</th><th>looking for</th><th>problem</th><th>budget / timeline</th><th>status</th><th></th></tr></thead>
@@ -124,7 +151,8 @@ export class AdminPage {
   readonly admin = inject(AdminService);
   private toast = inject(ToastService);
   readonly statuses = STATUSES;
-  readonly tab = signal<'leads' | 'ask'>('leads');
+  readonly tabs = TABS;
+  readonly tab = signal<Tab>(this.savedTab());
   readonly stats = signal<AdminStats | null>(null);
   readonly leads = signal<Lead[]>([]);
   readonly logs = signal<AskLog[]>([]);
@@ -148,6 +176,20 @@ export class AdminPage {
       next: () => { this.busy.set(false); this.password = ''; },
       error: (err: unknown) => { this.busy.set(false); this.error.set(problemMessage(err, 'Wrong username or password.')); }
     });
+  }
+
+  go(t: Tab): void {
+    this.tab.set(t);
+    try { sessionStorage.setItem('wn-admin-tab', t); } catch { /* ignore */ }
+  }
+
+  private savedTab(): Tab {
+    try {
+      const t = sessionStorage.getItem('wn-admin-tab') as Tab | null;
+      return t && TABS.some((x) => x.id === t) ? t : 'workspace';
+    } catch {
+      return 'workspace';
+    }
   }
 
   refresh(): void {

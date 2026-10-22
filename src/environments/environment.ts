@@ -7,5 +7,10 @@
  */
 export const environment = {
   production: true,
-  apiUrl: ''
+  apiUrl: '',
+  /**
+   * Admin uploads (profile photo, CV) go straight to the Render API: Vercel's proxy limits request
+   * bodies to about 4.5 MB. The API's CORS_ORIGINS must include this site (https://*.vercel.app is allowed by default).
+   */
+  uploadApiUrl: 'https://backendwesly.onrender.com'
 };

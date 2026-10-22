@@ -1,6 +1,7 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 
-import { SITE, TIMELINE } from '../core/data/site.data';
+import { TIMELINE } from '../core/data/site.data';
+import { SiteService } from '../core/site.service';
 import { SeoService } from '../core/seo.service';
 import { CtaBandComponent } from '../shared/cta-band.component';
 import { PageHeadComponent } from '../shared/page-head.component';
@@ -12,14 +13,15 @@ import { SectionHeadComponent } from '../shared/section-head.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'page' },
   template: `
-    <app-page-head [crumbs]="[{ label: 'home', link: '/' }, { label: 'about' }]" title="I build AI systems people can depend on."
-      lede="AI engineer and consultant. I work across the whole path from problem to production: strategy, architecture, data, models, applications, evaluation and infrastructure." />
+    <app-page-head [crumbs]="[{ label: 'home', link: '/' }, { label: 'about' }]" [title]="site.text('aboutTitle')"
+      [lede]="site.text('aboutLede')" />
 
     <section class="section">
       <div class="wrap about-intro">
         <div class="prose reveal">
-          <p>I started in software and data engineering, building the backends, pipelines and cloud infrastructure that products run on. When large language models became practical, I saw the same pattern again and again: impressive prototypes that never reached the people they were meant for.</p>
-          <p>That gap is where I work. I help organizations decide where AI is worth it, design systems that hold up under real use, and measure them honestly. Sometimes that means building an assistant or an agent. Sometimes it means deploying open-weight models on infrastructure the client controls. Sometimes it means advising <em>not</em> to use AI for a problem.</p>
+          @for (para of story(); track $index) {
+            <p>{{ para }}</p>
+          }
           <h3>What I focus on</h3>
           <ul class="bullets">
             <li>Retrieval-augmented and agentic systems that stay grounded and auditable</li>
@@ -41,8 +43,10 @@ import { SectionHeadComponent } from '../shared/section-head.component';
             <dt>status</dt><dd><span class="status-dot" aria-hidden="true"></span> open to engagements</dd>
           </dl>
           <div class="hero-ctas">
-            <a class="btn btn-primary btn-sm" [href]="site.cv" download>Download CV ↓</a>
-            <a class="btn btn-sm" [href]="site.linkedin" target="_blank" rel="noopener">LinkedIn ↗</a>
+            @if (site.cvUrl(); as cv) {
+              <a class="btn btn-primary btn-sm" [href]="cv">Download CV ↓</a>
+            }
+            <a class="btn btn-sm" [href]="site.linkedin()" target="_blank" rel="noopener">LinkedIn ↗</a>
           </div>
         </aside>
       </div>
@@ -82,7 +86,7 @@ import { SectionHeadComponent } from '../shared/section-head.component';
       <div class="wrap">
         <app-section-head eyebrow="beyond engineering" title="Outside of work" />
         <div class="prose reveal">
-          <p>Add a short, personal paragraph here: interests, community work, teaching, or what keeps you curious. It makes the page human without distracting from the work.</p>
+          <p>{{ site.text('aboutBeyond') }}</p>
         </div>
         <div class="chips reveal" style="margin-top:18px">
           <span class="chip c-green">mentoring</span><span class="chip c-amber">tech community</span><span class="chip c-sky">reading research papers</span>
@@ -95,7 +99,8 @@ import { SectionHeadComponent } from '../shared/section-head.component';
   `
 })
 export class AboutPage {
-  readonly site = SITE;
+  readonly site = inject(SiteService);
+  readonly story = computed(() => this.site.text('aboutStory').split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean));
   readonly timeline = TIMELINE;
   readonly principles: Array<[string, string]> = [
     ['Start from the problem', 'The first conversation is about the business problem and how success will be measured, not about models.'],

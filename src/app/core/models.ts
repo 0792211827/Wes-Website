@@ -183,6 +183,8 @@ export interface AskResponse {
   mode: string;
   trace: string;
   remaining: number;
+  /** Two suggested next questions (newer API versions). */
+  followUps?: string[];
 }
 
 export interface GithubRepo {
@@ -249,4 +251,95 @@ export interface AdminStats {
 export interface LoginResponse {
   token: string;
   expiresAt: string;
+}
+
+/* ---------- site settings & files (admin-editable) ---------- */
+export interface FileInfo {
+  key: string;
+  filename: string;
+  contentType: string;
+  size: number;
+  updatedAt: string;
+  url: string;
+}
+
+export interface SiteResponse {
+  settings: Record<string, string>;
+  photo: FileInfo | null;
+  cv: FileInfo | null;
+}
+
+/* ---------- visitor workspace ---------- */
+export interface CountItem { label: string; count: number; }
+export interface DayPoint { day: string; visitors: number; pageViews: number; }
+
+export interface AnalyticsSummary {
+  days: number;
+  visitors: number;
+  newVisitors: number;
+  sessions: number;
+  pageViews: number;
+  activeNow: number;
+  avgSessionSeconds: number;
+  avgPageSeconds: number;
+  bounceRate: number;
+  cvDownloads: number;
+  questions: number;
+  contacts: number;
+  outboundClicks: number;
+  timeline: DayPoint[];
+  topPages: CountItem[];
+  countries: CountItem[];
+  cities: CountItem[];
+  devices: CountItem[];
+  browsers: CountItem[];
+  systems: CountItem[];
+  referrers: CountItem[];
+  actions: CountItem[];
+}
+
+export interface VisitSession {
+  sessionId: string;
+  visitorId: string | null;
+  returning: boolean;
+  start: string;
+  end: string;
+  durationSeconds: number;
+  pageViews: number;
+  events: number;
+  entryPage: string | null;
+  exitPage: string | null;
+  referrer: string | null;
+  ip: string | null;
+  country: string | null;
+  countryCode: string | null;
+  region: string | null;
+  city: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  isp: string | null;
+  deviceType: string | null;
+  browser: string | null;
+  os: string | null;
+  screen: string | null;
+  language: string | null;
+  timezone: string | null;
+  actions: string[];
+}
+
+export interface VisitEvent {
+  id: number;
+  at: string;
+  type: string;
+  path: string | null;
+  title: string | null;
+  label: string | null;
+  durationMs: number | null;
+  referrer: string | null;
+}
+
+export interface SessionDetail {
+  session: VisitSession;
+  events: VisitEvent[];
+  otherSessions: VisitSession[];
 }

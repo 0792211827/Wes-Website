@@ -3,6 +3,7 @@ import {
 } from '@angular/core';
 
 import { ApiService } from '../../core/api.service';
+import { SiteService } from '../../core/site.service';
 import { SITE } from '../../core/data/site.data';
 import { ContributionDay, GithubRepo } from '../../core/models';
 import { MONTHS, mulberry32 } from '../../core/util';
@@ -51,7 +52,7 @@ function sampleDays(): ContributionDay[] {
     <div class="card heat reveal" id="github">
       <div class="heat-head">
         <span><b [appCountUp]="totalLabel()" style="color:var(--cream)"></b> contributions in the last year</span>
-        <a class="link-more" [href]="site.github" target="_blank" rel="noopener">github.com/{{ site.githubUser }}</a>
+        <a class="link-more" [href]="site.github()" target="_blank" rel="noopener">github.com/{{ site.githubUser() }}</a>
       </div>
       <div class="heat-scroll" #scroller>
         <div class="heat-months">
@@ -94,7 +95,7 @@ function sampleDays(): ContributionDay[] {
   `
 })
 export class GithubActivityComponent {
-  readonly site = SITE;
+  readonly site = inject(SiteService);
   readonly days = signal<ContributionDay[]>(sampleDays());
   readonly repos = signal<GithubRepo[]>(SAMPLE_REPOS);
   readonly live = signal(false);

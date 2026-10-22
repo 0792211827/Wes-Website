@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 
+import { AnalyticsService } from '../core/analytics.service';
 import { ThemeService } from '../core/theme.service';
 import { UiStateService } from '../core/ui-state.service';
 import { IconComponent } from '../shared/icon.component';
@@ -37,7 +38,7 @@ export const NAV = [
             <app-icon name="search" />
             <span class="lbl"><kbd>⌘</kbd> <kbd>K</kbd></span>
           </button>
-          <button class="icon-btn" type="button" (click)="theme.toggle()"
+          <button class="icon-btn" type="button" (click)="toggleTheme()"
             [attr.aria-label]="theme.theme() === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'">
             <app-icon [name]="theme.theme() === 'dark' ? 'sun' : 'moon'" />
           </button>
@@ -62,6 +63,12 @@ export const NAV = [
 })
 export class TopbarComponent {
   readonly theme = inject(ThemeService);
+  private analytics = inject(AnalyticsService);
+
+  toggleTheme(): void {
+    this.theme.toggle();
+    this.analytics.track('theme', this.theme.theme());
+  }
   readonly ui = inject(UiStateService);
   readonly nav = NAV;
 }

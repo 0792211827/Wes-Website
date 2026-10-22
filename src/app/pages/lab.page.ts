@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, computed, effect, inject, input, si
 import { ContentService } from '../core/content.service';
 import { LAB_TYPES } from '../core/data/site.data';
 import { SeoService } from '../core/seo.service';
+import { SiteService } from '../core/site.service';
 import { LabCardComponent } from '../shared/cards';
 import { PageHeadComponent } from '../shared/page-head.component';
 
@@ -14,7 +15,7 @@ import { PageHeadComponent } from '../shared/page-head.component';
   template: `
     <app-page-head [crumbs]="[{ label: 'home', link: '/' }, { label: 'ai lab' }]" title="AI Lab"
       lede="Experiments, benchmarks, research notes, infrastructure tests and prototypes. Every entry shows the question, method, environment, results and code."
-      note="Sample entries: figures are illustrative until replaced with Wesley's real runs." />
+      [note]="site.flag('showSampleNotes') ? 'Sample entries: figures are illustrative until replaced with Wesley’s real runs.' : ''" />
     <section class="section">
       <div class="wrap">
         <div class="filters" role="group" aria-label="Filter by type">
@@ -37,6 +38,7 @@ import { PageHeadComponent } from '../shared/page-head.component';
   `
 })
 export class LabPage {
+  readonly site = inject(SiteService);
   private content = inject(ContentService);
   readonly t = input<string | undefined>(undefined);
   readonly types = LAB_TYPES;

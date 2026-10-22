@@ -3,6 +3,7 @@ import { RouterLink } from '@angular/router';
 
 import { ContentService } from '../core/content.service';
 import { SeoService } from '../core/seo.service';
+import { SiteService } from '../core/site.service';
 import { ToastService } from '../core/toast.service';
 import { pad2 } from '../core/util';
 import { CountUpDirective } from '../shared/count-up.directive';
@@ -30,7 +31,7 @@ const SECTIONS: TocItem[] = [
     @if (project(); as p) {
       <app-page-head [crumbs]="[{ label: 'home', link: '/' }, { label: 'work', link: '/work' }, { label: p.title }]"
         eyebrow="case study" [eyebrowRest]="' · ' + p.category + ' · ' + p.year" [title]="p.title" [lede]="p.outcome"
-        note="Sample case study: replace the content and figures with real project details.">
+        [note]="site.flag('showSampleNotes') ? 'Sample case study: replace the content and figures with real project details.' : ''">
         <div class="chips">
           @for (t of p.tech; track t) {
             <span class="chip">{{ t }}</span>
@@ -93,6 +94,7 @@ const SECTIONS: TocItem[] = [
   `
 })
 export class WorkDetailPage {
+  readonly site = inject(SiteService);
   private content = inject(ContentService);
   private seo = inject(SeoService);
   readonly toast = inject(ToastService);

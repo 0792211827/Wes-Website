@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, computed, effect, inject, input, si
 import { ContentService } from '../core/content.service';
 import { WORK_CATS } from '../core/data/site.data';
 import { SeoService } from '../core/seo.service';
+import { SiteService } from '../core/site.service';
 import { WorkCardComponent } from '../shared/cards';
 import { CtaBandComponent } from '../shared/cta-band.component';
 import { PageHeadComponent } from '../shared/page-head.component';
@@ -15,7 +16,7 @@ import { PageHeadComponent } from '../shared/page-head.component';
   template: `
     <app-page-head [crumbs]="[{ label: 'home', link: '/' }, { label: 'work' }]" title="Selected work"
       lede="Case studies with the problem, architecture, decisions, evaluation and results. Client names are withheld; the engineering is not."
-      note="Sample case studies: replace with Wesley's real projects before launch." />
+      [note]="site.flag('showSampleNotes') ? 'Sample case studies: replace with Wesley’s real projects before launch.' : ''" />
     <section class="section">
       <div class="wrap">
         <div class="filters" role="group" aria-label="Filter by category">
@@ -38,6 +39,7 @@ import { PageHeadComponent } from '../shared/page-head.component';
   `
 })
 export class WorkPage {
+  readonly site = inject(SiteService);
   private content = inject(ContentService);
   /** ?c=rag from the "related work" links */
   readonly c = input<string | undefined>(undefined);

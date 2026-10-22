@@ -32,6 +32,12 @@ export class ContentService {
     this.fetch<Post[]>('/api/posts', (list) => this.posts.set(list));
   }
 
+  /** Reload everything from the API (after edits in the admin). */
+  refresh(): void {
+    this.loaded = false;
+    this.load();
+  }
+
   project(slug: string): Project | undefined {
     return this.projects().find((p) => p.slug === slug);
   }

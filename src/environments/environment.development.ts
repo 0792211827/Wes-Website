@@ -4,5 +4,7 @@
  */
 export const environment = {
   production: false,
-  apiUrl: ''
+  apiUrl: '',
+  /** Admin uploads go straight to the API (same as apiUrl locally). */
+  uploadApiUrl: ''
 };

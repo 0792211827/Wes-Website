@@ -3,7 +3,8 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 
 import { ApiService, problemMessage } from '../core/api.service';
-import { SITE } from '../core/data/site.data';
+import { AnalyticsService } from '../core/analytics.service';
+import { SiteService } from '../core/site.service';
 import { SeoService } from '../core/seo.service';
 import { ToastService } from '../core/toast.service';
 import { IconComponent } from '../shared/icon.component';
@@ -28,10 +29,18 @@ const SERVICES = ['AI Strategy', 'AI Architecture', 'Enterprise AI', 'RAG / Agen
           <li><span>03</span>A written proposal with scope, approach and cost.</li>
         </ol>
         <div class="reach">
-          <a [href]="'mailto:' + site.email"><app-icon name="mail" />{{ site.email }}</a>
-          <a [href]="site.linkedin" target="_blank" rel="noopener"><app-icon name="linkedin" />LinkedIn</a>
-          <a [href]="site.github" target="_blank" rel="noopener"><app-icon name="github" />GitHub</a>
-          <a [href]="site.cv" download><app-icon name="file" />Download CV</a>
+          <a [href]="'mailto:' + site.email()"><app-icon name="mail" />{{ site.email() }}</a>
+          @if (site.whatsapp(); as wa) {
+            <a [href]="wa" target="_blank" rel="noopener"><app-icon name="chat" />WhatsApp</a>
+          }
+          @if (site.phone(); as tel) {
+            <a [href]="'tel:' + tel"><app-icon name="phone" />{{ tel }}</a>
+          }
+          <a [href]="site.linkedin()" target="_blank" rel="noopener"><app-icon name="linkedin" />LinkedIn</a>
+          <a [href]="site.github()" target="_blank" rel="noopener"><app-icon name="github" />GitHub</a>
+          @if (site.cvUrl(); as cv) {
+            <a [href]="cv"><app-icon name="file" />Download CV</a>
+          }
         </div>
       </aside>
 
@@ -120,7 +129,8 @@ export class ContactPage {
   private api = inject(ApiService);
   private toast = inject(ToastService);
   private fb = inject(FormBuilder);
-  readonly site = SITE;
+  readonly site = inject(SiteService);
+  private analytics = inject(AnalyticsService);
   readonly services = SERVICES;
   readonly budgets = ['Under $10k', '$10k – $25k', '$25k – $50k', '$50k – $100k', '$100k+'];
   readonly timelines = ['As soon as possible', 'Within 1 month', '1 – 3 months', '3 – 6 months', 'Just exploring'];
@@ -181,10 +191,11 @@ export class ContactPage {
       next: () => {
         this.sending.set(false);
         this.sentTo.set({ first: v.name.trim().split(' ')[0], email: v.email.trim() });
+        this.analytics.track('contact', this.picked().join(', '));
       },
       error: (err: unknown) => {
         this.sending.set(false);
-        this.error.set(problemMessage(err, 'Your message could not be sent. Please email ' + SITE.email + ' instead.'));
+        this.error.set(problemMessage(err, 'Your message could not be sent. Please email ' + this.site.email() + ' instead.'));
       }
     });
   }

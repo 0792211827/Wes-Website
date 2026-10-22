@@ -4,10 +4,14 @@ import {
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 
+import { AnalyticsService } from '../core/analytics.service';
 import { ApiService, problemMessage } from '../core/api.service';
 import { SUGGESTED } from '../core/data/site.data';
+import { followUpsFor } from '../core/local-ask';
 import { SourceLink } from '../core/models';
+import { SiteService } from '../core/site.service';
 import { markdown, prefersReducedMotion } from '../core/util';
+import { IconComponent } from './icon.component';
 
 interface Msg {
   id: number;
@@ -18,6 +22,7 @@ interface Msg {
   streaming: boolean;
   sources: SourceLink[];
   trace: string;
+  followUps: string[];
 }
 
 let nextId = 1;
@@ -37,58 +42,76 @@ function sessionId(): string {
 
 /**
  * Ask Wesley's AI chat, used on the /ask page and in the floating assistant.
- * Answers stream in like a live model response, then show their cited sources.
+ * - The welcome message offers four starter questions; after that, each answer offers two follow-ups.
+ * - Suggestions only appear under the latest answer and stay hidden while an answer is being written.
+ * - Answers stream in like a live model, then show their sources.
  */
 @Component({
   selector: 'app-chat',
-  imports: [FormsModule, RouterLink],
+  imports: [FormsModule, RouterLink, IconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'host-contents' },
   template: `
     <div class="chat-log" #log aria-live="polite">
-      @for (m of messages(); track m.id) {
-        <div class="msg" [class.user]="m.who === 'user'" [class.bot]="m.who === 'bot'">
-          <span class="avatar" aria-hidden="true">{{ m.who === 'user' ? 'you' : 'wn' }}</span>
-          <div class="bubble">
-            <div class="who">{{ m.who === 'user' ? 'you' : 'wesley.ai' }}</div>
-            @if (m.typing) {
-              <span class="typing" aria-label="Thinking"><i></i><i></i><i></i></span>
-            } @else if (m.who === 'user') {
-              <p>{{ m.text }}</p>
-            } @else {
-              <div [class.streaming]="m.streaming" [innerHTML]="html(m)"></div>
-              @if (!m.streaming && m.sources.length) {
-                <div class="sources">
+      @for (m of messages(); track m.id; let last = $last) {
+        <div class="cmsg" [class.me]="m.who === 'user'">
+          @if (m.who === 'bot') {
+            <span class="cav" aria-hidden="true"><app-icon name="bot" /></span>
+          }
+          <div class="cbody">
+            <div class="cbubble">
+              @if (m.typing) {
+                <span class="typing" aria-label="Thinking"><i></i><i></i><i></i></span>
+              } @else if (m.who === 'user') {
+                {{ m.text }}
+              } @else {
+                <div class="cmd" [class.streaming]="m.streaming" [innerHTML]="html(m)"></div>
+              }
+            </div>
+            @if (m.who === 'bot' && !m.typing && !m.streaming) {
+              @if (m.sources.length) {
+                <div class="csrc">
                   @for (s of m.sources; track $index) {
-                    <a class="source" [routerLink]="s.url" (click)="navigated.emit()"><i>[{{ $index + 1 }}]</i> {{ s.label }}</a>
+                    <a class="csrc-chip" [routerLink]="s.url" (click)="navigated.emit()">{{ s.label }}</a>
                   }
                 </div>
               }
-              @if (!m.streaming && m.trace) {
-                <p class="trace">{{ m.trace }}</p>
+              @if (m.trace && !compact()) {
+                <p class="ctrace">{{ m.trace }}</p>
+              }
+              @if (last && !busy() && m.followUps.length) {
+                <div class="cfollow">
+                  <span>{{ m.id === welcomeId ? 'Try asking' : 'Ask next' }}</span>
+                  @for (q of m.followUps; track q) {
+                    <button type="button" (click)="ask(q)">{{ q }}</button>
+                  }
+                </div>
               }
             }
           </div>
         </div>
       }
     </div>
-    @if (!busy()) {
-      <div class="suggest">
-        @for (q of suggestions; track q) {
-          <button type="button" (click)="ask(q)">{{ q }}</button>
-        }
-      </div>
-    }
-    <form class="composer" (ngSubmit)="ask(draft)">
+
+    <div class="cquick">
+      <a [href]="'mailto:' + site.email()"><app-icon name="mail" />Email</a>
+      @if (site.whatsapp(); as wa) {
+        <a [href]="wa" target="_blank" rel="noopener"><app-icon name="chat" />WhatsApp</a>
+      }
+      <a routerLink="/contact" (click)="navigated.emit()"><app-icon name="send" />Contact form</a>
+    </div>
+
+    <form class="ccomposer" (ngSubmit)="ask(draft)">
       <label class="sr" [attr.for]="inputId">Ask a question</label>
       <textarea #box [id]="inputId" name="question" rows="1" maxlength="500" [(ngModel)]="draft"
-        [placeholder]="compact() ? 'Ask about Wesley’s work…' : 'e.g. Can Wesley help us deploy an open-weight model?'"
-        (keydown)="onKey($event)" (input)="grow()"></textarea>
-      <button class="btn btn-primary" type="submit" [disabled]="busy()" aria-label="Send">{{ compact() ? '↵' : 'Ask ↵' }}</button>
+        [placeholder]="busy() ? 'Answering…' : 'Type a question…'" (keydown)="onKey($event)" (input)="grow()"></textarea>
+      <button class="csend" type="submit" [disabled]="busy() || !draft.trim()" aria-label="Send">
+        <app-icon name="send" />
+      </button>
     </form>
     @if (!compact()) {
       <div class="chat-foot">
-        <span>Don't share confidential information. Questions are logged anonymously to improve answers.</span>
+        <span>Answers come only from this website. Don't share confidential information.</span>
         <span>{{ api.askRemaining() }} / {{ api.askQuota }} questions left this hour</span>
       </div>
     }
@@ -96,6 +119,8 @@ function sessionId(): string {
 })
 export class ChatComponent {
   readonly api = inject(ApiService);
+  readonly site = inject(SiteService);
+  private analytics = inject(AnalyticsService);
   readonly compact = input(false);
   readonly initialQuestion = input<string | null>(null);
   readonly navigated = output<void>();
@@ -103,8 +128,8 @@ export class ChatComponent {
 
   readonly messages = signal<Msg[]>([]);
   readonly busy = signal(false);
-  readonly suggestions = SUGGESTED;
   readonly inputId = 'ask-' + Math.random().toString(36).slice(2, 8);
+  readonly welcomeId: number;
   draft = '';
 
   private log = viewChild<ElementRef<HTMLElement>>('log');
@@ -114,9 +139,10 @@ export class ChatComponent {
   private sid = sessionId();
 
   constructor() {
-    this.push({
+    this.welcomeId = this.push({
       who: 'bot',
-      text: 'Hi, I\'m Wesley\'s assistant. I answer questions about his work, services and approach using only this website\'s approved content, and I\'ll link the pages I used.'
+      text: 'Hi! I\'m Wesley\'s assistant. Ask me about his work, services, experience or availability. I answer from this website only and link the pages I used.',
+      followUps: SUGGESTED
     });
     afterNextRender(() => {
       const q = this.initialQuestion();
@@ -144,7 +170,7 @@ export class ChatComponent {
     const el = this.box()?.nativeElement;
     if (!el) return;
     el.style.height = 'auto';
-    el.style.height = Math.min(140, el.scrollHeight) + 'px';
+    el.style.height = Math.min(120, el.scrollHeight) + 'px';
   }
 
   ask(raw: string): void {
@@ -154,6 +180,7 @@ export class ChatComponent {
     const box = this.box()?.nativeElement;
     if (box) box.style.height = '';
     this.push({ who: 'user', text: q });
+    this.analytics.track('ask', q.slice(0, 200));
 
     if (this.api.askRemaining() <= 0) {
       this.push({
@@ -170,17 +197,21 @@ export class ChatComponent {
     this.api.ask(q, this.sid).subscribe({
       next: (res) => {
         const wait = Math.max(0, 550 - (performance.now() - t0));
-        this.timers.push(setTimeout(() => this.reply(botId, res.answer, res.sources ?? [], res.trace ?? ''), wait));
+        const next = res.followUps && res.followUps.length ? res.followUps : followUpsFor(null, q);
+        this.timers.push(setTimeout(() => this.reply(botId, res.answer, res.sources ?? [], res.trace ?? '', next), wait));
       },
       error: (err: unknown) => {
         this.reply(botId, problemMessage(err, 'Sorry, something went wrong. Please try again, or use the contact form.'),
-          [{ label: 'Contact', url: '/contact' }], '');
+          [{ label: 'Contact', url: '/contact' }], '', []);
       }
     });
   }
 
-  private reply(id: number, text: string, sources: SourceLink[], trace: string): void {
-    this.update(id, { typing: false, text, shown: this.reduced ? text.length : 0, streaming: !this.reduced, sources, trace });
+  private reply(id: number, text: string, sources: SourceLink[], trace: string, followUps: string[]): void {
+    this.update(id, {
+      typing: false, text, shown: this.reduced ? text.length : 0, streaming: !this.reduced, sources, trace,
+      followUps: followUps.slice(0, 2)
+    });
     if (this.reduced) { this.setBusy(false); this.scroll(); return; }
     const tick = () => {
       const m = this.messages().find((x) => x.id === id);
@@ -202,7 +233,7 @@ export class ChatComponent {
     const id = nextId++;
     const m: Msg = {
       id, who: p.who, text: p.text, shown: p.text.length, typing: !!p.typing, streaming: false,
-      sources: p.sources ?? [], trace: p.trace ?? ''
+      sources: p.sources ?? [], trace: p.trace ?? '', followUps: p.followUps ?? []
     };
     this.messages.update((list) => [...list, m]);
     this.scroll();

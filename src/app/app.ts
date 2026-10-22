@@ -5,8 +5,10 @@ import {
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs';
 
+import { AnalyticsService } from './core/analytics.service';
 import { ContentService } from './core/content.service';
 import { MotionService } from './core/motion.service';
+import { SiteService } from './core/site.service';
 import { ToastService } from './core/toast.service';
 import { UiStateService } from './core/ui-state.service';
 import { AssistantFabComponent } from './layout/assistant-fab.component';
@@ -37,6 +39,8 @@ export class App {
 
   constructor() {
     inject(ContentService).load();
+    inject(SiteService).load();
+    inject(AnalyticsService).start();
     inject(ViewportScroller).setOffset([0, 80]);
 
     let first = true;
