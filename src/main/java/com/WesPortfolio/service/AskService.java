@@ -113,7 +113,7 @@ public class AskService {
                     "I can only share Wesley's public, professional information, so I can't help with that. "
                             + "For anything else, you can reach him directly through the contact page.",
                     List.of(new SourceLink("Contact", "/contact"), new SourceLink("Privacy notice", "/privacy")),
-                    false, true, "refusal", "privacy check · not answered", remaining);
+                    false, true, "refusal", "privacy check · not answered", remaining, List.of());
         } else {
             List<Hit> hits = currentIndex().search(question);
             if (hits.isEmpty() || hits.get(0).score() < minScore) {
@@ -122,7 +122,7 @@ public class AskService {
                                 + "Try asking about his services, case studies, AI Lab experiments or approach, or ask Wesley directly.",
                         List.of(new SourceLink("Contact", "/contact")),
                         false, true, "fallback",
-                        "retrieved 0 relevant documents · fallback answer", remaining);
+                        "retrieved 0 relevant documents · fallback answer", remaining, List.of());
                 if (!hits.isEmpty()) {
                     topKey = hits.get(0).doc().key();
                     topScore = hits.get(0).score();
@@ -138,7 +138,9 @@ public class AskService {
 
         long ms = (System.nanoTime() - started) / 1_000_000;
         saveLog(question, response, topKey, topScore, ms, ipHash, sessionId);
-        return response;
+        List<String> next = FollowUps.forKey(response.fallback() && !"refusal".equals(response.mode()) ? null : topKey, question);
+        return new AskResponse(response.answer(), response.sources(), response.grounded(), response.fallback(),
+                response.mode(), response.trace(), response.remaining(), next);
     }
 
     public List<String> suggestions() {
@@ -190,13 +192,13 @@ public class AskService {
             var reply = llm.chat(SYSTEM_PROMPT, user);
             if (reply.isPresent()) {
                 return new AskResponse(stripCitationMarkers(reply.get()), sources, true, false, "llm",
-                        trace + " · " + llm.model(), remaining);
+                        trace + " · " + llm.model(), remaining, List.of());
             }
         }
 
         // Extractive answer: the best approved answer, word for word.
         Doc best = context.get(0).doc();
-        return new AskResponse(best.answer(), sources, true, false, "extractive", trace, remaining);
+        return new AskResponse(best.answer(), sources, true, false, "extractive", trace, remaining, List.of());
     }
 
     /** Sources of the best document first, then other relevant pages, at most four, no duplicates. */

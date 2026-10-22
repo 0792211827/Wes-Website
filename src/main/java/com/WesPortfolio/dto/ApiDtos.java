@@ -51,7 +51,9 @@ public final class ApiDtos {
             boolean fallback,
             String mode,
             String trace,
-            int remaining) {
+            int remaining,
+            /** Two suggested next questions for the chat. */
+            List<String> followUps) {
     }
 
     /* ----------------------------- auth ----------------------------- */
