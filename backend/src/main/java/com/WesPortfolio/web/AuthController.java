@@ -68,7 +68,7 @@ public class AuthController {
     }
 
     private static boolean constantTimeEquals(String a, String b) {
-        if (a == null || b == null || b.isEmpty()) {
+        if (a == null || b == null || b.isBlank()) {
             return false;
         }
         return MessageDigest.isEqual(a.getBytes(StandardCharsets.UTF_8), b.getBytes(StandardCharsets.UTF_8));

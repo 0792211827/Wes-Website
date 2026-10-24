@@ -23,7 +23,7 @@ import com.WesPortfolio.config.AppProperties;
  * Fetches Wesley's public GitHub data on the server and caches it, so visitors never hit
  * GitHub's rate limit and the browser never has CORS problems.
  * The JSON is passed through unchanged; the Angular app reads the fields it needs and
- * falls back to sample data when this returns 503.
+ * hides the GitHub section when this returns 503.
  */
 @Service
 public class GithubService {

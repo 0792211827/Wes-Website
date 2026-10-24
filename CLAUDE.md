@@ -134,6 +134,8 @@ live database. Tell Wesley when a change also needs to be made in `/admin`.
 5. Domain `wesleynyamosi.com` does not exist (NXDOMAIN) but is used for canonical URLs, sitemap and
    CORS. Replace with the real domain or the Vercel URL once decided.
 6. Admin password, DB password and old admin default were committed in git history: rotate them on Render.
+7. Render keeps existing env values: check `NOTIFY_EMAIL` is unset or the real address (else lead emails
+   go to the dead domain) and remove/replace `GITHUB_USERNAME=wesleynyamosi`.
 
 ## 9. Subagents
 
