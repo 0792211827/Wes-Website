@@ -18,20 +18,16 @@ const GROUPS: Array<{ title: string; text: string; fields: Field[] }> = [
     title: 'Hero (top of the home page)', text: 'The first thing visitors see.', fields: [
       { key: 'name', label: 'Name', kind: 'text' },
       { key: 'role', label: 'Role line', kind: 'text' },
-      { key: 'headline', label: 'Headline', hint: 'Wrap the highlighted words in double square brackets, e.g. Building AI systems that [[work beyond the demo.]]', kind: 'text' },
+      { key: 'headline', label: 'Headline', hint: 'Wrap the highlighted words in double square brackets, e.g. Building [[real value]] in the AI generation.', kind: 'text' },
       { key: 'support', label: 'Supporting text', kind: 'area' },
-      { key: 'availability', label: 'Stamp text', hint: 'The rotated stamp next to the name, e.g. open to engagements', kind: 'text' },
+      { key: 'availability', label: 'Stamp text', hint: 'The rotated stamp next to the name, e.g. open to opportunities', kind: 'text' },
       { key: 'showStamp', label: 'Show the stamp', kind: 'toggle' },
-      { key: 'building', label: '"Currently building" lines', hint: 'One per line; they type in one after another.', kind: 'area' },
-      { key: 'heroTags', label: 'Skill tags', hint: 'One per line as Label|colour. Colours: c-green, c-amber, c-sky, c-rose, c-violet, c-teal, c-orange, c-cream', kind: 'area' },
-      { key: 'tldr', label: '"tl;dr" tab', hint: 'One point per line.', kind: 'area' },
-      { key: 'now', label: '"now" tab', hint: 'One point per line.', kind: 'area' }
+      { key: 'heroTags', label: 'Skill tags', hint: 'One per line as Label|colour. Colours: c-green, c-amber, c-sky, c-rose, c-violet, c-teal, c-orange, c-cream', kind: 'area' }
     ]
   },
   {
-    title: 'Contact & links', text: 'Used in the hero, footer, contact page and the AI chat.', fields: [
+    title: 'Contact & links', text: 'Used in the hero, footer and the AI chat.', fields: [
       { key: 'email', label: 'Email', kind: 'text' },
-      { key: 'phone', label: 'Phone', hint: 'Optional, shown on the contact page. Leave empty to hide.', kind: 'text' },
       { key: 'whatsapp', label: 'WhatsApp number', hint: 'Optional, international format without +, e.g. 254712345678. Adds WhatsApp buttons.', kind: 'text' },
       { key: 'location', label: 'Location', hint: 'Optional.', kind: 'text' },
       { key: 'github', label: 'GitHub profile URL', kind: 'text' },
@@ -40,33 +36,20 @@ const GROUPS: Array<{ title: string; text: string; fields: Field[] }> = [
     ]
   },
   {
-    title: 'About page', text: '', fields: [
-      { key: 'aboutTitle', label: 'Title', kind: 'text' },
-      { key: 'aboutLede', label: 'Intro', kind: 'area' },
-      { key: 'aboutStory', label: 'Story', hint: 'Leave an empty line between paragraphs.', kind: 'area' },
-      { key: 'aboutBeyond', label: 'Outside of work', kind: 'area' }
-    ]
-  },
-  {
     title: 'Footer', text: '', fields: [
       { key: 'footerText', label: 'Footer text', kind: 'area' }
     ]
   },
   {
-    title: 'What is visible', text: 'Switch home-page sections and the "sample content" notes on or off.', fields: [
-      { key: 'showSampleNotes', label: '"Sample content" notes on work, lab and articles', kind: 'toggle' },
-      { key: 'section.system', label: 'Live system diagram', kind: 'toggle' },
-      { key: 'section.github', label: 'GitHub activity', kind: 'toggle' },
-      { key: 'section.marquee', label: 'Scrolling tech strip', kind: 'toggle' },
-      { key: 'section.stats', label: 'Numbers band', kind: 'toggle' },
-      { key: 'section.philosophy', label: 'Philosophy (Production matters…)', kind: 'toggle' },
-      { key: 'section.build', label: 'What I Build', kind: 'toggle' },
-      { key: 'section.work', label: 'Selected work', kind: 'toggle' },
-      { key: 'section.howItWorks', label: 'How it works walkthrough', kind: 'toggle' },
-      { key: 'section.lab', label: 'AI Lab preview', kind: 'toggle' },
-      { key: 'section.writing', label: 'Writing preview', kind: 'toggle' },
-      { key: 'section.ask', label: 'Ask my AI teaser', kind: 'toggle' },
-      { key: 'section.cta', label: 'Closing call to action', kind: 'toggle' }
+    title: 'What is visible', text: 'Switch home and work page sections and the "sample content" notes on or off.', fields: [
+      { key: 'showSampleNotes', label: '"Sample content" notes on work and blog posts', kind: 'toggle' },
+      { key: 'section.github', label: 'Home: GitHub activity', kind: 'toggle' },
+      { key: 'section.pillars', label: 'Home: AI engineering areas', kind: 'toggle' },
+      { key: 'section.philosophy', label: 'Home: Philosophy (Production matters…)', kind: 'toggle' },
+      { key: 'section.ask', label: 'Home: Ask my AI teaser', kind: 'toggle' },
+      { key: 'section.cta', label: 'Home: closing call to action', kind: 'toggle' },
+      { key: 'section.system', label: 'Work: live system diagram', kind: 'toggle' },
+      { key: 'section.build', label: 'Work: What I build', kind: 'toggle' }
     ]
   }
 ];

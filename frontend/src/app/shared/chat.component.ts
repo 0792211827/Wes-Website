@@ -98,7 +98,7 @@ function sessionId(): string {
       @if (site.whatsapp(); as wa) {
         <a [href]="wa" target="_blank" rel="noopener"><app-icon name="chat" />WhatsApp</a>
       }
-      <a routerLink="/contact" (click)="navigated.emit()"><app-icon name="send" />Contact form</a>
+      <a routerLink="/" fragment="contact" (click)="navigated.emit()"><app-icon name="send" />Contact</a>
     </div>
 
     <form class="ccomposer" (ngSubmit)="ask(draft)">
@@ -185,7 +185,7 @@ export class ChatComponent {
     if (this.api.askRemaining() <= 0) {
       this.push({
         who: 'bot',
-        text: 'You\'ve reached the question limit for now. For anything else, please use the contact form; Wesley replies within two working days.',
+        text: 'You\'ve reached the question limit for now. For anything else, please email Wesley; he replies within two working days.',
         sources: [{ label: 'Contact', url: '/contact' }]
       });
       return;
@@ -201,7 +201,7 @@ export class ChatComponent {
         this.timers.push(setTimeout(() => this.reply(botId, res.answer, res.sources ?? [], res.trace ?? '', next), wait));
       },
       error: (err: unknown) => {
-        this.reply(botId, problemMessage(err, 'Sorry, something went wrong. Please try again, or use the contact form.'),
+        this.reply(botId, problemMessage(err, 'Sorry, something went wrong. Please try again, or email Wesley.'),
           [{ label: 'Contact', url: '/contact' }], '', []);
       }
     });

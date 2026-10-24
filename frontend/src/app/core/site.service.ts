@@ -9,55 +9,30 @@ import { ColoredTag, FileInfo, SiteResponse } from './models';
 /** Same defaults as the API (SiteService.DEFAULTS), used until /api/site answers or if it cannot be reached. */
 export const DEFAULT_SETTINGS: Record<string, string> = {
   name: 'Wesley Nyamosi',
-  role: 'AI Engineering & Consulting',
-  headline: 'Building AI systems that [[work beyond the demo.]]',
-  support: 'I design and build production-ready AI systems and applications that solve real business problems, from strategy and architecture to evaluation, deployment and the infrastructure underneath.',
-  availability: 'open to engagements',
+  role: 'AI Engineering',
+  headline: 'Building [[real value]] in the AI generation.',
+  support: 'I build AI systems that turn models into something useful: agents and RAG pipelines, open-weight LLMs deployed locally, and fast inference with engines like vLLM and Ollama.',
+  availability: 'open to opportunities',
   showStamp: 'true',
-  building: [
-    'an evaluation harness for multi-turn RAG assistants',
-    'a self-hosted inference stack for open-weight models',
-    'a sub-second voice agent pipeline',
-    'agent tool-use guardrails with human approval steps'
-  ].join('\n'),
   heroTags: [
-    'AI Architecture|c-green', 'Enterprise AI|c-amber', 'RAG & Agents|c-sky', 'LLM Evaluation|c-rose', 'Voice AI|c-violet',
-    'Open-Weight LLMs|c-teal', 'vLLM|c-orange', 'Python|c-cream', 'Kubernetes|c-sky', 'PostgreSQL|c-green'
-  ].join('\n'),
-  tldr: ['AI engineer & consultant', 'RAG, agents, voice & open-weight LLMs', 'evaluation before opinions', 'open to consulting engagements'].join('\n'),
-  now: [
-    'building: an evaluation harness for multi-turn RAG assistants', 'writing: Evaluating LLM applications',
-    'testing: prefix caching on vLLM', 'updated monthly'
+    'AI Agents|c-sky', 'RAG|c-green', 'LLMs|c-amber', 'Local Deployment|c-teal', 'vLLM|c-orange', 'Ollama|c-violet', 'Python|c-cream'
   ].join('\n'),
   email: SITE.email,
-  phone: '',
   whatsapp: '',
   location: '',
   github: SITE.github,
   githubUser: SITE.githubUser,
   linkedin: SITE.linkedin,
-  aboutTitle: 'I build AI systems people can depend on.',
-  aboutLede: 'AI engineer and consultant. I work across the whole path from problem to production: strategy, architecture, data, models, applications, evaluation and infrastructure.',
-  aboutStory: [
-    'I started in software and data engineering, building the backends, pipelines and cloud infrastructure that products run on. When large language models became practical, I saw the same pattern again and again: impressive prototypes that never reached the people they were meant for.',
-    'That gap is where I work. I help organizations decide where AI is worth it, design systems that hold up under real use, and measure them honestly. Sometimes that means building an assistant or an agent. Sometimes it means deploying open-weight models on infrastructure the client controls. Sometimes it means advising not to use AI for a problem.'
-  ].join('\n\n'),
-  aboutBeyond: 'Add a short, personal paragraph here: interests, community work, teaching, or what keeps you curious.',
-  footerText: 'AI engineering & consulting. I design and build production-ready AI systems that solve real business problems. Production matters more than demos.',
+  footerText: 'AI engineering. I build AI systems that create real value in the AI generation. Production matters more than demos.',
   showSampleNotes: 'true',
-  'section.system': 'true',
   'section.github': 'true',
+  'section.pillars': 'true',
   'section.philosophy': 'true',
-  'section.build': 'true',
-  'section.work': 'true',
-  'section.lab': 'true',
-  'section.writing': 'true',
   'section.ask': 'true',
   'section.cta': 'true',
-  /* off by default to keep the home page short (can be switched on in the admin) */
-  'section.stats': 'false',
-  'section.marquee': 'false',
-  'section.howItWorks': 'false'
+  /* Work page */
+  'section.system': 'true',
+  'section.build': 'true'
 };
 
 /**
@@ -73,12 +48,14 @@ export class SiteService {
   readonly photoFile = signal<FileInfo | null>(null);
   readonly cvFile = signal<FileInfo | null>(null);
 
-  /** Resolves once the saved settings arrived (or after 3 s), so the portrait knows which photo to use. */
+  /** Resolves once the saved settings arrived (or after 3 s), so the hero knows which photo to use. */
   private readyResolve!: () => void;
-  readonly ready: Promise<void> = new Promise<void>((r) => { this.readyResolve = r; });
+  readonly ready: Promise<void> = new Promise<void>((r) => { this.readyResolve = r; }).then(() => this.isReady.set(true));
   private loaded = false;
+  /** Signal form of `ready`. */
+  readonly isReady = signal(false);
 
-  /** Uploaded photo, or the static file in public/assets, or nothing. */
+  /** Uploaded photo, or the stock placeholder in public/assets. */
   readonly photoUrl = computed(() => {
     const f = this.photoFile();
     return f ? this.base + f.url : SITE.photo;
@@ -92,7 +69,6 @@ export class SiteService {
   readonly github = computed(() => this.text('github'));
   readonly githubUser = computed(() => this.text('githubUser'));
   readonly linkedin = computed(() => this.text('linkedin'));
-  readonly phone = computed(() => this.text('phone'));
   readonly whatsapp = computed(() => {
     const raw = this.text('whatsapp').replace(/[^\d]/g, '');
     return raw ? 'https://wa.me/' + raw : '';
@@ -134,7 +110,7 @@ export class SiteService {
     return this.text(key) !== 'false';
   }
 
-  /** Is a home-page section switched on in the admin? */
+  /** Is a home or work page section switched on in the admin? */
   show(section: string): boolean {
     return this.flag('section.' + section);
   }

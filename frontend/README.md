@@ -1,6 +1,6 @@
 # Wesley Nyamosi — Portfolio (Angular frontend)
 
-The website for **Wesley Nyamosi, AI Engineering & Consulting**, built from the approved `index.html` design.
+The website for **Wesley Nyamosi, AI Engineering**, built from the approved `index.html` design.
 Angular 20 (standalone components, signals, zoneless), deployed on **Vercel**, talking to the Spring Boot API
 (`WesPortfolio`, deployed on **Render**) under `/api`.
 
@@ -22,7 +22,7 @@ cd backend
 ```
 
 The site still works **without the backend**: content falls back to the bundled copy, the AI assistant answers from
-its offline knowledge base, and the GitHub section is hidden. Only the contact form needs the API.
+its offline knowledge base, and the GitHub section is hidden. Only the admin needs the API.
 
 ## Build
 

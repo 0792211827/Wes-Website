@@ -156,7 +156,7 @@ public class ContactService {
                 ack.setText("Hi " + firstName(lead.getName()) + ",\n\n"
                         + "Thanks for telling me about the problem you're working on. I've received your message "
                         + "and will reply within two working days, usually with a few questions and a time for a short call.\n\n"
-                        + "Best regards,\nWesley Nyamosi\nAI Engineering & Consulting");
+                        + "Best regards,\nWesley Nyamosi\nAI Engineering");
                 sender.send(ack);
             } catch (Exception e) {
                 log.warn("Could not send the acknowledgement email for lead {}: {}", lead.getId(), e.getMessage());

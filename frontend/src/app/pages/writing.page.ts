@@ -12,7 +12,7 @@ import { PageHeadComponent } from '../shared/page-head.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'page' },
   template: `
-    <app-page-head [crumbs]="[{ label: 'home', link: '/' }, { label: 'writing' }]" title="Writing"
+    <app-page-head [crumbs]="[{ label: 'home', link: '/' }, { label: 'blogs' }]" title="Blogs"
       lede="Two tracks: engineering deep-dives for builders, and executive notes for people deciding where AI fits." />
     <section class="section">
       <div class="wrap">
@@ -62,7 +62,7 @@ export class WritingPage {
   });
 
   constructor() {
-    inject(SeoService).set('Writing', 'Articles on building RAG, evaluating LLM applications, deploying open-weight models, voice AI and AI strategy.', '/writing');
+    inject(SeoService).set('Blogs', 'Articles on building RAG, evaluating LLM applications, deploying open-weight models, voice AI and AI strategy.', '/blogs');
     effect(() => {
       const q = this.trackParam();
       if (q && this.tracks.includes(q)) this.track.set(q);

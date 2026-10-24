@@ -29,6 +29,13 @@ committed. Keep it out of `public/` too.
 - Contact: nyamosiwesley02@gmail.com,
   linkedin.com/in/wesley-nyamosi-809409251.
 
+- **AI engineering focus areas** — CONFIRMED by Wesley in session on
+  2026-10-24: he builds hands-on with AI agents and RAG (including evaluation
+  harnesses), open-weight LLMs deployed locally, and inference engines such as
+  vLLM and Ollama. The home page "AI Engineering" cards, hero tags and support
+  line rely on this. It is a statement of what he works with, not a claim of
+  production deployments, clients or metrics.
+
 ## Deliberately NOT used
 
 - **The two CV projects** (Spacy Custom Location Mention Recognition; Investor

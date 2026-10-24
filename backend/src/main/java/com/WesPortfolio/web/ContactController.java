@@ -22,7 +22,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 /**
- * "Let's solve an AI problem." The contact form on /contact.
+ * Contact form endpoint. The site no longer has a contact page (removed 2026-10-25); kept for the API contract and stored leads.
  */
 @RestController
 @RequestMapping("/api")

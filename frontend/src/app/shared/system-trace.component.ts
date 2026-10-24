@@ -3,9 +3,9 @@ import {
 } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 
-import { MotionService } from '../../core/motion.service';
-import { pad2 } from '../../core/util';
-import { systemSVG } from '../../shared/art';
+import { MotionService } from '../core/motion.service';
+import { pad2 } from '../core/util';
+import { systemSVG } from './art';
 
 type Kind = 'a' | 'b' | 'c';
 interface Packet { el: SVGCircleElement; kind: Kind; d: number; speed: number; }

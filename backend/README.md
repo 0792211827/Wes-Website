@@ -1,6 +1,6 @@
 # WesPortfolio API (Spring Boot)
 
-Backend for **Wesley Nyamosi, AI Engineering & Consulting**. It serves the site content, stores consulting leads,
+Backend for **Wesley Nyamosi, AI Engineering**. It serves the site content, stores consulting leads,
 answers "Ask Wesley's AI" questions from approved content, and proxies GitHub data. The Angular frontend (Vercel)
 calls it under `/api`.
 

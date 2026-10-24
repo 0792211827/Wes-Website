@@ -1,68 +1,18 @@
 // GENERATED from the shared content source (same data the API seeds into Postgres).
 // SAMPLE CONTENT: replace with Wesley's real projects, experiments and articles.
-import { Capability, ColoredTag, EngagementFormat, Faq, KeyLabel, Service, SiteInfo, TimelineItem, TitledText } from '../models';
+import { Capability, ColoredTag, EngagementFormat, Faq, KeyLabel, Service, SiteInfo, TitledText } from '../models';
 
 export const SITE: SiteInfo = {
   "name": "Wesley Nyamosi",
-  "role": "AI Engineering & Consulting",
+  "role": "AI Engineering",
   "email": "nyamosiwesley02@gmail.com",
   "github": "",
   "githubUser": "",
   "linkedin": "https://www.linkedin.com/in/wesley-nyamosi-809409251",
   "cv": "/assets/wesley-nyamosi-cv.pdf",
-  "photo": "/assets/wesley.jpg",
+  "photo": "/assets/hero-placeholder.jpg",
   "url": "https://wesleynyamosi.com"
 };
-
-export const BUILDING: string[] = [
-  "an evaluation harness for multi-turn RAG assistants",
-  "a self-hosted inference stack for open-weight models",
-  "a sub-second voice agent pipeline",
-  "agent tool-use guardrails with human approval steps"
-];
-
-export const HERO_TAGS: ColoredTag[] = [
-  {
-    "label": "AI Architecture",
-    "color": "c-green"
-  },
-  {
-    "label": "Enterprise AI",
-    "color": "c-amber"
-  },
-  {
-    "label": "RAG & Agents",
-    "color": "c-sky"
-  },
-  {
-    "label": "LLM Evaluation",
-    "color": "c-rose"
-  },
-  {
-    "label": "Voice AI",
-    "color": "c-violet"
-  },
-  {
-    "label": "Open-Weight LLMs",
-    "color": "c-teal"
-  },
-  {
-    "label": "vLLM",
-    "color": "c-orange"
-  },
-  {
-    "label": "Python",
-    "color": "c-cream"
-  },
-  {
-    "label": "Kubernetes",
-    "color": "c-sky"
-  },
-  {
-    "label": "PostgreSQL",
-    "color": "c-green"
-  }
-];
 
 export const PHILOSOPHY: TitledText[] = [
   {
@@ -122,7 +72,7 @@ export const CAPS: Capability[] = [
     "title": "Enterprise AI Applications",
     "color": "c-amber",
     "icon": "layers",
-    "desc": "Building production AI assistants, copilots, and intelligent applications that fit real workflows.",
+    "desc": "AI assistants, copilots, and intelligent applications that fit real workflows.",
     "tags": [
       "Copilots",
       "Assistants",
@@ -181,6 +131,34 @@ export const CAPS: Capability[] = [
       "GPU serving",
       "Kubernetes"
     ]
+  }
+];
+
+/** Home page: the three areas of AI engineering Wesley works in hands-on (confirmed 2026-10-24, see docs/source-material.md). */
+export const PILLARS: Capability[] = [
+  {
+    "id": "agents",
+    "title": "AI Agents & RAG",
+    "color": "c-sky",
+    "icon": "network",
+    "desc": "Agents that use tools and retrieval pipelines that ground answers in your own data, with evaluation harnesses that show whether they actually work.",
+    "tags": ["Agents", "RAG", "Retrieval", "Eval harnesses"]
+  },
+  {
+    "id": "local",
+    "title": "LLMs & Local Deployment",
+    "color": "c-teal",
+    "icon": "layers",
+    "desc": "Running open-weight language models on hardware you control, so data stays private and costs stay predictable.",
+    "tags": ["Open-weight LLMs", "Local deployment", "Hugging Face", "Docker"]
+  },
+  {
+    "id": "inference",
+    "title": "Inference Engines",
+    "color": "c-orange",
+    "icon": "server",
+    "desc": "Serving models fast and efficiently with engines like vLLM and Ollama, tuned for latency, throughput and the hardware available.",
+    "tags": ["vLLM", "Ollama", "Latency", "Throughput"]
   }
 ];
 
@@ -367,7 +345,7 @@ export const FAQ: Faq[] = [
   },
   {
     "q": "How quickly can we start?",
-    "a": "Usually within two to three weeks. Send a short description of the problem through the contact form and you will get a reply within two working days."
+    "a": "Usually within two to three weeks. Send a short description of the problem by email and you will get a reply within two working days."
   }
 ];
 
@@ -378,33 +356,6 @@ export const LAB_TYPES: string[] = [
   "Research",
   "Infrastructure",
   "Prototype"
-];
-
-export const TIMELINE: TimelineItem[] = [
-  {
-    "when": "Now",
-    "title": "Independent AI engineer & consultant",
-    "text": "Helping organizations design, build, evaluate and deploy production AI systems: RAG, agents, voice and open-weight model infrastructure.",
-    "now": true
-  },
-  {
-    "when": "Earlier",
-    "title": "AI engineering in industry",
-    "text": "Built and operated AI applications and LLM infrastructure used daily by real teams. Replace with real roles, dates and outcomes.",
-    "now": false
-  },
-  {
-    "when": "Earlier",
-    "title": "Software & data engineering",
-    "text": "Backend systems, data pipelines and cloud infrastructure: the foundation production AI depends on.",
-    "now": false
-  },
-  {
-    "when": "Start",
-    "title": "Education",
-    "text": "Add degree, institution and relevant research here.",
-    "now": false
-  }
 ];
 
 export const SUGGESTED: string[] = [

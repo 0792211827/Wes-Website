@@ -1,7 +1,7 @@
 {
   "name": "wes-portfolio",
   "version": "1.0.0",
-  "description": "Wesley Nyamosi — AI Engineering & Consulting (Angular frontend)",
+  "description": "Wesley Nyamosi — AI Engineering (Angular frontend)",
   "private": true,
   "scripts": {
     "ng": "ng",

@@ -7,8 +7,10 @@ mid-task, prefer this file unless they explicitly say to override it.
 ## 1. What this project is
 
 Personal site for Wesley Nyamosi: an early-career AI / data engineer building toward
-AI engineering and consulting work. Pages: Home, About, Work (case studies), Consulting,
-AI Lab (experiments), Writing, Ask Wesley's AI, Contact, Privacy, plus a hidden `/admin`.
+AI engineering work. Pages: Home, Work (case studies), Blogs, Ask Wesley's AI, Privacy,
+plus a hidden `/admin`. (Consulting, AI Lab, About and Contact pages were removed 2026-10-25;
+old URLs redirect. Contact is the closing section of Home (`/#contact`, an email link). Lab data,
+its API and admin tab, and the `POST /api/contact` endpoint still exist but are not used by the site.)
 
 North star: **"Production matters more than demos."** That is a stated *value*, not a
 claim that Wesley has shipped production systems. Every page should answer: *does this
@@ -61,7 +63,7 @@ docs/       API_CONTRACT.md (the frontend ⇄ backend contract), source-material
   - Prod: `frontend/vercel.json` rewrites `/api/*` to the Render service.
 - The frontend **must keep working when the API is down** (Render sleeps): content renders
   from the bundled copy, Ask-AI answers from the offline knowledge base, settings fall back
-  to defaults. Only the contact form and admin truly need the API.
+  to defaults. Only the admin truly needs the API.
 - The backend's database is the live source of content; Wesley edits it through `/admin`.
 
 ### Run locally
@@ -130,7 +132,9 @@ live database. Tell Wesley when a change also needs to be made in `/admin`.
 2. GitHub: no real username yet, so GitHub links and the activity section are hidden. When known, set
    `github`/`githubUser` defaults (both §6 copies) and Render env `GITHUB_USERNAME`.
 3. Replace sample case studies / Lab / articles with real, sourced work (§2).
-4. Home page: stats, marquee and home "How it works" are off by default (2026-10-24). Mobile is still ~12,900px; consider trimming further.
+4. Home page trimmed (2026-10-24, short about dropped 2026-10-25) to hero → AI Engineering areas → philosophy → Ask teaser → CTA
+   (~5,800px on mobile, was ~12,900px). The system trace and "What I build" moved to Work. The hero image defaults to
+   a stock Unsplash photo (not a person) until Wesley uploads his own in `/admin`.
 5. Domain `wesleynyamosi.com` does not exist (NXDOMAIN) but is used for canonical URLs, sitemap and
    CORS. Replace with the real domain or the Vercel URL once decided.
 6. Admin password, DB password and old admin default were committed in git history: rotate them on Render.

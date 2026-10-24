@@ -910,10 +910,6 @@ export const KNOWLEDGE: KnowledgeEntry[] = [
       {
         "label": "What I Build",
         "url": "/"
-      },
-      {
-        "label": "Consulting",
-        "url": "/consulting"
       }
     ]
   },
@@ -921,19 +917,15 @@ export const KNOWLEDGE: KnowledgeEntry[] = [
     "key": "rag",
     "title": "Enterprise Knowledge Assistant",
     "keywords": "work rag retrieval augmented generation knowledge search documents vector embeddings chunk rerank re-rank hybrid bm25",
-    "answer": "RAG is one of Wesley's core areas. The Enterprise Knowledge Assistant case study shows a permission-aware assistant with hybrid retrieval, re-ranking and cited answers.\n\nHis AI Lab also benchmarks hybrid retrieval: in that experiment, hybrid search plus re-ranking reached 0.90 recall@10 against 0.71 for dense-only (sample figures).",
+    "answer": "RAG is one of Wesley's core areas. The Enterprise Knowledge Assistant case study shows a permission-aware assistant with hybrid retrieval, re-ranking and cited answers.",
     "sources": [
       {
         "label": "Enterprise Knowledge Assistant",
         "url": "/work/enterprise-knowledge-assistant"
       },
       {
-        "label": "Hybrid retrieval (AI Lab)",
-        "url": "/lab/hybrid-retrieval"
-      },
-      {
         "label": "Building RAG that works",
-        "url": "/writing/building-rag-that-works"
+        "url": "/blogs/building-rag-that-works"
       }
     ]
   },
@@ -941,15 +933,15 @@ export const KNOWLEDGE: KnowledgeEntry[] = [
     "key": "evaluate",
     "title": "AI Evaluation service",
     "keywords": "work evaluate evaluation eval benchmark test testing quality measure metrics audit assess our system help hallucination",
-    "answer": "Yes. AI evaluation is one of the services Wesley offers. A typical evaluation sprint covers:\n\n- A test set agreed with your domain experts\n- Quality metrics such as faithfulness and answer relevance\n- Latency, cost and safety checks\n- A prioritized list of fixes and a regression gate for CI\n\nIt usually takes two to three weeks. The contact page is the best place to start.",
+    "answer": "Yes. AI evaluation is one of the services Wesley offers. A typical evaluation sprint covers:\n\n- A test set agreed with your domain experts\n- Quality metrics such as faithfulness and answer relevance\n- Latency, cost and safety checks\n- A prioritized list of fixes and a regression gate for CI\n\nIt usually takes two to three weeks. A short email describing the problem is the best place to start.",
     "sources": [
       {
-        "label": "AI Evaluation service",
-        "url": "/consulting"
+        "label": "Contact",
+        "url": "/contact"
       },
       {
         "label": "Evaluating LLM applications",
-        "url": "/writing/evaluating-llm-applications"
+        "url": "/blogs/evaluating-llm-applications"
       }
     ]
   },
@@ -965,7 +957,7 @@ export const KNOWLEDGE: KnowledgeEntry[] = [
       },
       {
         "label": "Why AI projects fail",
-        "url": "/writing/why-most-ai-projects-fail-in-production"
+        "url": "/blogs/why-most-ai-projects-fail-in-production"
       }
     ]
   },
@@ -973,15 +965,11 @@ export const KNOWLEDGE: KnowledgeEntry[] = [
     "key": "infra",
     "title": "Private LLM Inference Platform",
     "keywords": "work open weight open-weight llm deploy deployment self host self-host hosting vllm gpu infrastructure quantization private on-prem premise kubernetes inference serving",
-    "answer": "Wesley deploys open-weight models on infrastructure the client controls, using tools such as vLLM, Kubernetes and quantization.\n\nThe Private LLM Inference Platform case study covers routing, quotas, observability and cost reporting, and the AI Lab has serving benchmarks.",
+    "answer": "Wesley deploys open-weight models on infrastructure the client controls, using tools such as vLLM, Kubernetes and quantization.\n\nThe Private LLM Inference Platform case study covers routing, quotas, observability and cost reporting.",
     "sources": [
       {
         "label": "Private LLM Inference Platform",
         "url": "/work/private-llm-inference-platform"
-      },
-      {
-        "label": "vLLM vs TGI (AI Lab)",
-        "url": "/lab/vllm-vs-tgi-throughput"
       }
     ]
   },
@@ -989,15 +977,11 @@ export const KNOWLEDGE: KnowledgeEntry[] = [
     "key": "voice",
     "title": "Voice Agent case study",
     "keywords": "work voice speech phone call calls telephony asr tts audio conversational agent latency",
-    "answer": "Wesley builds real-time voice agents with streaming speech recognition, natural turn-taking, interruption support and clean human handoff.\n\nSee the Voice Agent case study and the voice latency experiment in the AI Lab.",
+    "answer": "Wesley builds real-time voice agents with streaming speech recognition, natural turn-taking, interruption support and clean human handoff.\n\nSee the Voice Agent case study.",
     "sources": [
       {
         "label": "Voice Agent case study",
         "url": "/work/voice-agent-customer-support"
-      },
-      {
-        "label": "Voice latency budget",
-        "url": "/lab/voice-latency-budget"
       }
     ]
   },
@@ -1015,14 +999,10 @@ export const KNOWLEDGE: KnowledgeEntry[] = [
   },
   {
     "key": "engage",
-    "title": "Consulting",
+    "title": "Working together",
     "keywords": "hire engage engagement work with consult consulting price pricing cost rate process start how long project proposal",
     "answer": "Engagements follow seven steps: Discover, Assess, Design, Build, Evaluate, Deploy and Optimize.\n\nFormats range from 2–4 week advisory work and evaluation sprints to 6–16 week builds and workshops. Pricing is fixed-scope for advisory work and milestone-based for builds, confirmed in a written proposal.",
     "sources": [
-      {
-        "label": "Consulting",
-        "url": "/consulting"
-      },
       {
         "label": "Contact",
         "url": "/contact"
@@ -1038,10 +1018,6 @@ export const KNOWLEDGE: KnowledgeEntry[] = [
       {
         "label": "Selected work",
         "url": "/work"
-      },
-      {
-        "label": "AI Lab",
-        "url": "/lab"
       }
     ]
   },
@@ -1049,7 +1025,7 @@ export const KNOWLEDGE: KnowledgeEntry[] = [
     "key": "contact",
     "title": "Contact",
     "keywords": "contact email reach talk call meeting available availability book touch",
-    "answer": "The best way to reach Wesley is the contact form: describe the problem you're trying to solve, and he usually replies within two working days.\n\nYou can also email nyamosiwesley02@gmail.com or connect on LinkedIn.",
+    "answer": "The best way to reach Wesley is email: write to nyamosiwesley02@gmail.com describing the problem you're trying to solve, and he usually replies within two working days.\n\nYou can also connect on LinkedIn.",
     "sources": [
       {
         "label": "Contact",
@@ -1076,32 +1052,20 @@ export const KNOWLEDGE: KnowledgeEntry[] = [
     "answer": "Yes. Wesley runs practical workshops for engineering teams (RAG, evaluation, deployment) and briefings for leadership on AI strategy, risk and value.",
     "sources": [
       {
-        "label": "Workshops & Training",
-        "url": "/consulting"
-      }
-    ]
-  },
-  {
-    "key": "lab",
-    "title": "AI Lab",
-    "keywords": "lab experiments experiment research benchmarks prototypes",
-    "answer": "The AI Lab is where Wesley publishes experiments, benchmarks, research notes, infrastructure tests and prototypes, each with the question, method, environment, results and conclusion.",
-    "sources": [
-      {
-        "label": "AI Lab",
-        "url": "/lab"
+        "label": "Contact",
+        "url": "/contact"
       }
     ]
   },
   {
     "key": "writing",
-    "title": "Writing",
-    "keywords": "writing articles blog posts read publish",
-    "answer": "Wesley writes in two tracks: engineering (RAG, evaluation, deployment, voice) and executive (AI strategy, why projects fail). Browse them on the Writing page.",
+    "title": "Blogs",
+    "keywords": "blogs blog writing articles posts read publish",
+    "answer": "Wesley writes in two tracks: engineering (RAG, evaluation, deployment, voice) and executive (AI strategy, why projects fail). Browse them on the Blogs page.",
     "sources": [
       {
-        "label": "Writing",
-        "url": "/writing"
+        "label": "Blogs",
+        "url": "/blogs"
       }
     ]
   },
@@ -1109,11 +1073,11 @@ export const KNOWLEDGE: KnowledgeEntry[] = [
     "key": "about",
     "title": "About",
     "keywords": "who is wesley about background experience career bio himself",
-    "answer": "Wesley Nyamosi is an AI engineer and consultant who designs and builds production-ready AI systems and applications that solve real business problems.\n\nThe About page covers his background and what he focuses on.",
+    "answer": "Wesley Nyamosi is an AI engineer and consultant who designs and builds production-ready AI systems and applications that solve real business problems.\n\nThe Work page shows the kinds of systems he builds.",
     "sources": [
       {
-        "label": "About",
-        "url": "/about"
+        "label": "Work",
+        "url": "/work"
       }
     ]
   }

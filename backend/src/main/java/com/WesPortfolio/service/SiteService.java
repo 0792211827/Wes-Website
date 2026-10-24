@@ -27,59 +27,30 @@ public class SiteService {
         Map<String, String> d = new LinkedHashMap<>();
         // hero
         d.put("name", "Wesley Nyamosi");
-        d.put("role", "AI Engineering & Consulting");
-        d.put("headline", "Building AI systems that [[work beyond the demo.]]");
-        d.put("support", "I design and build production-ready AI systems and applications that solve real business problems, "
-                + "from strategy and architecture to evaluation, deployment and the infrastructure underneath.");
-        d.put("availability", "open to engagements");
+        d.put("role", "AI Engineering");
+        d.put("headline", "Building [[real value]] in the AI generation.");
+        d.put("support", "I build AI systems that turn models into something useful: agents and RAG pipelines, "
+                + "open-weight LLMs deployed locally, and fast inference with engines like vLLM and Ollama.");
+        d.put("availability", "open to opportunities");
         d.put("showStamp", "true");
-        d.put("building", String.join("\n",
-                "an evaluation harness for multi-turn RAG assistants",
-                "a self-hosted inference stack for open-weight models",
-                "a sub-second voice agent pipeline",
-                "agent tool-use guardrails with human approval steps"));
         d.put("heroTags", String.join("\n",
-                "AI Architecture|c-green", "Enterprise AI|c-amber", "RAG & Agents|c-sky", "LLM Evaluation|c-rose",
-                "Voice AI|c-violet", "Open-Weight LLMs|c-teal", "vLLM|c-orange", "Python|c-cream",
-                "Kubernetes|c-sky", "PostgreSQL|c-green"));
-        d.put("tldr", String.join("\n",
-                "AI engineer & consultant", "RAG, agents, voice & open-weight LLMs",
-                "evaluation before opinions", "open to consulting engagements"));
-        d.put("now", String.join("\n",
-                "building: an evaluation harness for multi-turn RAG assistants", "writing: Evaluating LLM applications",
-                "testing: prefix caching on vLLM", "updated monthly"));
+                "AI Agents|c-sky", "RAG|c-green", "LLMs|c-amber", "Local Deployment|c-teal",
+                "vLLM|c-orange", "Ollama|c-violet", "Python|c-cream"));
         // contact & links
         d.put("email", "nyamosiwesley02@gmail.com");
-        d.put("phone", "");
         d.put("whatsapp", "");
         d.put("location", "");
         d.put("github", "");
         d.put("githubUser", "");
         d.put("linkedin", "https://www.linkedin.com/in/wesley-nyamosi-809409251");
-        // about page
-        d.put("aboutTitle", "I build AI systems people can depend on.");
-        d.put("aboutLede", "AI engineer and consultant. I work across the whole path from problem to production: "
-                + "strategy, architecture, data, models, applications, evaluation and infrastructure.");
-        d.put("aboutStory", String.join("\n\n",
-                "I started in software and data engineering, building the backends, pipelines and cloud infrastructure that "
-                        + "products run on. When large language models became practical, I saw the same pattern again and again: "
-                        + "impressive prototypes that never reached the people they were meant for.",
-                "That gap is where I work. I help organizations decide where AI is worth it, design systems that hold up under "
-                        + "real use, and measure them honestly. Sometimes that means building an assistant or an agent. Sometimes "
-                        + "it means deploying open-weight models on infrastructure the client controls. Sometimes it means advising "
-                        + "not to use AI for a problem."));
-        d.put("aboutBeyond", "Add a short, personal paragraph here: interests, community work, teaching, or what keeps you curious.");
         // footer
-        d.put("footerText", "AI engineering & consulting. I design and build production-ready AI systems that solve real "
-                + "business problems. Production matters more than demos.");
+        d.put("footerText", "AI engineering. I build AI systems that create real value in the AI generation. "
+                + "Production matters more than demos.");
         // what is visible
         d.put("showSampleNotes", "true");
-        for (String s : new String[] {"system", "github", "philosophy", "build", "work", "lab", "writing", "ask", "cta"}) {
+        // home page sections, then work page sections
+        for (String s : new String[] {"github", "pillars", "philosophy", "ask", "cta", "system", "build"}) {
             d.put("section." + s, "true");
-        }
-        // off by default to keep the home page short (can be switched on in the admin)
-        for (String s : new String[] {"stats", "marquee", "howItWorks"}) {
-            d.put("section." + s, "false");
         }
         DEFAULTS = Collections.unmodifiableMap(d);
     }

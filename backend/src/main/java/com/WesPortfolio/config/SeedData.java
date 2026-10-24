@@ -548,25 +548,23 @@ public final class SeedData {
                 "build builds systems kind what does do areas expertise capabilities specialise specialize",
                 "Wesley designs and builds production AI systems in six areas:\n\n- AI strategy & architecture\n- Enterprise AI applications (assistants, copilots, document AI)\n- RAG and agentic systems\n- AI evaluation & benchmarking\n- Voice AI agents\n- Open-weight LLM deployment and AI infrastructure\n\nThe common thread is taking AI from prototype to something people can depend on.",
                 List.of(
-                s("What I Build", "/"),
-                s("Consulting", "/consulting"))),
+                s("What I Build", "/"))),
             new KnowledgeDto(
                 "rag",
                 "Enterprise Knowledge Assistant",
                 "work rag retrieval augmented generation knowledge search documents vector embeddings chunk rerank re-rank hybrid bm25",
-                "RAG is one of Wesley's core areas. The Enterprise Knowledge Assistant case study shows a permission-aware assistant with hybrid retrieval, re-ranking and cited answers.\n\nHis AI Lab also benchmarks hybrid retrieval: in that experiment, hybrid search plus re-ranking reached 0.90 recall@10 against 0.71 for dense-only (sample figures).",
+                "RAG is one of Wesley's core areas. The Enterprise Knowledge Assistant case study shows a permission-aware assistant with hybrid retrieval, re-ranking and cited answers.",
                 List.of(
                 s("Enterprise Knowledge Assistant", "/work/enterprise-knowledge-assistant"),
-                s("Hybrid retrieval (AI Lab)", "/lab/hybrid-retrieval"),
-                s("Building RAG that works", "/writing/building-rag-that-works"))),
+                s("Building RAG that works", "/blogs/building-rag-that-works"))),
             new KnowledgeDto(
                 "evaluate",
                 "AI Evaluation service",
                 "work evaluate evaluation eval benchmark test testing quality measure metrics audit assess our system help hallucination",
-                "Yes. AI evaluation is one of the services Wesley offers. A typical evaluation sprint covers:\n\n- A test set agreed with your domain experts\n- Quality metrics such as faithfulness and answer relevance\n- Latency, cost and safety checks\n- A prioritized list of fixes and a regression gate for CI\n\nIt usually takes two to three weeks. The contact page is the best place to start.",
+                "Yes. AI evaluation is one of the services Wesley offers. A typical evaluation sprint covers:\n\n- A test set agreed with your domain experts\n- Quality metrics such as faithfulness and answer relevance\n- Latency, cost and safety checks\n- A prioritized list of fixes and a regression gate for CI\n\nIt usually takes two to three weeks. A short email describing the problem is the best place to start.",
                 List.of(
-                s("AI Evaluation service", "/consulting"),
-                s("Evaluating LLM applications", "/writing/evaluating-llm-applications"))),
+                s("Contact", "/contact"),
+                s("Evaluating LLM applications", "/blogs/evaluating-llm-applications"))),
             new KnowledgeDto(
                 "philosophy",
                 "Philosophy",
@@ -574,23 +572,21 @@ public final class SeedData {
                 "Wesley's philosophy is \"Production matters more than demos.\"\n\nA model or prototype is only one part of a working system. Success needs the whole path: problem, strategy, architecture, data, models, application, evaluation, infrastructure and production.",
                 List.of(
                 s("Philosophy", "/"),
-                s("Why AI projects fail", "/writing/why-most-ai-projects-fail-in-production"))),
+                s("Why AI projects fail", "/blogs/why-most-ai-projects-fail-in-production"))),
             new KnowledgeDto(
                 "infra",
                 "Private LLM Inference Platform",
                 "work open weight open-weight llm deploy deployment self host self-host hosting vllm gpu infrastructure quantization private on-prem premise kubernetes inference serving",
-                "Wesley deploys open-weight models on infrastructure the client controls, using tools such as vLLM, Kubernetes and quantization.\n\nThe Private LLM Inference Platform case study covers routing, quotas, observability and cost reporting, and the AI Lab has serving benchmarks.",
+                "Wesley deploys open-weight models on infrastructure the client controls, using tools such as vLLM, Kubernetes and quantization.\n\nThe Private LLM Inference Platform case study covers routing, quotas, observability and cost reporting.",
                 List.of(
-                s("Private LLM Inference Platform", "/work/private-llm-inference-platform"),
-                s("vLLM vs TGI (AI Lab)", "/lab/vllm-vs-tgi-throughput"))),
+                s("Private LLM Inference Platform", "/work/private-llm-inference-platform"))),
             new KnowledgeDto(
                 "voice",
                 "Voice Agent case study",
                 "work voice speech phone call calls telephony asr tts audio conversational agent latency",
-                "Wesley builds real-time voice agents with streaming speech recognition, natural turn-taking, interruption support and clean human handoff.\n\nSee the Voice Agent case study and the voice latency experiment in the AI Lab.",
+                "Wesley builds real-time voice agents with streaming speech recognition, natural turn-taking, interruption support and clean human handoff.\n\nSee the Voice Agent case study.",
                 List.of(
-                s("Voice Agent case study", "/work/voice-agent-customer-support"),
-                s("Voice latency budget", "/lab/voice-latency-budget"))),
+                s("Voice Agent case study", "/work/voice-agent-customer-support"))),
             new KnowledgeDto(
                 "agents",
                 "Agentic Operations Copilot",
@@ -600,11 +596,10 @@ public final class SeedData {
                 s("Agentic Operations Copilot", "/work/agentic-operations-copilot"))),
             new KnowledgeDto(
                 "engage",
-                "Consulting",
+                "Working together",
                 "hire engage engagement work with consult consulting price pricing cost rate process start how long project proposal",
                 "Engagements follow seven steps: Discover, Assess, Design, Build, Evaluate, Deploy and Optimize.\n\nFormats range from 2\u20134 week advisory work and evaluation sprints to 6\u201316 week builds and workshops. Pricing is fixed-scope for advisory work and milestone-based for builds, confirmed in a written proposal.",
                 List.of(
-                s("Consulting", "/consulting"),
                 s("Contact", "/contact"))),
             new KnowledgeDto(
                 "portfolio",
@@ -612,13 +607,12 @@ public final class SeedData {
                 "work projects project case studies study portfolio examples shipped built delivered past previous",
                 "Wesley's case studies cover:\n\n- Enterprise Knowledge Assistant (RAG)\n- Contract Intelligence Pipeline (document AI)\n- Voice Agent for Customer Support\n- Private LLM Inference Platform (open-weight models)\n- Agentic Operations Copilot\n\nEach one covers the problem, architecture, decisions and tradeoffs, evaluation and results.",
                 List.of(
-                s("Selected work", "/work"),
-                s("AI Lab", "/lab"))),
+                s("Selected work", "/work"))),
             new KnowledgeDto(
                 "contact",
                 "Contact",
                 "contact email reach talk call meeting available availability book touch",
-                "The best way to reach Wesley is the contact form: describe the problem you're trying to solve, and he usually replies within two working days.\n\nYou can also email nyamosiwesley02@gmail.com or connect on LinkedIn.",
+                "The best way to reach Wesley is email: write to nyamosiwesley02@gmail.com describing the problem you're trying to solve, and he usually replies within two working days.\n\nYou can also connect on LinkedIn.",
                 List.of(
                 s("Contact", "/contact"))),
             new KnowledgeDto(
@@ -634,27 +628,20 @@ public final class SeedData {
                 "workshop workshops training teach team course session executive leadership",
                 "Yes. Wesley runs practical workshops for engineering teams (RAG, evaluation, deployment) and briefings for leadership on AI strategy, risk and value.",
                 List.of(
-                s("Workshops & Training", "/consulting"))),
-            new KnowledgeDto(
-                "lab",
-                "AI Lab",
-                "lab experiments experiment research benchmarks prototypes",
-                "The AI Lab is where Wesley publishes experiments, benchmarks, research notes, infrastructure tests and prototypes, each with the question, method, environment, results and conclusion.",
-                List.of(
-                s("AI Lab", "/lab"))),
+                s("Contact", "/contact"))),
             new KnowledgeDto(
                 "writing",
-                "Writing",
-                "writing articles blog posts read publish",
-                "Wesley writes in two tracks: engineering (RAG, evaluation, deployment, voice) and executive (AI strategy, why projects fail). Browse them on the Writing page.",
+                "Blogs",
+                "blogs blog writing articles posts read publish",
+                "Wesley writes in two tracks: engineering (RAG, evaluation, deployment, voice) and executive (AI strategy, why projects fail). Browse them on the Blogs page.",
                 List.of(
-                s("Writing", "/writing"))),
+                s("Blogs", "/blogs"))),
             new KnowledgeDto(
                 "about",
                 "About",
                 "who is wesley about background experience career bio himself",
-                "Wesley Nyamosi is an AI engineer and consultant who designs and builds production-ready AI systems and applications that solve real business problems.\n\nThe About page covers his background and what he focuses on.",
+                "Wesley Nyamosi is an AI engineer and consultant who designs and builds production-ready AI systems and applications that solve real business problems.\n\nThe Work page shows the kinds of systems he builds.",
                 List.of(
-                s("About", "/about"))));
+                s("Work", "/work"))));
     }
 }

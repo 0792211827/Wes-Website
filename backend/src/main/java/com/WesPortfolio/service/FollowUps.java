@@ -30,7 +30,6 @@ final class FollowUps {
             Map.entry("contact", List.of("How does an engagement with Wesley work?", "What kind of AI systems does Wesley build?")),
             Map.entry("stack", List.of("Does Wesley deploy open-weight models?", "Show me his work with RAG.")),
             Map.entry("training", List.of("How does an engagement with Wesley work?", "How can I contact Wesley?")),
-            Map.entry("lab", List.of("Which serving engine is faster, vLLM or TGI?", "Does quantization hurt quality?")),
             Map.entry("writing", List.of("Why do AI projects fail in production?", "How should LLM apps be evaluated?")),
             Map.entry("about", List.of("What kind of AI systems does Wesley build?", "What does Wesley believe about production AI?")),
             Map.entry("portfolio", List.of("Show me his work with RAG.", "Tell me about the voice agent project.")));
@@ -44,8 +43,6 @@ final class FollowUps {
             base = GENERAL;
         } else if (key.startsWith("project:")) {
             base = List.of("How was this system evaluated?", "How does an engagement with Wesley work?");
-        } else if (key.startsWith("lab:")) {
-            base = List.of("What else is in the AI Lab?", "Does Wesley deploy open-weight models?");
         } else if (key.startsWith("post:")) {
             base = List.of("What other articles has Wesley written?", "Can Wesley help us with this?");
         } else {

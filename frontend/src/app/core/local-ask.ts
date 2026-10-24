@@ -78,7 +78,6 @@ const BY_KEY: Record<string, string[]> = {
   contact: ['How does an engagement with Wesley work?', 'What kind of AI systems does Wesley build?'],
   stack: ['Does Wesley deploy open-weight models?', 'Show me his work with RAG.'],
   training: ['How does an engagement with Wesley work?', 'How can I contact Wesley?'],
-  lab: ['Which serving engine is faster, vLLM or TGI?', 'Does quantization hurt quality?'],
   writing: ['Why do AI projects fail in production?', 'How should LLM apps be evaluated?'],
   about: ['What kind of AI systems does Wesley build?', 'What does Wesley believe about production AI?'],
   portfolio: ['Show me his work with RAG.', 'Tell me about the voice agent project.']

@@ -8,13 +8,9 @@ import { IconComponent } from '../shared/icon.component';
 
 export const NAV = [
   { path: '/', label: 'home', exact: true },
-  { path: '/about', label: 'about', exact: false },
   { path: '/work', label: 'work', exact: false },
-  { path: '/consulting', label: 'consulting', exact: false },
-  { path: '/lab', label: 'ai lab', exact: false },
-  { path: '/writing', label: 'writing', exact: false },
-  { path: '/ask', label: 'ask my ai', exact: false },
-  { path: '/contact', label: 'contact', exact: false }
+  { path: '/blogs', label: 'blogs', exact: false },
+  { path: '/ask', label: 'ask my ai', exact: false }
 ];
 
 @Component({
@@ -42,7 +38,7 @@ export const NAV = [
             [attr.aria-label]="theme.theme() === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'">
             <app-icon [name]="theme.theme() === 'dark' ? 'sun' : 'moon'" />
           </button>
-          <a class="btn btn-sm btn-green" id="barCta" routerLink="/contact">work with me</a>
+          <a class="btn btn-sm btn-green" id="barCta" routerLink="/" fragment="contact">work with me</a>
           <button class="icon-btn menu-btn" type="button" aria-controls="drawer" [attr.aria-expanded]="ui.drawerOpen()"
             [attr.aria-label]="ui.drawerOpen() ? 'Close menu' : 'Open menu'" (click)="ui.drawerOpen.set(!ui.drawerOpen())">
             <app-icon [name]="ui.drawerOpen() ? 'close' : 'menu'" />
@@ -57,7 +53,7 @@ export const NAV = [
         <a [routerLink]="n.path" routerLinkActive [routerLinkActiveOptions]="{ exact: n.exact }" ariaCurrentWhenActive="page"
           (click)="ui.drawerOpen.set(false)">~/{{ n.label.replace(' ', '-') }}</a>
       }
-      <a class="btn btn-primary" routerLink="/contact" (click)="ui.drawerOpen.set(false)">Work With Me →</a>
+      <a class="btn btn-primary" routerLink="/" fragment="contact" (click)="ui.drawerOpen.set(false)">Work With Me →</a>
     </div>
   `
 })

@@ -15,7 +15,7 @@ interface Item {
   target: string;
 }
 
-/** ⌘K / Ctrl+K / "/" command menu: jump to any page, case study, lab entry or article, or run an action. */
+/** ⌘K / Ctrl+K / "/" command menu: jump to any page, case study or blog post, or run an action. */
 @Component({
   selector: 'app-command-palette',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -60,11 +60,10 @@ export class CommandPaletteComponent {
   readonly sel = signal(0);
 
   private readonly all = computed<Item[]>(() => [
-    ...[['Home', '/'], ['About', '/about'], ['Work', '/work'], ['Consulting', '/consulting'], ['AI Lab', '/lab'], ['Writing', '/writing'],
-      ['Ask My AI', '/ask'], ['Contact', '/contact'], ['Privacy', '/privacy']].map(([label, target]) => ({ label, kind: 'page', target })),
+    ...[['Home', '/'], ['Work', '/work'], ['Blogs', '/blogs'],
+      ['Ask My AI', '/ask'], ['Privacy', '/privacy']].map(([label, target]) => ({ label, kind: 'page', target })),
     ...this.content.projects().map((p) => ({ label: p.title, kind: 'case study', target: '/work/' + p.slug })),
-    ...this.content.lab().map((l) => ({ label: l.title, kind: 'lab · ' + l.type.toLowerCase(), target: '/lab/' + l.slug })),
-    ...this.content.posts().map((p) => ({ label: p.title, kind: 'article', target: '/writing/' + p.slug })),
+    ...this.content.posts().map((p) => ({ label: p.title, kind: 'blog post', target: '/blogs/' + p.slug })),
     { label: 'Toggle theme', kind: 'action', target: 'action:theme' },
     { label: 'Copy email address', kind: 'action', target: 'action:email' },
     { label: 'Download CV', kind: 'action', target: 'action:cv' },
@@ -131,7 +130,7 @@ export class CommandPaletteComponent {
     else if (it.target === 'action:cv') {
       const a = document.createElement('a');
       const cv = this.site.cvUrl();
-      if (!cv) { this.toast.show('The CV will be available soon. Use the contact form meanwhile.'); return; }
+      if (!cv) { this.toast.show('The CV will be available soon. Email me meanwhile.'); return; }
       a.href = cv;
       document.body.appendChild(a); a.click(); a.remove();
     } else if (it.kind === 'link') window.open(it.target, '_blank', 'noopener');

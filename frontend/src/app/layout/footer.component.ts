@@ -20,16 +20,12 @@ import { MotionService } from '../core/motion.service';
           <div>
             <h4>Explore</h4>
             <a routerLink="/work">Selected work</a>
-            <a routerLink="/lab">AI Lab</a>
-            <a routerLink="/writing">Writing</a>
+            <a routerLink="/blogs">Blogs</a>
             <a routerLink="/ask">Ask my AI</a>
           </div>
           <div>
             <h4>Work together</h4>
-            <a routerLink="/consulting">Consulting</a>
-            <a routerLink="/consulting" fragment="services">Services</a>
-            <a routerLink="/consulting" fragment="engagement">How engagements run</a>
-            <a routerLink="/contact">Start a conversation</a>
+            <a routerLink="/" fragment="contact">Start a conversation</a>
           </div>
           <div>
             <h4>Elsewhere</h4>

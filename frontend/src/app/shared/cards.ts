@@ -2,8 +2,8 @@ import { ChangeDetectionStrategy, Component, computed, inject, input } from '@an
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { RouterLink } from '@angular/router';
 
-import { LabEntry, Post, Project } from '../core/models';
-import { fmtDate, fmtVal, pad2 } from '../core/util';
+import { Post, Project } from '../core/models';
+import { fmtDate, pad2 } from '../core/util';
 import { workArt } from './art';
 import { CountUpDirective } from './count-up.directive';
 
@@ -47,43 +47,6 @@ export class WorkCardComponent {
   readonly art = computed<SafeHtml>(() => this.sanitizer.bypassSecurityTrustHtml(workArt(this.project().art)));
 }
 
-/** AI Lab card with a mini bar chart of the first results. */
-@Component({
-  selector: 'app-lab-card',
-  imports: [RouterLink],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'host-contents' },
-  template: `
-    <article class="card card-link lab-card reveal">
-      <div class="lab-type">
-        <b [class]="typeClass()">● {{ entry().type.toLowerCase() }}</b>
-        <span>{{ date() }}</span>
-      </div>
-      <h3><a [routerLink]="['/lab', entry().slug]">{{ entry().title }}</a></h3>
-      <p class="q">{{ entry().question }}</p>
-      <div class="spark">
-        @for (r of entry().rows.slice(0, 3); track r.label; let i = $index) {
-          <div class="spark-row">
-            <span>{{ r.label }}</span>
-            <span class="track"><i [class.alt]="i > 0" [attr.data-w]="r.pct"></i></span>
-            <span>{{ val(r.value) }}</span>
-          </div>
-        }
-      </div>
-      <div class="lab-foot">
-        <span>{{ entry().unit }}</span>
-        <span>{{ entry().status === 'complete' ? '✓ complete' : '◐ in progress' }}</span>
-      </div>
-    </article>
-  `
-})
-export class LabCardComponent {
-  readonly entry = input.required<LabEntry>();
-  readonly typeClass = computed(() => this.entry().color.replace('c-', 't-'));
-  readonly date = computed(() => fmtDate(this.entry().date));
-  val(v: number): string { return fmtVal(v); }
-}
-
 /** One line in an article list. */
 @Component({
   selector: 'app-post-row',
@@ -91,7 +54,7 @@ export class LabCardComponent {
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'host-contents' },
   template: `
-    <a class="post" [routerLink]="['/writing', post().slug]">
+    <a class="post" [routerLink]="['/blogs', post().slug]">
       <time [attr.datetime]="post().date">{{ date() }}</time>
       <div>
         <h3>{{ post().title }}</h3>

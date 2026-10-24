@@ -7,7 +7,7 @@ import { FileInfo } from '../../core/models';
 import { SiteService } from '../../core/site.service';
 import { ToastService } from '../../core/toast.service';
 
-/** Admin: upload the profile photo (shown as the ASCII → photo portrait) and the CV (all "Download CV" buttons). */
+/** Admin: upload the profile photo (the home page hero image) and the CV (all "Download CV" buttons). */
 @Component({
   selector: 'app-admin-files',
   imports: [DatePipe, DecimalPipe],
@@ -17,7 +17,7 @@ import { ToastService } from '../../core/toast.service';
     <div class="ad-files">
       <section class="card ad-group">
         <h3>Profile photo</h3>
-        <p class="ad-sub">Shown on the home page: it first appears as animated ASCII art, then the real photo sweeps in. JPG, PNG or WebP up to 5 MB; a portrait crop (about 4:5) works best.</p>
+        <p class="ad-sub">Shown in the home page hero; until one is uploaded a stock placeholder image is used. JPG, PNG or WebP up to 5 MB; a portrait crop (about 4:5) works best.</p>
         <div class="ad-photo">
           @if (site.photoFile(); as f) {
             <img [src]="site.photoUrl()" alt="Current profile photo">

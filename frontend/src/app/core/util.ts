@@ -16,10 +16,6 @@ export function fmtDate(iso: string): string {
   return MONTHS[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
 }
 
-export function fmtVal(v: number): string {
-  return v < 1 ? v.toFixed(2) : Number(v).toLocaleString('en-US');
-}
-
 export function prefersReducedMotion(): boolean {
   return typeof window !== 'undefined' && !!window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 }

@@ -1,29 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://wesleynyamosi.com/</loc></url>
-  <url><loc>https://wesleynyamosi.com/about</loc></url>
   <url><loc>https://wesleynyamosi.com/work</loc></url>
-  <url><loc>https://wesleynyamosi.com/consulting</loc></url>
-  <url><loc>https://wesleynyamosi.com/lab</loc></url>
-  <url><loc>https://wesleynyamosi.com/writing</loc></url>
+  <url><loc>https://wesleynyamosi.com/blogs</loc></url>
   <url><loc>https://wesleynyamosi.com/ask</loc></url>
-  <url><loc>https://wesleynyamosi.com/contact</loc></url>
   <url><loc>https://wesleynyamosi.com/privacy</loc></url>
   <url><loc>https://wesleynyamosi.com/work/enterprise-knowledge-assistant</loc></url>
   <url><loc>https://wesleynyamosi.com/work/contract-intelligence-pipeline</loc></url>
   <url><loc>https://wesleynyamosi.com/work/voice-agent-customer-support</loc></url>
   <url><loc>https://wesleynyamosi.com/work/private-llm-inference-platform</loc></url>
   <url><loc>https://wesleynyamosi.com/work/agentic-operations-copilot</loc></url>
-  <url><loc>https://wesleynyamosi.com/lab/vllm-vs-tgi-throughput</loc></url>
-  <url><loc>https://wesleynyamosi.com/lab/awq-int4-vs-fp16</loc></url>
-  <url><loc>https://wesleynyamosi.com/lab/hybrid-retrieval</loc></url>
-  <url><loc>https://wesleynyamosi.com/lab/kv-cache-prefix-reuse</loc></url>
-  <url><loc>https://wesleynyamosi.com/lab/voice-latency-budget</loc></url>
-  <url><loc>https://wesleynyamosi.com/lab/embedding-model-comparison</loc></url>
-  <url><loc>https://wesleynyamosi.com/writing/why-most-ai-projects-fail-in-production</loc></url>
-  <url><loc>https://wesleynyamosi.com/writing/building-rag-that-works</loc></url>
-  <url><loc>https://wesleynyamosi.com/writing/evaluating-llm-applications</loc></url>
-  <url><loc>https://wesleynyamosi.com/writing/deploying-open-weight-llms</loc></url>
-  <url><loc>https://wesleynyamosi.com/writing/designing-voice-ai-agents</loc></url>
-  <url><loc>https://wesleynyamosi.com/writing/building-an-enterprise-ai-strategy</loc></url>
+  <url><loc>https://wesleynyamosi.com/blogs/why-most-ai-projects-fail-in-production</loc></url>
+  <url><loc>https://wesleynyamosi.com/blogs/building-rag-that-works</loc></url>
+  <url><loc>https://wesleynyamosi.com/blogs/evaluating-llm-applications</loc></url>
+  <url><loc>https://wesleynyamosi.com/blogs/deploying-open-weight-llms</loc></url>
+  <url><loc>https://wesleynyamosi.com/blogs/designing-voice-ai-agents</loc></url>
+  <url><loc>https://wesleynyamosi.com/blogs/building-an-enterprise-ai-strategy</loc></url>
 </urlset>

@@ -1,11 +1,12 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
 
+import { SiteService } from '../core/site.service';
 import { SplitDirective } from './split.directive';
 
+/** Closing call to action. On the home page it is the contact section (#contact); the button opens an email. */
 @Component({
   selector: 'app-cta-band',
-  imports: [RouterLink, SplitDirective],
+  imports: [SplitDirective],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'host-block' },
   template: `
@@ -15,14 +16,14 @@ import { SplitDirective } from './split.directive';
           <h2 [appSplit]="title()"></h2>
           <p>{{ text() }}</p>
         </div>
-        <a class="btn btn-primary" [routerLink]="link()">{{ button() }} →</a>
+        <a class="btn btn-primary" [href]="'mailto:' + site.email()">{{ button() }} →</a>
       </div>
     </div>
   `
 })
 export class CtaBandComponent {
+  readonly site = inject(SiteService);
   readonly title = input('Have an AI problem worth solving?');
   readonly text = input('Tell me what you\'re trying to solve. You\'ll get a reply within two working days, and a clear next step.');
-  readonly button = input('Start a Conversation');
-  readonly link = input('/contact');
+  readonly button = input('Email Me');
 }

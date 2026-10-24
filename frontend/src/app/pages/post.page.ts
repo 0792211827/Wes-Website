@@ -18,7 +18,7 @@ import { NotFoundPage } from './not-found.page';
   host: { class: 'page' },
   template: `
     @if (post(); as p) {
-      <app-page-head [crumbs]="[{ label: 'home', link: '/' }, { label: 'writing', link: '/writing' }, { label: p.title }]"
+      <app-page-head [crumbs]="[{ label: 'home', link: '/' }, { label: 'blogs', link: '/blogs' }, { label: p.title }]"
         [eyebrow]="p.track" [title]="p.title" [lede]="p.excerpt" [note]="site.flag('showSampleNotes') ? 'Sample article: replace with the full text.' : ''">
         <div class="article-meta">
           <span>{{ date() }}</span>
@@ -59,7 +59,7 @@ export class PostPage {
   readonly post = computed(() => this.content.post(this.slug()));
   readonly date = computed(() => fmtDate(this.post()?.date ?? ''));
   readonly body = computed(() => markdown(this.post()?.body ?? ''));
-  readonly url = computed(() => SITE.url + '/writing/' + this.slug());
+  readonly url = computed(() => SITE.url + '/blogs/' + this.slug());
   readonly linkedinShare = computed(() => 'https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(this.url()));
   readonly related = computed(() => {
     const p = this.post();
@@ -70,7 +70,7 @@ export class PostPage {
   constructor() {
     effect(() => {
       const p = this.post();
-      if (p) this.seo.set(p.title, p.excerpt, '/writing/' + p.slug);
+      if (p) this.seo.set(p.title, p.excerpt, '/blogs/' + p.slug);
     });
   }
 }

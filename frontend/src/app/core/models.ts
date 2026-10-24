@@ -150,13 +150,6 @@ export interface Faq {
   a: string;
 }
 
-export interface TimelineItem {
-  when: string;
-  title: string;
-  text: string;
-  now: boolean;
-}
-
 /* ---------- API ---------- */
 export interface ContactRequest {
   name: string;
