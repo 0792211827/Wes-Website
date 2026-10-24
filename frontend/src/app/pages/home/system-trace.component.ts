@@ -28,7 +28,7 @@ interface LogLine { id: number; text: string; cls: string; }
         <span class="status-dot" aria-hidden="true"></span><span>healthy</span>
       </div>
       <div class="system-grid">
-        <div class="sys-canvas" #canvas [innerHTML]="svg"></div>
+        <div class="sys-canvas" #canvas [innerHTML]="svg" tabindex="0" role="region" aria-label="Request flow diagram"></div>
         <aside class="sys-side" aria-label="Simulated system metrics">
           <div class="sys-metrics">
             <div class="metric"><b>{{ p50() }}ms</b><span>p50 latency</span><div class="bar-mini"><i [style.width.%]="p50() / 15"></i></div></div>

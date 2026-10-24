@@ -45,18 +45,19 @@ export const DEFAULT_SETTINGS: Record<string, string> = {
   aboutBeyond: 'Add a short, personal paragraph here: interests, community work, teaching, or what keeps you curious.',
   footerText: 'AI engineering & consulting. I design and build production-ready AI systems that solve real business problems. Production matters more than demos.',
   showSampleNotes: 'true',
-  'section.stats': 'true',
   'section.system': 'true',
   'section.github': 'true',
-  'section.marquee': 'true',
   'section.philosophy': 'true',
   'section.build': 'true',
   'section.work': 'true',
-  'section.howItWorks': 'true',
   'section.lab': 'true',
   'section.writing': 'true',
   'section.ask': 'true',
-  'section.cta': 'true'
+  'section.cta': 'true',
+  /* off by default to keep the home page short (can be switched on in the admin) */
+  'section.stats': 'false',
+  'section.marquee': 'false',
+  'section.howItWorks': 'false'
 };
 
 /**

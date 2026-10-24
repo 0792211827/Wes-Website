@@ -74,9 +74,12 @@ public class SiteService {
                 + "business problems. Production matters more than demos.");
         // what is visible
         d.put("showSampleNotes", "true");
-        for (String s : new String[] {"stats", "system", "github", "marquee", "philosophy", "build", "work", "howItWorks",
-                "lab", "writing", "ask", "cta"}) {
+        for (String s : new String[] {"system", "github", "philosophy", "build", "work", "lab", "writing", "ask", "cta"}) {
             d.put("section." + s, "true");
+        }
+        // off by default to keep the home page short (can be switched on in the admin)
+        for (String s : new String[] {"stats", "marquee", "howItWorks"}) {
+            d.put("section." + s, "false");
         }
         DEFAULTS = Collections.unmodifiableMap(d);
     }

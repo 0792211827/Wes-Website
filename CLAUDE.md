@@ -130,7 +130,7 @@ live database. Tell Wesley when a change also needs to be made in `/admin`.
 2. GitHub: no real username yet, so GitHub links and the activity section are hidden. When known, set
    `github`/`githubUser` defaults (both §6 copies) and Render env `GITHUB_USERNAME`.
 3. Replace sample case studies / Lab / articles with real, sourced work (§2).
-4. Home page is too long and repetitive; tighten it.
+4. Home page: stats, marquee and home "How it works" are off by default (2026-10-24). Mobile is still ~12,900px; consider trimming further.
 5. Domain `wesleynyamosi.com` does not exist (NXDOMAIN) but is used for canonical URLs, sitemap and
    CORS. Replace with the real domain or the Vercel URL once decided.
 6. Admin password, DB password and old admin default were committed in git history: rotate them on Render.
