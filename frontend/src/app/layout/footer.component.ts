@@ -33,7 +33,9 @@ import { MotionService } from '../core/motion.service';
           </div>
           <div>
             <h4>Elsewhere</h4>
-            <a [href]="site.github()" target="_blank" rel="noopener">GitHub ↗</a>
+            @if (site.github()) {
+              <a [href]="site.github()" target="_blank" rel="noopener">GitHub ↗</a>
+            }
             <a [href]="site.linkedin()" target="_blank" rel="noopener">LinkedIn ↗</a>
             @if (site.cvUrl(); as cv) {
               <a [href]="cv">Download CV ↓</a>

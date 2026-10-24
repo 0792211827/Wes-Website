@@ -618,7 +618,7 @@ public final class SeedData {
                 "contact",
                 "Contact",
                 "contact email reach talk call meeting available availability book touch",
-                "The best way to reach Wesley is the contact form: describe the problem you're trying to solve, and he usually replies within two working days.\n\nYou can also email hello@wesleynyamosi.com or connect on LinkedIn.",
+                "The best way to reach Wesley is the contact form: describe the problem you're trying to solve, and he usually replies within two working days.\n\nYou can also email nyamosiwesley02@gmail.com or connect on LinkedIn.",
                 List.of(
                 s("Contact", "/contact"))),
             new KnowledgeDto(

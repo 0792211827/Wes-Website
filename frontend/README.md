@@ -16,12 +16,13 @@ npm start            # http://localhost:4200
 `npm start` forwards every `/api/*` call to `http://localhost:8087` (see `proxy.conf.json`), so start the backend too:
 
 ```bash
-# in the WesPortfolio (backend) folder
+# from the repo root
+cd backend
 ./mvnw spring-boot:run -Dspring-boot.run.profiles=local      # Windows: mvnw.cmd ...
 ```
 
 The site still works **without the backend**: content falls back to the bundled copy, the AI assistant answers from
-its offline knowledge base, and the GitHub section shows sample data. Only the contact form needs the API.
+its offline knowledge base, and the GitHub section is hidden. Only the contact form needs the API.
 
 ## Build
 
@@ -31,7 +32,7 @@ npm run build        # output: dist/wes-portfolio/browser
 
 ## Deploy on Vercel
 
-1. Push this folder to GitHub and import it in Vercel (framework: Angular is detected; settings come from `vercel.json`).
+1. Import the repo in Vercel and set **Root Directory** to `frontend` (framework: Angular is detected; settings come from `vercel.json`).
 2. In `vercel.json`, change the `/api/:path*` rewrite destination to your Render API URL
    (default `https://wesportfolio-api.onrender.com`). The browser then calls the API on the same domain: no CORS setup needed.
 3. Add the custom domain (e.g. `wesleynyamosi.com`) in Vercel, and make sure the same domain is in the API's `CORS_ORIGINS`.
@@ -43,7 +44,7 @@ work on refresh), caches hashed assets for a year and sets security headers.
 
 - `public/assets/wesley.jpg`: Wesley's photo. The home page turns it into the animated ASCII portrait (a silhouette is drawn until it exists).
 - `public/assets/wesley-nyamosi-cv.pdf`: the CV.
-- `src/app/core/data/site.data.ts`: email, GitHub, LinkedIn, `githubUser`, timeline, services copy.
+- `src/app/core/data/site.data.ts`: email, GitHub (empty = GitHub links and section hidden), LinkedIn, `githubUser`, timeline, services copy.
 - Case studies, AI Lab entries and articles are **sample content**. Edit them in the database through the admin API
   (preferred, no redeploy) or in `src/app/core/data/content.data.ts` (the bundled fallback).
 - Update `public/sitemap.xml` and the canonical domain in `src/index.html` if the domain differs.
@@ -86,4 +87,3 @@ who set *reduce motion* in their operating system.
 
 `/admin` (not linked anywhere, blocked in `robots.txt`): sign in with the API's `ADMIN_USERNAME` / `ADMIN_PASSWORD`
 to see consulting leads (status + notes) and what visitors ask the AI assistant.
-# WeslyPortfolio

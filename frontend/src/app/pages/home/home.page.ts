@@ -68,7 +68,9 @@ const TECH = ['Python', 'FastAPI', 'PostgreSQL', 'pgvector', 'vLLM', 'Kubernetes
             }
           </div>
           <div class="socials">
-            <a [href]="site.github()" target="_blank" rel="noopener" aria-label="GitHub"><app-icon name="github" /></a>
+            @if (site.github()) {
+              <a [href]="site.github()" target="_blank" rel="noopener" aria-label="GitHub"><app-icon name="github" /></a>
+            }
             <a [href]="site.linkedin()" target="_blank" rel="noopener" aria-label="LinkedIn"><app-icon name="linkedin" /></a>
             <a [href]="'mailto:' + site.email()" aria-label="Email"><app-icon name="mail" /></a>
             @if (site.cvUrl(); as cv) {
@@ -89,7 +91,7 @@ const TECH = ['Python', 'FastAPI', 'PostgreSQL', 'pgvector', 'vLLM', 'Kubernetes
       }
 
       @if (site.show('github')) {
-        <div class="wrap" style="margin-top:28px">
+        <div class="wrap">
           <app-github-activity />
         </div>
       }

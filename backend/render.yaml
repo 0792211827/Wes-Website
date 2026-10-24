@@ -23,7 +23,7 @@ services:
       - key: CORS_ORIGINS
         value: https://wesleynyamosi.com,https://www.wesleynyamosi.com,https://*.vercel.app,http://localhost:4200
       - key: GITHUB_USERNAME
-        value: wesleynyamosi
+        sync: false
       - key: GITHUB_TOKEN
         sync: false
       - key: MAIL_HOST

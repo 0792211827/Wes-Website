@@ -70,7 +70,7 @@ export class CommandPaletteComponent {
     { label: 'Download CV', kind: 'action', target: 'action:cv' },
     { label: 'Open GitHub', kind: 'link', target: this.site.github() },
     { label: 'Open LinkedIn', kind: 'link', target: this.site.linkedin() }
-  ]);
+  ].filter((it) => it.kind !== 'link' || it.target));
 
   readonly results = computed(() => {
     const q = this.query().trim().toLowerCase();

@@ -1049,7 +1049,7 @@ export const KNOWLEDGE: KnowledgeEntry[] = [
     "key": "contact",
     "title": "Contact",
     "keywords": "contact email reach talk call meeting available availability book touch",
-    "answer": "The best way to reach Wesley is the contact form: describe the problem you're trying to solve, and he usually replies within two working days.\n\nYou can also email hello@wesleynyamosi.com or connect on LinkedIn.",
+    "answer": "The best way to reach Wesley is the contact form: describe the problem you're trying to solve, and he usually replies within two working days.\n\nYou can also email nyamosiwesley02@gmail.com or connect on LinkedIn.",
     "sources": [
       {
         "label": "Contact",

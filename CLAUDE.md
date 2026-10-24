@@ -127,10 +127,13 @@ live database. Tell Wesley when a change also needs to be made in `/admin`.
 ## 8. Open work (update this list as items close)
 
 1. Live site serves another person's photo and CV — Wesley must upload his own in `/admin`.
-2. GitHub username `wesleynyamosi` does not exist; real username needed (code + Render env `GITHUB_USERNAME`).
+2. GitHub: no real username yet, so GitHub links and the activity section are hidden. When known, set
+   `github`/`githubUser` defaults (both §6 copies) and Render env `GITHUB_USERNAME`.
 3. Replace sample case studies / Lab / articles with real, sourced work (§2).
 4. Home page is too long and repetitive; tighten it.
-5. Confirm the public email and LinkedIn URL (`docs/source-material.md` has the CV versions).
+5. Domain `wesleynyamosi.com` does not exist (NXDOMAIN) but is used for canonical URLs, sitemap and
+   CORS. Replace with the real domain or the Vercel URL once decided.
+6. Admin password, DB password and old admin default were committed in git history: rotate them on Render.
 
 ## 9. Subagents
 

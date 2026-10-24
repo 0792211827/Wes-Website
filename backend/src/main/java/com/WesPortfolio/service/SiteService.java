@@ -49,13 +49,13 @@ public class SiteService {
                 "building: an evaluation harness for multi-turn RAG assistants", "writing: Evaluating LLM applications",
                 "testing: prefix caching on vLLM", "updated monthly"));
         // contact & links
-        d.put("email", "hello@wesleynyamosi.com");
+        d.put("email", "nyamosiwesley02@gmail.com");
         d.put("phone", "");
         d.put("whatsapp", "");
         d.put("location", "");
-        d.put("github", "https://github.com/wesleynyamosi");
-        d.put("githubUser", "wesleynyamosi");
-        d.put("linkedin", "https://www.linkedin.com/in/wesleynyamosi");
+        d.put("github", "");
+        d.put("githubUser", "");
+        d.put("linkedin", "https://www.linkedin.com/in/wesley-nyamosi-809409251");
         // about page
         d.put("aboutTitle", "I build AI systems people can depend on.");
         d.put("aboutLede", "AI engineer and consultant. I work across the whole path from problem to production: "

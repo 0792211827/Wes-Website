@@ -5,10 +5,10 @@ import { Capability, ColoredTag, EngagementFormat, Faq, KeyLabel, Service, SiteI
 export const SITE: SiteInfo = {
   "name": "Wesley Nyamosi",
   "role": "AI Engineering & Consulting",
-  "email": "hello@wesleynyamosi.com",
-  "github": "https://github.com/wesleynyamosi",
-  "githubUser": "wesleynyamosi",
-  "linkedin": "https://www.linkedin.com/in/wesleynyamosi",
+  "email": "nyamosiwesley02@gmail.com",
+  "github": "",
+  "githubUser": "",
+  "linkedin": "https://www.linkedin.com/in/wesley-nyamosi-809409251",
   "cv": "/assets/wesley-nyamosi-cv.pdf",
   "photo": "/assets/wesley.jpg",
   "url": "https://wesleynyamosi.com"

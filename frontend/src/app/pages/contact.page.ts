@@ -37,7 +37,9 @@ const SERVICES = ['AI Strategy', 'AI Architecture', 'Enterprise AI', 'RAG / Agen
             <a [href]="'tel:' + tel"><app-icon name="phone" />{{ tel }}</a>
           }
           <a [href]="site.linkedin()" target="_blank" rel="noopener"><app-icon name="linkedin" />LinkedIn</a>
-          <a [href]="site.github()" target="_blank" rel="noopener"><app-icon name="github" />GitHub</a>
+          @if (site.github()) {
+            <a [href]="site.github()" target="_blank" rel="noopener"><app-icon name="github" />GitHub</a>
+          }
           @if (site.cvUrl(); as cv) {
             <a [href]="cv"><app-icon name="file" />Download CV</a>
           }

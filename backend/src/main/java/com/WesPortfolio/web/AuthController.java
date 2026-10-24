@@ -40,8 +40,8 @@ public class AuthController {
     public AuthController(AppProperties props, TokenService tokens) {
         this.props = props;
         this.tokens = tokens;
-        if (props.admin() == null || "change-me-now".equals(props.admin().password())) {
-            log.warn("The admin password is still the default. Set ADMIN_PASSWORD before going live.");
+        if (props.admin() == null || props.admin().password() == null || props.admin().password().isBlank()) {
+            log.warn("ADMIN_PASSWORD is not set, so admin login is disabled.");
         }
     }
 
@@ -68,7 +68,7 @@ public class AuthController {
     }
 
     private static boolean constantTimeEquals(String a, String b) {
-        if (a == null || b == null) {
+        if (a == null || b == null || b.isEmpty()) {
             return false;
         }
         return MessageDigest.isEqual(a.getBytes(StandardCharsets.UTF_8), b.getBytes(StandardCharsets.UTF_8));
