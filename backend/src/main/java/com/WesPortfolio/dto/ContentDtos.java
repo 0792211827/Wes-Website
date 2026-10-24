@@ -8,7 +8,7 @@ import jakarta.validation.constraints.Size;
 
 /**
  * Public JSON shapes for the site's content. The Angular app uses the same field names
- * (see API_CONTRACT.md). Admin upserts accept the same records.
+ * (see docs/API_CONTRACT.md). Admin upserts accept the same records.
  */
 public final class ContentDtos {
 

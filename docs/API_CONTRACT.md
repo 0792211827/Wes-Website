@@ -47,7 +47,8 @@ Response:
 { "answer": "markdown-lite text (paragraphs, '- ' bullets)",
   "sources": [{ "label": "Enterprise Knowledge Assistant", "url": "/work/enterprise-knowledge-assistant" }],
   "grounded": true, "fallback": false, "mode": "llm|extractive|refusal|fallback",
-  "trace": "retrieved 4 documents · top score 0.82 · grounded", "remaining": 14 }
+  "trace": "retrieved 4 documents · top score 0.82 · grounded", "remaining": 14,
+  "followUps": ["two suggested next questions"] }
 ```
 Rate limit: 15 questions per IP per hour → 429.
 `GET /api/ask/suggestions` → `string[]`
@@ -55,13 +56,26 @@ Rate limit: 15 questions per IP per hour → 429.
 ## GitHub (public, cached server side)
 `GET /api/github/repos` → GitHub REST repos JSON array (passed through)
 `GET /api/github/contributions` → `{ total: { lastYear: n }, contributions: [{ date, count, level }] }` (passed through)
-On failure: 503 ProblemDetail (the frontend falls back to sample data).
+On failure: 503 ProblemDetail (the frontend hides the section).
+
+## Site settings & files (public)
+`GET /api/site` → `{ settings: Record<string,string>, photo: FileInfo|null, cv: FileInfo|null }`
+(keys and defaults: `SiteService.DEFAULTS` ⇄ frontend `DEFAULT_SETTINGS`)
+`GET /api/files/{key}` → the uploaded file (`photo` inline, `cv` downloads as `Wesley-Nyamosi-CV.pdf`) or 404
+```ts
+FileInfo { key, filename, contentType, size, updatedAt, url }   // url e.g. /api/files/photo?v=1729600000
+```
+
+## Visitor tracking (public)
+`POST /api/track` → `{ visitorId?, sessionId?, type, path?, title?, referrer?, label?, screen?, language?, timezone?, refId?, durationMs? }`
+Response: `{ id }`. `type` is `pageview`, `leave` (with `refId` + `durationMs`), `cv_download`, `outbound`, etc.
 
 ## Admin (Bearer token)
 `POST /api/auth/login` `{ username, password }` → `{ token, expiresAt }` (5 attempts / 15 min per IP)
 All below need `Authorization: Bearer <token>`:
 | Method | Path | Notes |
 |---|---|---|
+| GET | /api/admin/me | `{ username }` (token check) |
 | GET | /api/admin/stats | `{ leads, newLeads, questions, fallbackRate, projects, labEntries, posts }` |
 | GET | /api/admin/leads | `LeadDto[]` newest first |
 | PATCH | /api/admin/leads/{id} | `{ status?, notes? }` → `LeadDto` |
@@ -76,6 +90,12 @@ All below need `Authorization: Bearer <token>`:
 | GET | /api/admin/knowledge | `KnowledgeDto[]` |
 | PUT | /api/admin/knowledge | `KnowledgeDto` upsert by key |
 | DELETE | /api/admin/knowledge/{key} | 204 |
+| GET / PUT / DELETE | /api/admin/site | read, update (`Record<string,string>`, known keys only), reset settings |
+| POST | /api/admin/files/{key} | multipart `file`; key `photo` (≤5 MB image) or `cv` (≤10 MB PDF) → `FileInfo` |
+| DELETE | /api/admin/files/{key} | 204 |
+| GET | /api/admin/analytics/summary?days=30 | `Summary` (see `AnalyticsDtos.java`) |
+| GET | /api/admin/analytics/sessions?days=30&limit=200&q= | `SessionDto[]` |
+| GET | /api/admin/analytics/sessions/{sessionId} | `{ session, events, otherSessions }` |
 
 ```ts
 LeadDto   { id, name, email, company, role, services: string[], problem, budget, timeline,

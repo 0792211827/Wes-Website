@@ -1,4 +1,4 @@
-/* Types shared by the whole app. Content types match the Spring Boot DTOs exactly (see API_CONTRACT.md). */
+/* Types shared by the whole app. Content types match the Spring Boot DTOs exactly (see docs/API_CONTRACT.md). */
 
 export interface Pair {
   label: string;

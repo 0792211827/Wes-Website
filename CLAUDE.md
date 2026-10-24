@@ -6,108 +6,144 @@ mid-task, prefer this file unless they explicitly say to override it.
 
 ## 1. What this project is
 
-Personal site for Wesley Nyamosi: AI engineer, builder, independent AI consultant.
-Full spec: `/docs/requirements.md` (paste the requirements doc here before Phase 1 starts).
+Personal site for Wesley Nyamosi: an early-career AI / data engineer building toward
+AI engineering and consulting work. Pages: Home, About, Work (case studies), Consulting,
+AI Lab (experiments), Writing, Ask Wesley's AI, Contact, Privacy, plus a hidden `/admin`.
 
-North star: **"Production matters more than demos."**
-Every page should answer, in some way: *does this strengthen Wesley's credibility as someone
-who can solve real problems with AI?* If a component/section doesn't serve that, cut it.
+North star: **"Production matters more than demos."** That is a stated *value*, not a
+claim that Wesley has shipped production systems. Every page should answer: *does this
+strengthen Wesley's credibility as someone who can solve real problems with AI?* If a
+section doesn't serve that, cut it.
 
-## 2. Brand & content rules (non-negotiable)
+**Current goal:** the code is built (all four original phases exist in some form). The
+work now is (1) making every claim true, (2) tightening the UI, (3) hardening for launch.
+See §8.
 
-- Voice: technical, confident, precise, understated. No hype language ("world-class",
-  "revolutionary", "cutting-edge" as filler). Show evidence, don't assert authority.
+## 2. Truth rules (non-negotiable)
+
+- **Every claim about Wesley must be traceable** to `docs/source-material.md` or to
+  something Wesley confirmed in the session. Never invent metrics, clients, employers,
+  testimonials, years of experience, GitHub stars or project outcomes.
+- The case studies, Lab entries and articles shipped with the code are **sample content**
+  written by the original developer. Treat them as placeholders, not facts. Don't add
+  more sample content; replace it with real work when Wesley provides it.
+- Don't describe Wesley's own work as "in production" or "at scale" unless sourced.
+  His two roles so far were **internships** — never drop that word.
 - Never mention "Cassava AI" anywhere in content, copy, or metadata.
 - Don't tie the brand to a single employer, job title, tech stack, or AI model/provider.
-- Dark-first visual design. Animation communicates systems/data flow, not decoration —
-  no particle effects, no generic "AI brain" imagery, no heavy 3D.
-- Every claim about Wesley's work must be traceable to real content (case study, repo,
-  article). Never invent metrics, testimonials, or experience.
+- Don't publish Wesley's phone number. `Wesley_Nyamosi_Resume.pdf` at the repo root is
+  gitignored for that reason; never commit it or copy it into `frontend/public`.
+- No fake data presented as real: if a live source (GitHub, analytics) fails, hide the
+  section or label the fallback clearly. Never show invented numbers as Wesley's.
 
-## 3. Tech stack (do not swap without asking)
+## 3. Brand & design
 
-- Next.js (App Router) + TypeScript
-- Tailwind CSS
-- Content: MDX/Markdown, Git-managed, no headless CMS in v1
-- Hosting/backend: Next.js server + API routes; split into a separate service only if
-  the AI assistant's load genuinely requires it
-- AI: provider-agnostic wrapper — never hardcode a single LLM SDK call outside
-  `src/lib/rag/`. All model calls go through one abstraction so the provider can change.
+- Voice: technical, confident, precise, understated. No hype ("world-class",
+  "revolutionary", "cutting-edge"). Show evidence, don't assert authority.
+- Dark-first, terminal-inspired design (monospace headings, green accent). Light theme exists.
+- Animation communicates systems/data flow, not decoration: no particles, no "AI brain"
+  imagery, no heavy 3D, no ambient looping decoration.
+- **Exception:** pointer-reactive motion (magnetic buttons, hover glow, card tilt) is
+  wanted. Keep it subtle and inert on touch devices and under `prefers-reduced-motion`.
 
-## 4. Repo conventions
+## 4. Architecture
 
-- Content lives in `src/content/**`, never hardcoded into components. Every content
-  item needs frontmatter: `title, slug, description, date, category, tags, featured,
-  image, github, demo` (omit fields that don't apply, don't invent values).
-- Components: `src/components/ui` (primitives), `src/components/sections` (page
-  sections), `src/components/layout`, `src/components/assistant`.
-- Path aliases: `@/components`, `@/lib`, `@/content`, `@/config`.
-- No secrets in frontend code or committed files. Env vars via `.env.local`, documented
-  in `.env.example`.
-- Every page needs: unique title, meta description, canonical URL, OG + Twitter
-  metadata, semantic HTML, proper heading hierarchy. Use `src/lib/seo.ts` helpers,
-  don't hand-roll metadata per page.
-- Accessibility is not optional: keyboard nav, contrast, reduced-motion support,
-  accessible forms, labeled interactive elements — check this before calling any
-  UI task done.
-- Performance: prefer server components / static generation by default; only use
-  client components where interactivity requires it. The AI assistant widget must
-  load independently and never block first paint of the rest of the page.
+One git repo, two apps:
 
-## 5. GitHub integration rule
+```
+frontend/   Angular 20 (standalone components, signals, zoneless) — deployed on Vercel
+backend/    Spring Boot 4, Java 17 (Docker image uses 21) — deployed on Render with PostgreSQL
+docs/       API_CONTRACT.md (the frontend ⇄ backend contract), source-material.md (facts about Wesley)
+```
 
-Any GitHub API call (featured repos, stars, activity) must have a graceful fallback
-(cached/static data) if the API fails or rate-limits. Never let a GitHub API failure
-break page render.
+- The browser calls the API on the same origin under `/api/*`.
+  - Dev: `frontend/proxy.conf.json` forwards `/api` to `http://localhost:8087`.
+  - Prod: `frontend/vercel.json` rewrites `/api/*` to the Render service.
+- The frontend **must keep working when the API is down** (Render sleeps): content renders
+  from the bundled copy, Ask-AI answers from the offline knowledge base, settings fall back
+  to defaults. Only the contact form and admin truly need the API.
+- The backend's database is the live source of content; Wesley edits it through `/admin`.
 
-## 6. Working in phases
+### Run locally
 
-Build in the order below. Don't jump ahead to later phases' polish (e.g. don't wire
-the AI assistant's real retrieval before Phase 1 pages exist) unless explicitly asked.
+```bash
+cd backend  && ./mvnw spring-boot:run -Dspring-boot.run.profiles=local   # H2 in-memory, port 8087
+cd frontend && npm install && npm start                                  # http://localhost:4200
+cd frontend && npm run build                                             # must pass before calling work done
+```
 
-1. **Phase 1 — Core website**: Home, About, Work, Consulting, AI Lab, Writing, Contact,
-   nav/footer, responsive layout, SEO scaffolding, analytics scaffolding.
-2. **Phase 2 — Content**: populate 3–5 case studies, 3–5 Lab experiments, initial
-   articles, bio, consulting services content.
-3. **Phase 3 — AI**: "Ask Wesley's AI" — RAG over approved public content only.
-4. **Phase 4 — Advanced**: GitHub integration, interactive architecture diagrams,
-   deeper analytics, newsletter, booking, testimonials.
+Java must be installed for the backend. If it isn't, run the frontend alone (it falls
+back to bundled data), or point a temporary proxy config at the live API for review.
 
-## 7. Subagents available
+### Deploy
 
-See `.claude/agents/`. Use them proactively for their named job rather than doing the
-work inline:
+Vercel and Render must use **Root Directory** `frontend` and `backend` respectively.
+Secrets (admin password, token secret, DB, mail, AI key) live only in Render env vars;
+see `backend/README.md`.
 
-- `case-study-writer` — drafts/edits pages under `src/content/case-studies`
-- `lab-experiment-writer` — drafts/edits pages under `src/content/lab`
-- `blog-writer` — drafts/edits articles under `src/content/blog`
-- `seo-auditor` — checks metadata/structured data completeness across content
-- `architecture-diagram` — produces diagram specs/SVGs for case studies & Lab posts
-- `code-reviewer` — reviews diffs against the conventions in this file before merge
+## 5. Where things live
 
-## 8. Slash commands available
+**Frontend (`frontend/src`)**
+- `styles.css` — the whole design system (tokens, components, motion, responsive). Numbered sections.
+- `app/app.routes.ts` — lazy-loaded pages. `app/pages/` — one file per page (`home/` has its own components).
+- `app/layout/` — top bar, footer, boot intro, command palette, floating assistant.
+- `app/shared/` — cards, section heads, chat, TOC, icons, SVG art, directives.
+- `app/core/` — services (`api`, `content`, `site`, `seo`, `analytics`, `motion`, `admin`), `models.ts`.
+- `app/core/data/` — bundled fallback content (`content.data.ts`), site copy (`site.data.ts`).
 
-See `.claude/commands/`: `/new-case-study`, `/new-lab-experiment`, `/new-blog-post`
-scaffold a correctly-structured content file with frontmatter and required section
-headers so nothing is missed.
+**Backend (`backend/src/main/java/com/WesPortfolio`)**
+- `web/` controllers, `service/` logic, `domain/` JPA entities, `dto/` JSON records,
+  `security/` token auth + rate limits, `config/` properties + `SeedData.java` (starter content).
 
-## 9. Definition of done for any page/section
+## 6. Rules that keep the two apps in sync
 
-- Matches required structure from the spec (e.g. case studies need Overview, Problem,
-  Business Context, Requirements, Architecture, Implementation, Challenges, Tradeoffs,
-  Evaluation, Results, Lessons, Resources — no skipping sections, empty ones are fine
-  as placeholders during Phase 1/2).
-- Responsive at mobile/tablet/laptop/desktop.
-- Passes the accessibility checklist in §4.
-- SEO metadata present.
-- No hardcoded content that belongs in `src/content`.
+Data is duplicated on purpose (offline fallback). When you change one copy, change all of them:
 
-<!-- BEGIN:nextjs-agent-rules -->
+| What | Copies to keep identical |
+|---|---|
+| API shapes | `backend/.../dto/*.java` ⇄ `frontend/src/app/core/models.ts` ⇄ `docs/API_CONTRACT.md` |
+| Case studies, Lab, articles, Ask-AI knowledge | `backend/.../config/SeedData.java` ⇄ `frontend/src/app/core/data/content.data.ts` |
+| Default site settings (headline, links, section toggles…) | `backend/.../service/SiteService.java` `DEFAULTS` ⇄ `frontend/src/app/core/site.service.ts` `DEFAULT_SETTINGS` |
 
-# This is NOT the Next.js you know
+Seed data only fills **empty** tables, so editing `SeedData.java` does not change the
+live database. Tell Wesley when a change also needs to be made in `/admin`.
 
-This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+## 7. Conventions
 
-This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+- Match the surrounding code: standalone components with inline templates, signals,
+  `inject()`, the existing CSS classes and tokens in `styles.css`. Don't add a CSS framework
+  or UI library without asking.
+- Every page sets title, description and canonical URL via `SeoService.set()`.
+- Accessibility is not optional: keyboard navigation, visible focus, contrast, labeled
+  controls, accessible forms, `prefers-reduced-motion` support. Check before calling UI done.
+- Responsive at mobile (390px), tablet, laptop, desktop. No horizontal overflow or clipping.
+- Performance: pages stay lazy-loaded; the assistant widget must never block first paint.
+- Any GitHub call needs a graceful fallback; a GitHub failure must never break render.
+- No secrets in committed files. Backend secrets come from env vars or a gitignored
+  `secrets.properties`. Never commit real default passwords in `application.properties`.
+- LLM calls happen only in the backend (`LlmClient`, any OpenAI-compatible endpoint), so the
+  provider can change by config. The frontend never calls a model provider.
 
-<!-- END:nextjs-agent-rules -->
+## 8. Open work (update this list as items close)
+
+1. Live site serves another person's photo and CV — Wesley must upload his own in `/admin`.
+2. GitHub username `wesleynyamosi` does not exist; real username needed (code + Render env `GITHUB_USERNAME`).
+3. Replace sample case studies / Lab / articles with real, sourced work (§2).
+4. Home page is too long and repetitive; tighten it.
+5. Confirm the public email and LinkedIn URL (`docs/source-material.md` has the CV versions).
+
+## 9. Subagents
+
+See `.claude/agents/`. Use them for their named job:
+
+- `content-writer` — drafts/edits case studies, Lab entries, articles and Ask-AI knowledge in both data copies (§6)
+- `code-reviewer` — reviews diffs against this file before commit
+- `seo-auditor` — checks titles, descriptions, canonicals, sitemap and robots
+
+## 10. Definition of done
+
+- `npm run build` in `frontend/` passes (and the backend compiles, if touched and Java is available).
+- Checked in a browser at mobile and desktop widths.
+- Accessibility checklist in §7 passes.
+- §6 copies are in sync; `docs/API_CONTRACT.md` updated if an endpoint changed.
+- No invented claims (§2).
