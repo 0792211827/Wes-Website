@@ -35,7 +35,7 @@ public class AskLog {
     @Column(length = 20)
     private String mode;
 
-    /** Key of the best-matching document, e.g. "rag" or "project:enterprise-knowledge-assistant". */
+    /** Key of the best-matching document, e.g. "rag" or "project:local-rag-private-llm". */
     @Column(length = 160)
     private String topKey;
 

@@ -35,6 +35,8 @@ export class CountUpDirective {
 
   private run(target: string): void {
     const node = this.el.nativeElement;
+    // Bounds such as "< 1 s" or "≥ 0.9" would count through values they exclude; show them as-is.
+    if (/^[<>≤≥]/.test(target.trim())) { node.textContent = target; return; }
     const m = target.match(/^([^\d-]*)(-?[\d,]*\.?\d+)(.*)$/);
     if (!m) { node.textContent = target; return; }
     const pre = m[1], raw = m[2], post = m[3];

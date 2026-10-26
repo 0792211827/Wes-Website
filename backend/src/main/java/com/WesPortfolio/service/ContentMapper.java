@@ -40,7 +40,7 @@ public final class ContentMapper {
                 map(p.getDecisions(), ContentMapper::decision),
                 p.getEvaluation(),
                 map(p.getResults(), ContentMapper::pair),
-                copy(p.getLessons()), copy(p.getResources()),
+                copy(p.getLessons()), copy(p.getResources()), nz(p.getBody()),
                 p.isFeatured(), p.getSortOrder());
     }
 
@@ -67,6 +67,7 @@ public final class ContentMapper {
         p.setResults(map(d.results(), x -> join(x.label(), x.value())));
         p.setLessons(clean(d.lessons()));
         p.setResources(clean(d.resources()));
+        p.setBody(d.body());
         p.setFeatured(d.featured());
         p.setSortOrder(d.sortOrder());
     }

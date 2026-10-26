@@ -37,7 +37,7 @@ npm run build        # output: dist/wes-portfolio/browser
    (default `https://wesportfolio-api.onrender.com`). The browser then calls the API on the same domain: no CORS setup needed.
 3. Add the custom domain (e.g. `wesleynyamosi.com`) in Vercel, and make sure the same domain is in the API's `CORS_ORIGINS`.
 
-`vercel.json` also sends every other path to `index.html` (deep links like `/work/enterprise-knowledge-assistant`
+`vercel.json` also sends every other path to `index.html` (deep links like `/work/local-rag-private-llm`
 work on refresh), caches hashed assets for a year and sets security headers.
 
 ## Before launch

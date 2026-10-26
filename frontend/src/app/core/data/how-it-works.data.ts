@@ -3,54 +3,35 @@
  * One entry per architecture step of each case study (same order as `arch` in content.data.ts).
  * Projects added later through the admin API without an entry here still animate,
  * using their architecture labels only.
- * SAMPLE CONTENT: adjust the wording and figures to Wesley's real projects.
+ * Figures in `stat` are design targets or reference values, not measurements (docs/source-material.md).
  */
 import { HowStep } from '../models';
 
 export const HOW_IT_WORKS: Record<string, HowStep[]> = {
-  'enterprise-knowledge-assistant': [
-    { title: 'Connectors', text: 'Documents are pulled from SharePoint, the wiki, shared drives and two line-of-business systems, nightly and whenever a file changes. Each document keeps its owner and access list.', stat: '5 sources synced' },
-    { title: 'Chunk + embed', text: 'A layout-aware parser keeps headings, tables and clauses intact, then splits documents by structure rather than fixed size. Every chunk is turned into a vector embedding.', stat: 'structure-aware chunks' },
-    { title: 'Hybrid index', text: 'Chunks are stored in PostgreSQL with pgvector for meaning-based search, next to a BM25 keyword index that catches exact names, product codes and clause numbers.', stat: 'dense + keyword' },
-    { title: 'Re-ranker', text: 'A question pulls the top 40 candidates from both indexes. A cross-encoder reads each one against the question and keeps the best 8. Permission filters run inside the search, so nobody sees documents they cannot open.', stat: '40 → 8 passages' },
-    { title: 'LLM', text: 'An open-weight model served with vLLM inside the company\'s cloud writes the answer from those 8 passages only. No document ever leaves the tenancy.', stat: 'data stays in-house' },
-    { title: 'Guardrails', text: 'Before anything is shown, the answer is checked: every claim must be backed by a cited passage. If the evidence is weak, the assistant says so and links the closest documents instead of guessing.', stat: 'refuse, don\'t guess' },
-    { title: 'Cited answer', text: 'The answer streams to the user with numbered citations that open the exact source passage. Each release is scored against 420 expert-written questions before it ships.', stat: '1.8 s p95 · 0.93 faithfulness' }
+  'voice-agent-customer-service': [
+    { title: 'Audio stream', text: 'The caller\'s audio is streamed to the agent in small frames over a real-time connection instead of being recorded and uploaded after each sentence. Everything downstream works on this live stream.', stat: '~100 ms transport budget' },
+    { title: 'Streaming ASR', text: 'A speech-to-text model transcribes while the caller is still talking, producing partial transcripts that firm up as more audio arrives. By the time the caller stops, most of the sentence is already text.', stat: '~100 ms finalisation budget' },
+    { title: 'Turn detection', text: 'The agent has to decide when the caller has actually finished rather than just paused. It combines silence timing with whether the partial transcript reads as a complete thought.', stat: '~200 ms endpointing budget' },
+    { title: 'LLM agent', text: 'The finished turn, the conversation so far and the available tools, described as JSON schemas, go to the language model. The model either replies or proposes a tool call, such as looking up an order.', stat: '~300 ms first-token budget' },
+    { title: 'Tool layer', text: 'Proposed tool calls pass through plain code before anything runs. Arguments are validated, identity must be verified before any account action, and anything outside policy is refused. The model proposes, code decides.', stat: 'verify before acting' },
+    { title: 'ElevenLabs TTS', text: 'The reply is streamed sentence by sentence to ElevenLabs text-to-speech in a cloned brand voice, used with the speaker\'s consent. Speech starts before the full reply is written, and if the caller interrupts, playback stops and the agent listens again.', stat: '~200 ms first-audio budget' },
+    { title: 'Human handoff', text: 'When a request is out of scope or the caller asks for a person, the call is transferred to a human agent with a short written summary, so the caller does not have to repeat themselves.', stat: 'transfer + summary' }
   ],
-  'contract-intelligence-pipeline': [
-    { title: 'Upload', text: 'Legal drops in supplier contracts: clean PDFs, Word files or scans with stamps and signatures. Each file gets an ID and an audit trail from the first second.', stat: 'any format' },
-    { title: 'OCR + layout', text: 'Optical character recognition reads scanned pages, and layout analysis rebuilds the structure: sections, tables, clauses that run across pages.', stat: 'scans included' },
-    { title: 'Classifier', text: 'The contract type is identified first (NDA, master services, supply, lease) so the right extraction schema and playbook are used.', stat: 'type-specific rules' },
-    { title: 'Extractor', text: 'A model fills a strict JSON schema: parties, renewal date, notice period, liability cap, governing law. Every field comes with a confidence score.', stat: 'field-level confidence' },
-    { title: 'Validator', text: 'Plain code double-checks the model: dates must be real dates, currencies must match, end dates must come after start dates. Clauses are compared with the company playbook.', stat: 'deterministic checks' },
-    { title: 'Review queue', text: 'Anything below the confidence threshold goes to a lawyer, with the source text highlighted. Their correction is saved and becomes new test data.', stat: '14% sent to review' },
-    { title: 'Contract DB', text: 'Approved data lands in a searchable contract database with renewal alerts, so missed renewals become a thing of the past.', stat: '4× review throughput' }
+  'document-intelligence-retrieval': [
+    { title: 'Ingestion', text: 'Documents are collected with their source, version and a content fingerprint, so unchanged files are skipped and every passage can be traced back to its file.', stat: 'versioned + traceable' },
+    { title: 'OCR + layout', text: 'Scanned pages are read with optical character recognition. A layout parser then rebuilds reading order, headings, tables and columns, so text comes out in the order a person would read it.', stat: 'scans + tables' },
+    { title: 'Chunk + metadata', text: 'Documents are split along their structure: sections and tables stay whole, and long sections break at paragraph boundaries. Each chunk keeps its heading path, page number and metadata such as document type and date.', stat: 'structure-aware chunks' },
+    { title: 'Embed + index', text: 'Each chunk is converted into a vector by an embedding model and stored in a vector store, next to a keyword index of the same text.', stat: 'dense + keyword' },
+    { title: 'Hybrid retrieval', text: 'A question searches both indexes: vectors find passages with the same meaning, keywords find exact terms such as codes and names. The two result lists are merged into one ranking.', stat: 'rank fusion' },
+    { title: 'Re-ranker', text: 'A cross-encoder reads each candidate passage together with the question and scores how well it answers it. Only the best few passages go to the model.', stat: 'wide net → best few' },
+    { title: 'Cited answer', text: 'The LLM writes an answer from those passages only, citing each claim with a link to the page it came from. If the best scores are too low, it says no supported answer was found and shows the closest passages.', stat: 'cite or decline' }
   ],
-  'voice-agent-customer-support': [
-    { title: 'Telephony', text: 'A customer calls the normal support number. Audio is streamed in real time over SIP/WebRTC instead of waiting for the caller to finish.', stat: 'real-time audio' },
-    { title: 'Streaming ASR', text: 'Speech recognition produces words while the caller is still talking, so the system is already understanding the request mid-sentence.', stat: 'partial transcripts' },
-    { title: 'Turn detection', text: 'A turn detector decides when the caller has actually finished, not just paused. Tuning this was the biggest single latency win.', stat: 'largest latency cost' },
-    { title: 'LLM + tools', text: 'The model understands the request and calls tools such as "check balance" or "move appointment" to get real answers from company systems.', stat: 'function calling' },
-    { title: 'Policy check', text: 'Every tool call passes a rules layer first: identity must be verified before any account action, and risky actions are blocked. The model proposes, code decides.', stat: '<2% wrong actions' },
-    { title: 'Streaming TTS', text: 'Text-to-speech starts speaking the first sentence while the rest is still being written. If the caller interrupts, playback stops instantly.', stat: 'barge-in supported' },
-    { title: 'Caller', text: 'The caller hears a natural reply in under a second. If the agent cannot help, it transfers to a human with a written summary so nobody repeats themselves.', stat: '780 ms median response' }
-  ],
-  'private-llm-inference-platform': [
-    { title: 'Clients', text: 'Internal apps and teams call one OpenAI-compatible API, so moving off an external provider is just a change of base URL.', stat: '6 teams migrated' },
-    { title: 'API gateway', text: 'The gateway checks each team\'s key, applies quotas and logs usage, so costs can be reported per team.', stat: 'keys · quotas · logs' },
-    { title: 'Router', text: 'Requests are routed by task: simple extraction goes to a fast quantized model, complex reasoning to a larger full-precision one.', stat: 'right model per task' },
-    { title: 'vLLM pool', text: 'Models are served with vLLM, which batches many requests together and manages GPU memory efficiently, roughly 2.6× the previous throughput.', stat: '2.6× throughput' },
-    { title: 'GPU nodes', text: 'Kubernetes runs the models on GPU node pools and scales them with demand. New model versions roll out without downtime.', stat: 'autoscaling' },
-    { title: 'Metrics', text: 'Prometheus collects tokens per second, latency and GPU utilisation for every model and team, with alerts when something drifts.', stat: '99.9% availability' },
-    { title: 'Cost reports', text: 'Grafana dashboards show the cost per million tokens for each team. Seeing their own cost changed behaviour faster than any quota.', stat: '-57% cost / 1M tokens' }
-  ],
-  'agentic-operations-copilot': [
-    { title: 'Request', text: 'An operations colleague describes the task in plain language, for example "update the supplier address and re-issue the open purchase orders".', stat: 'plain language' },
-    { title: 'Planner', text: 'The agent writes an explicit plan as numbered steps before doing anything. The plan is visible, can be reviewed and is tested against 150 scenarios.', stat: '92% plan correctness' },
-    { title: 'Tool registry', text: 'Each step maps to a registered tool with scoped permissions. Read-only tools (look up, compare) run straight away.', stat: 'scoped permissions' },
-    { title: 'Approval step', text: 'Any step that changes data pauses and asks a person to approve, showing exactly what will change.', stat: '0 unapproved writes' },
-    { title: 'Executor', text: 'Approved steps run as a durable workflow: if a system times out, the task resumes from the last good step instead of starting over.', stat: 'survives failures' },
-    { title: 'Audit log', text: 'Every plan, tool call, approval and result is logged, so anyone can see who approved what and when.', stat: 'full audit trail' },
-    { title: 'Result', text: 'The colleague gets a summary of what was done, with links into each system. Routine multi-system tasks take far less time.', stat: '-41% handling time' }
+  'local-rag-private-llm': [
+    { title: 'GPU VM', text: 'A virtual machine with a GPU is provisioned inside the organisation\'s controlled environment, with drivers installed and outbound network access restricted. This is the boundary data does not cross.', stat: 'data stays inside' },
+    { title: 'vLLM server', text: 'vLLM is deployed on the VM as an OpenAI-compatible server. It batches concurrent requests and manages GPU memory efficiently, and applications talk to it with a standard client.', stat: 'OpenAI-compatible API' },
+    { title: 'Open-weight LLM', text: 'An open-weight model is loaded into vLLM. Model size, quantization and maximum context length are chosen together so the weights and the working memory for requests fit on the GPU.', stat: 'sized to VRAM' },
+    { title: 'Embeddings + retrieval', text: 'Internal documents are chunked and embedded by a locally hosted embedding model, then stored in a vector store on the same network. Each question retrieves the most relevant chunks, which the model must answer from and cite.', stat: 'local embeddings' },
+    { title: 'Guardrails', text: 'Checks run before and after the model. Inputs are screened for personal data and prompt-injection attempts; outputs are checked for leaked personal data and for claims the retrieved passages do not support.', stat: 'input + output checks' },
+    { title: 'Evaluation', text: 'A fixed question set runs through the whole system and scores retrieval, faithfulness, refusals and guardrail accuracy, plus latency on the GPU. A change ships only if these scores do not get worse.', stat: 'regression gate' }
   ]
 };

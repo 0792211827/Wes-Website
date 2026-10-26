@@ -11,7 +11,7 @@ type Kind = 'projects' | 'lab' | 'posts' | 'knowledge';
 type Item = Record<string, unknown>;
 
 const KINDS: Array<{ id: Kind; label: string; help: string }> = [
-  { id: 'projects', label: 'Case studies', help: 'The projects on the Work page. "featured": true shows a project on the home page.' },
+  { id: 'projects', label: 'Case studies', help: 'The projects on the Work page. "featured": true shows a project on the home page. "body" is the long technical write-up in markdown: ## starts a section, a line [[diagram:key]] embeds a diagram.' },
   { id: 'lab', label: 'AI Lab', help: 'Experiments on the AI Lab page.' },
   { id: 'posts', label: 'Articles', help: 'Writing. The body supports simple markdown (## headings, **bold**, lists, `code`).' },
   { id: 'knowledge', label: 'AI chat answers', help: 'What the AI assistant knows. Keywords decide when an answer is used.' }
@@ -21,7 +21,7 @@ const BLANK: Record<Kind, Item> = {
   projects: {
     slug: 'new-project', title: 'New project', category: 'AI Systems', cat: 'ai', art: 'rag', year: '2026',
     problem: '', outcome: '', metric: { label: '', value: '' }, tech: [], overview: '', context: '', requirements: [],
-    arch: [], implementation: '', challenges: [], decisions: [], evaluation: '', results: [], lessons: [], resources: [],
+    arch: [], implementation: '', challenges: [], decisions: [], evaluation: '', results: [], lessons: [], resources: [], body: '',
     featured: false, sortOrder: 99
   },
   lab: {

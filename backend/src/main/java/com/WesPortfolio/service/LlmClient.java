@@ -48,10 +48,13 @@ public class LlmClient {
             return Optional.empty();
         }
         String base = ai.baseUrl().endsWith("/") ? ai.baseUrl().substring(0, ai.baseUrl().length() - 1) : ai.baseUrl();
+        // Thinking models (Gemini 3, o-series) spend part of max_tokens on reasoning, so both are configurable.
+        String effort = ai.reasoningEffort() == null ? "" : ai.reasoningEffort().trim();
         String body = "{"
                 + "\"model\":" + JsonText.quote(model()) + ","
                 + "\"temperature\":0.2,"
-                + "\"max_tokens\":500,"
+                + "\"max_tokens\":" + (ai.maxTokens() <= 0 ? 500 : ai.maxTokens()) + ","
+                + (effort.isEmpty() ? "" : "\"reasoning_effort\":" + JsonText.quote(effort) + ",")
                 + "\"messages\":["
                 + "{\"role\":\"system\",\"content\":" + JsonText.quote(systemPrompt) + "},"
                 + "{\"role\":\"user\",\"content\":" + JsonText.quote(userPrompt) + "}"

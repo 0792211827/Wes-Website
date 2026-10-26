@@ -28,15 +28,18 @@ import { MotionService } from '../core/motion.service';
             <a routerLink="/" fragment="contact">Start a conversation</a>
           </div>
           <div>
-            <h4>Elsewhere</h4>
+            <h4>Contact</h4>
+            <a [href]="'mailto:' + site.email()">{{ site.email() }}</a>
+            <a [href]="site.linkedin()" target="_blank" rel="noopener">LinkedIn ↗</a>
+            @if (site.x()) {
+              <a [href]="site.x()" target="_blank" rel="noopener">X ↗</a>
+            }
             @if (site.github()) {
               <a [href]="site.github()" target="_blank" rel="noopener">GitHub ↗</a>
             }
-            <a [href]="site.linkedin()" target="_blank" rel="noopener">LinkedIn ↗</a>
             @if (site.cvUrl(); as cv) {
               <a [href]="cv">Download CV ↓</a>
             }
-            <a [href]="'mailto:' + site.email()">{{ site.email() }}</a>
           </div>
         </div>
         <div class="foot-bottom">

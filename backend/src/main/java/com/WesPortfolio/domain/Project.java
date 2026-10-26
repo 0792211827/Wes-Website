@@ -109,6 +109,10 @@ public class Project {
     @Column(columnDefinition = "TEXT")
     private List<String> resources = new ArrayList<>();
 
+    /** Long-form technical write-up (markdown). */
+    @Column(columnDefinition = "TEXT")
+    private String body;
+
     private boolean featured;
 
     private int sortOrder;

@@ -51,7 +51,7 @@ export const NAV = [
     <div class="drawer" id="drawer" [class.open]="ui.drawerOpen()" aria-label="Mobile navigation">
       @for (n of nav; track n.path) {
         <a [routerLink]="n.path" routerLinkActive [routerLinkActiveOptions]="{ exact: n.exact }" ariaCurrentWhenActive="page"
-          (click)="ui.drawerOpen.set(false)">~/{{ n.label.replace(' ', '-') }}</a>
+          (click)="ui.drawerOpen.set(false)">/{{ n.label.replaceAll(' ', '-') }}</a>
       }
       <a class="btn btn-primary" routerLink="/" fragment="contact" (click)="ui.drawerOpen.set(false)">Work With Me →</a>
     </div>

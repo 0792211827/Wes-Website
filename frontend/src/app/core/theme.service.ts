@@ -22,7 +22,7 @@ export class ThemeService {
     document.documentElement.setAttribute('data-theme', t);
     try { localStorage.setItem('wn-theme', t); } catch { /* private mode */ }
     const meta = document.querySelector('meta[name="theme-color"]');
-    if (meta) meta.setAttribute('content', t === 'dark' ? '#0c0e0c' : '#f4f0e4');
+    if (meta) meta.setAttribute('content', t === 'dark' ? '#000000' : '#ffffff');
     this.listeners.forEach((fn) => fn());
   }
 

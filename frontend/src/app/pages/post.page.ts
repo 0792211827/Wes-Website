@@ -18,7 +18,7 @@ import { NotFoundPage } from './not-found.page';
   host: { class: 'page' },
   template: `
     @if (post(); as p) {
-      <app-page-head [crumbs]="[{ label: 'home', link: '/' }, { label: 'blogs', link: '/blogs' }, { label: p.title }]"
+      <app-page-head [crumbs]="[{ label: 'blogs', link: '/blogs' }, { label: p.title }]"
         [eyebrow]="p.track" [title]="p.title" [lede]="p.excerpt" [note]="site.flag('showSampleNotes') ? 'Sample article: replace with the full text.' : ''">
         <div class="article-meta">
           <span>{{ date() }}</span>

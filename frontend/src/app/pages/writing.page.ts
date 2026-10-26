@@ -12,7 +12,7 @@ import { PageHeadComponent } from '../shared/page-head.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'page' },
   template: `
-    <app-page-head [crumbs]="[{ label: 'home', link: '/' }, { label: 'blogs' }]" title="Blogs"
+    <app-page-head [crumbs]="[{ label: 'blogs' }]" title="Blogs"
       lede="Two tracks: engineering deep-dives for builders, and executive notes for people deciding where AI fits." />
     <section class="section">
       <div class="wrap">

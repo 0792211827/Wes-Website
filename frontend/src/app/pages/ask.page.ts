@@ -14,7 +14,7 @@ const FLOW = ['your question', 'retrieval', 'approved website knowledge', 'llm',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'page' },
   template: `
-    <app-page-head [crumbs]="[{ label: 'home', link: '/' }, { label: 'ask my ai' }]" title="Ask Wesley's AI"
+    <app-page-head [crumbs]="[{ label: 'ask' }]" title="Ask Wesley's AI"
       lede="Ask about Wesley's work, services and approach. Answers come only from this website's approved content, and every answer links to its sources." />
     <div class="wrap ask-layout">
       <section class="window chat" aria-label="Chat with Wesley's AI">

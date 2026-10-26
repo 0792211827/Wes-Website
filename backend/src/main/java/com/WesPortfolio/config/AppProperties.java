@@ -32,7 +32,8 @@ public record AppProperties(
     public record Github(String username, String token, int cacheMinutes) {
     }
 
-    public record Ai(String baseUrl, String model, String apiKey, int timeoutSeconds, double minScore) {
+    public record Ai(String baseUrl, String model, String apiKey, int timeoutSeconds, double minScore,
+            int maxTokens, String reasoningEffort) {
 
         public boolean enabled() {
             return apiKey != null && !apiKey.isBlank() && baseUrl != null && !baseUrl.isBlank();

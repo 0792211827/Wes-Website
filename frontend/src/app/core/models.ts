@@ -44,6 +44,8 @@ export interface Project {
   results: Pair[];
   lessons: string[];
   resources: string[];
+  /** Long-form technical write-up (markdown). `## ` starts a section; a line `[[diagram:key]]` embeds a diagram. */
+  body: string;
   featured: boolean;
   sortOrder: number;
 }
@@ -101,6 +103,7 @@ export interface SiteInfo {
   github: string;
   githubUser: string;
   linkedin: string;
+  x: string;
   cv: string;
   photo: string;
   url: string;
@@ -128,26 +131,6 @@ export interface Capability {
 export interface KeyLabel {
   key: string;
   label: string;
-}
-
-export interface Service {
-  title: string;
-  icon: string;
-  desc: string;
-  items: string[];
-  outcome: string;
-}
-
-export interface EngagementFormat {
-  title: string;
-  duration: string;
-  text: string;
-  cta: string;
-}
-
-export interface Faq {
-  q: string;
-  a: string;
 }
 
 /* ---------- API ---------- */

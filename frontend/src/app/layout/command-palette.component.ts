@@ -68,7 +68,8 @@ export class CommandPaletteComponent {
     { label: 'Copy email address', kind: 'action', target: 'action:email' },
     { label: 'Download CV', kind: 'action', target: 'action:cv' },
     { label: 'Open GitHub', kind: 'link', target: this.site.github() },
-    { label: 'Open LinkedIn', kind: 'link', target: this.site.linkedin() }
+    { label: 'Open LinkedIn', kind: 'link', target: this.site.linkedin() },
+    { label: 'Open X', kind: 'link', target: this.site.x() }
   ].filter((it) => it.kind !== 'link' || it.target));
 
   readonly results = computed(() => {

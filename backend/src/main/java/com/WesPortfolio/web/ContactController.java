@@ -52,6 +52,6 @@ public class ContactController {
         Lead lead = contact.receive(body, ipHash, request.getHeader("User-Agent"));
         String first = ContactService.firstName(lead.getName());
         return ResponseEntity.status(HttpStatus.CREATED).body(new ContactResponse(lead.getId(),
-                "Thanks, " + first + ". Message received. You'll get a reply within two working days."));
+                "Thanks, " + first + ". Message received."));
     }
 }

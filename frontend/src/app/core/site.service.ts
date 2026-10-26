@@ -23,6 +23,7 @@ export const DEFAULT_SETTINGS: Record<string, string> = {
   github: SITE.github,
   githubUser: SITE.githubUser,
   linkedin: SITE.linkedin,
+  x: SITE.x,
   footerText: 'AI engineering. I build AI systems that create real value in the AI generation. Production matters more than demos.',
   showSampleNotes: 'true',
   'section.github': 'true',
@@ -31,8 +32,7 @@ export const DEFAULT_SETTINGS: Record<string, string> = {
   'section.ask': 'true',
   'section.cta': 'true',
   /* Work page */
-  'section.system': 'true',
-  'section.build': 'true'
+  'section.system': 'true'
 };
 
 /**
@@ -69,6 +69,7 @@ export class SiteService {
   readonly github = computed(() => this.text('github'));
   readonly githubUser = computed(() => this.text('githubUser'));
   readonly linkedin = computed(() => this.text('linkedin'));
+  readonly x = computed(() => this.text('x'));
   readonly whatsapp = computed(() => {
     const raw = this.text('whatsapp').replace(/[^\d]/g, '');
     return raw ? 'https://wa.me/' + raw : '';

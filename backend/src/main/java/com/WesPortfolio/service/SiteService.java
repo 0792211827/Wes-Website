@@ -40,16 +40,17 @@ public class SiteService {
         d.put("email", "nyamosiwesley02@gmail.com");
         d.put("whatsapp", "");
         d.put("location", "");
-        d.put("github", "");
-        d.put("githubUser", "");
+        d.put("github", "https://github.com/0792211827");
+        d.put("githubUser", "0792211827");
         d.put("linkedin", "https://www.linkedin.com/in/wesley-nyamosi-809409251");
+        d.put("x", "https://x.com/nyamosiW");
         // footer
         d.put("footerText", "AI engineering. I build AI systems that create real value in the AI generation. "
                 + "Production matters more than demos.");
         // what is visible
         d.put("showSampleNotes", "true");
         // home page sections, then work page sections
-        for (String s : new String[] {"github", "pillars", "philosophy", "ask", "cta", "system", "build"}) {
+        for (String s : new String[] {"github", "pillars", "philosophy", "ask", "cta", "system"}) {
             d.put("section." + s, "true");
         }
         DEFAULTS = Collections.unmodifiableMap(d);

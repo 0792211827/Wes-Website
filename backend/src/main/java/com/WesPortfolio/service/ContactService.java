@@ -155,7 +155,7 @@ public class ContactService {
                 ack.setSubject("Thanks for getting in touch");
                 ack.setText("Hi " + firstName(lead.getName()) + ",\n\n"
                         + "Thanks for telling me about the problem you're working on. I've received your message "
-                        + "and will reply within two working days, usually with a few questions and a time for a short call.\n\n"
+                        + "and will reply by email.\n\n"
                         + "Best regards,\nWesley Nyamosi\nAI Engineering");
                 sender.send(ack);
             } catch (Exception e) {

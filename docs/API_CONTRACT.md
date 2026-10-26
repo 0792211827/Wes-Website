@@ -21,7 +21,8 @@ LabRow     { label: string; value: number; pct: number }
 SourceLink { label: string; url: string }
 ProjectDto { slug, title, category, cat, art, year, problem, outcome, metric: Pair, tech: string[], overview, context,
              requirements: string[], arch: string[], implementation, challenges: string[], decisions: Decision[],
-             evaluation, results: Pair[], lessons: string[], resources: string[], featured: boolean, sortOrder: number }
+             evaluation, results: Pair[], lessons: string[], resources: string[],
+             body /* markdown long-form write-up; `## ` sections, `[[diagram:key]]` embeds a frontend diagram */, featured: boolean, sortOrder: number }
 LabDto     { slug, type, color, date, status, title, question, method, env: Pair[], experiment, unit, rows: LabRow[],
              analysis, conclusion, code, sortOrder: number }
 PostDto    { slug, track, date, readMinutes: number, title, tags: string[], excerpt, body }   // body = markdown-lite
@@ -45,7 +46,7 @@ Response `201`: `{ "id": 12, "message": "Thanks, …" }`
 Response:
 ```json
 { "answer": "markdown-lite text (paragraphs, '- ' bullets)",
-  "sources": [{ "label": "Enterprise Knowledge Assistant", "url": "/work/enterprise-knowledge-assistant" }],
+  "sources": [{ "label": "Local RAG on Private Infrastructure", "url": "/work/local-rag-private-llm" }],
   "grounded": true, "fallback": false, "mode": "llm|extractive|refusal|fallback",
   "trace": "retrieved 4 documents · top score 0.82 · grounded", "remaining": 14,
   "followUps": ["two suggested next questions"] }

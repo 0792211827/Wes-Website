@@ -108,15 +108,15 @@ public class AskService {
             response = new AskResponse(
                     "I can only share Wesley's public, professional information, so I can't help with that. "
                             + "For anything else, you can reach him directly by email.",
-                    List.of(new SourceLink("Contact", "/contact"), new SourceLink("Privacy notice", "/privacy")),
+                    List.of(new SourceLink("Contact", "/#contact"), new SourceLink("Privacy notice", "/privacy")),
                     false, true, "refusal", "privacy check · not answered", remaining, List.of());
         } else {
             List<Hit> hits = currentIndex().search(question);
             if (hits.isEmpty() || hits.get(0).score() < minScore) {
                 response = new AskResponse(
                         "I couldn't find anything about that in Wesley's public content, and I'd rather not guess. "
-                                + "Try asking about his services, case studies, blog posts or approach, or ask Wesley directly.",
-                        List.of(new SourceLink("Contact", "/contact")),
+                                + "Try asking about his work, background or approach, or ask Wesley directly.",
+                        List.of(new SourceLink("Contact", "/#contact")),
                         false, true, "fallback",
                         "retrieved 0 relevant documents · fallback answer", remaining, List.of());
                 if (!hits.isEmpty()) {
@@ -269,7 +269,7 @@ public class AskService {
                     + " Outcome: " + nz(p.getOutcome()) + " Technologies: " + join(p.getTech(), ", ") + ".";
             String answer = "The most relevant case study is " + p.getTitle() + " (" + nz(p.getCategory()) + ").\n\n"
                     + "Problem: " + nz(p.getProblem()) + "\n\nOutcome: " + nz(p.getOutcome())
-                    + "\n\nThe case study covers the architecture, decisions, evaluation and results.";
+                    + "\n\nThe case study covers the problem, its context, the architecture and the lessons learned.";
             docs.add(new Doc("project:" + p.getSlug(), p.getTitle(), text, answer,
                     List.of(new SourceLink(p.getTitle(), "/work/" + p.getSlug())),
                     tokens(p.getTitle() + " " + nz(p.getCategory()) + " " + nz(p.getCat()) + " " + join(p.getTech(), " ")),

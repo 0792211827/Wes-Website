@@ -36,6 +36,41 @@ committed. Keep it out of `public/` too.
   line rely on this. It is a statement of what he works with, not a claim of
   production deployments, clients or metrics.
 
+- **Agent tooling** — CONFIRMED by Wesley on 2026-10-25: retrieval, evaluation,
+  agent harnesses and OpenClaw are part of his agents/RAG work (home card tags).
+- **Strategy, cost saving and consulting** — CONFIRMED by Wesley on 2026-10-25
+  ("I also do that"). The home card describes the kind of help (where AI is
+  worth it, hosted vs self-hosted, predictable inference cost). It names no
+  clients, engagements, savings figures or pricing; those stay unsourced.
+- **Links** — CONFIRMED by Wesley on 2026-10-25: X https://x.com/nyamosiW,
+  GitHub https://github.com/0792211827. The GitHub username is the same digits
+  as the phone number on his CV; Wesley was told and chose to publish it as is.
+- **Case studies** — CONFIRMED by Wesley on 2026-10-25 from his own briefs:
+  (a) a customer-service voice agent with tool calling, ElevenLabs speech and
+  voice cloning, built around latency; (b) document intelligence and retrieval;
+  (c) local RAG: provisioning GPU infrastructure as a VM, deploying vLLM, loading
+  an open-weight model, building the embedding/retrieval pipeline, then
+  guardrails and an evaluation pipeline, for enterprises with data or regulatory
+  constraints. All three were **built for an employer/client**, who stays unnamed.
+  Only vLLM and ElevenLabs are confirmed tools; everything else is described by role.
+  The architecture and walkthrough detail is a technical write-up of those briefs.
+- **Case-study figures are reference targets, not measurements.** Wesley has no
+  measured numbers and asked for standard reference figures. Every number in
+  `metric`, `results` and the walkthrough stats is labelled as a target or
+  reference value. Never relabel one as an achieved outcome; replace with real
+  measurements if Wesley provides them.
+- **Case-study deep dives are reference designs.** On 2026-10-25 Wesley asked for
+  much more technical write-ups and chose "reference design" over supplying his
+  exact stack. Each `body` opens with a "Reference stack" section stating that
+  named tools are standard choices for the design, not a record of what was
+  deployed. Only vLLM (local RAG) and ElevenLabs (voice) are confirmed. Replace
+  reference choices with the real stack as Wesley supplies it, and drop the
+  disclaimer once a write-up is fully sourced.
+
+- **Ask-AI knowledge base** (`SeedData.knowledge()` / `KNOWLEDGE`) — rewritten 2026-10-26 to use only
+  the facts above: focus areas, consulting (no specifics), the three case studies, CV skills, education and
+  internships. Consulting answers say scope depends on the problem; they name no process, durations or pricing.
+
 ## Deliberately NOT used
 
 - **The two CV projects** (Spacy Custom Location Mention Recognition; Investor
@@ -68,8 +103,9 @@ committed. Keep it out of `public/` too.
 
 ## Still unsourced — do not invent
 
-- Consulting services (`src/config/services.ts` is still empty). Nothing in the
-  CV describes an offering, engagement shape or deliverables.
+- Consulting specifics: engagement shapes, deliverables, pricing, past clients
+  or savings achieved. Only the fact that he offers strategy / cost / consulting
+  help is confirmed (above).
 - Anything implying production systems at scale, paid client engagements, or
   testimonials.
-- GitHub profile URL, CV download, production domain, OG image.
+- CV download, production domain, OG image.

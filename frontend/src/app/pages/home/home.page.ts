@@ -52,6 +52,9 @@ import { PipelineComponent } from './pipeline.component';
               <a [href]="site.github()" target="_blank" rel="noopener" aria-label="GitHub"><app-icon name="github" /></a>
             }
             <a [href]="site.linkedin()" target="_blank" rel="noopener" aria-label="LinkedIn"><app-icon name="linkedin" /></a>
+            @if (site.x()) {
+              <a [href]="site.x()" target="_blank" rel="noopener" aria-label="X"><app-icon name="x" /></a>
+            }
             <a [href]="'mailto:' + site.email()" aria-label="Email"><app-icon name="mail" /></a>
             @if (site.cvUrl(); as cv) {
               <a [href]="cv" aria-label="Download CV"><app-icon name="file" /></a>
@@ -76,8 +79,8 @@ import { PipelineComponent } from './pipeline.component';
     <section class="section" id="ai-engineering">
       <div class="wrap">
         <app-section-head eyebrow="ai engineering" title="Where I build value"
-          text="Three areas I work in hands-on, from the model to the system around it." link="/work" linkLabel="See the work" />
-        <div class="grid-3">
+          text="Where I work hands-on, from the model to the system around it, and where I help teams decide what is worth building." link="/work" linkLabel="See the work" />
+        <div class="grid-2">
           @for (c of pillars; track c.id) {
             <article class="card cap reveal">
               <div class="cap-ico"><app-icon [name]="c.icon" /></div>

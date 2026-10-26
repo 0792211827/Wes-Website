@@ -32,7 +32,8 @@ const GROUPS: Array<{ title: string; text: string; fields: Field[] }> = [
       { key: 'location', label: 'Location', hint: 'Optional.', kind: 'text' },
       { key: 'github', label: 'GitHub profile URL', kind: 'text' },
       { key: 'githubUser', label: 'GitHub username (label)', kind: 'text' },
-      { key: 'linkedin', label: 'LinkedIn URL', kind: 'text' }
+      { key: 'linkedin', label: 'LinkedIn URL', kind: 'text' },
+      { key: 'x', label: 'X profile URL', hint: 'Optional. Leave empty to hide the X links.', kind: 'text' }
     ]
   },
   {
@@ -42,14 +43,13 @@ const GROUPS: Array<{ title: string; text: string; fields: Field[] }> = [
   },
   {
     title: 'What is visible', text: 'Switch home and work page sections and the "sample content" notes on or off.', fields: [
-      { key: 'showSampleNotes', label: '"Sample content" notes on work and blog posts', kind: 'toggle' },
+      { key: 'showSampleNotes', label: '"Sample content" notes on blog posts', kind: 'toggle' },
       { key: 'section.github', label: 'Home: GitHub activity', kind: 'toggle' },
       { key: 'section.pillars', label: 'Home: AI engineering areas', kind: 'toggle' },
       { key: 'section.philosophy', label: 'Home: Philosophy (Production matters…)', kind: 'toggle' },
       { key: 'section.ask', label: 'Home: Ask my AI teaser', kind: 'toggle' },
       { key: 'section.cta', label: 'Home: closing call to action', kind: 'toggle' },
-      { key: 'section.system', label: 'Work: live system diagram', kind: 'toggle' },
-      { key: 'section.build', label: 'Work: What I build', kind: 'toggle' }
+      { key: 'section.system', label: 'Work: live system diagram', kind: 'toggle' }
     ]
   }
 ];

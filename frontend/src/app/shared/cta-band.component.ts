@@ -24,6 +24,6 @@ import { SplitDirective } from './split.directive';
 export class CtaBandComponent {
   readonly site = inject(SiteService);
   readonly title = input('Have an AI problem worth solving?');
-  readonly text = input('Tell me what you\'re trying to solve. You\'ll get a reply within two working days, and a clear next step.');
+  readonly text = input('Tell me what you\'re trying to solve.');
   readonly button = input('Email Me');
 }

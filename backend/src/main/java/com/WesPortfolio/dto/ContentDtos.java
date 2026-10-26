@@ -15,7 +15,7 @@ public final class ContentDtos {
     private ContentDtos() {
     }
 
-    /** Slugs are lowercase words joined by hyphens, e.g. enterprise-knowledge-assistant. */
+    /** Slugs are lowercase words joined by hyphens, e.g. local-rag-private-llm. */
     public static final String SLUG = "^[a-z0-9]+(?:-[a-z0-9]+)*$";
 
     public record Pair(String label, String value) {
@@ -52,6 +52,8 @@ public final class ContentDtos {
             List<Pair> results,
             List<String> lessons,
             List<String> resources,
+            /** Long-form technical write-up (markdown). */
+            String body,
             boolean featured,
             int sortOrder) {
     }

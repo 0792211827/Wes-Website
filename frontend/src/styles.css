@@ -3,19 +3,19 @@
    1. Design tokens
    ===================================================================== */
 :root {
-  --bg: #0c0e0c;
-  --bg-2: #101310;
-  --panel: #131713;
-  --panel-2: #181d18;
-  --line: #222822;
-  --line-2: #2f372e;
-  --text: #ddd3b8;
-  --text-2: #b3ad97;
-  --muted: #7d7f6f;
-  --faint: #4b5047;
+  --bg: #000000;
+  --bg-2: #0a0a0a;
+  --panel: #101010;
+  --panel-2: #161616;
+  --line: #242424;
+  --line-2: #323232;
+  --text: #ededed;
+  --text-2: #b8b8b8;
+  --muted: #8a8a8a;
+  --faint: #525252;
   --accent: #8fbf7a;
   --accent-2: #b9db8c;
-  --accent-ink: #0c0e0c;
+  --accent-ink: #000000;
   --accent-soft: rgba(143, 191, 122, .12);
   --accent-glow: rgba(143, 191, 122, .28);
   --amber: #e3bb63;
@@ -24,8 +24,8 @@
   --violet: #b9a0dd;
   --teal: #6fc7b2;
   --orange: #e59e62;
-  --cream: #e9dfc2;
-  --cell-0: #161b16;
+  --cream: #f5f5f5;
+  --cell-0: #141414;
   --cell-1: #20372a;
   --cell-2: #2f5a3b;
   --cell-3: #4f8a55;
@@ -41,19 +41,19 @@
   color-scheme: dark;
 }
 [data-theme="light"] {
-  --bg: #f4f0e4;
-  --bg-2: #efeadc;
-  --panel: #fbf8ef;
-  --panel-2: #f1ecdd;
-  --line: #ddd5bf;
-  --line-2: #cfc5ab;
-  --text: #22261f;
-  --text-2: #4a4d42;
-  --muted: #6f705f;
-  --faint: #a7a38f;
+  --bg: #ffffff;
+  --bg-2: #f7f7f7;
+  --panel: #ffffff;
+  --panel-2: #f2f2f2;
+  --line: #e4e4e4;
+  --line-2: #d0d0d0;
+  --text: #0a0a0a;
+  --text-2: #333333;
+  --muted: #5e5e5e;
+  --faint: #a3a3a3;
   --accent: #3f7a33;
   --accent-2: #2f6427;
-  --accent-ink: #fbf8ef;
+  --accent-ink: #ffffff;
   --accent-soft: rgba(63, 122, 51, .1);
   --accent-glow: rgba(63, 122, 51, .22);
   --amber: #9a6b06;
@@ -62,13 +62,13 @@
   --violet: #6b4ba6;
   --teal: #1f7f6b;
   --orange: #a95514;
-  --cream: #5b4b23;
-  --cell-0: #e7e1cf;
+  --cream: #1a1a1a;
+  --cell-0: #ececec;
   --cell-1: #c9dcb5;
   --cell-2: #9cc583;
   --cell-3: #5f9a4c;
   --cell-4: #2f6427;
-  --shadow: 0 1px 0 rgba(255, 255, 255, .6), 0 18px 40px -26px rgba(60, 50, 20, .35);
+  --shadow: 0 1px 0 rgba(255, 255, 255, .6), 0 18px 40px -26px rgba(0, 0, 0, .25);
   color-scheme: light;
 }
 
@@ -141,7 +141,7 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 }
 .nav a:hover { color: var(--text); background: var(--panel); }
 .nav a[aria-current="page"] { color: var(--accent-2); }
-.nav a[aria-current="page"]::before { content: "~/"; color: var(--muted); }
+.nav a[aria-current="page"]::before { content: "/"; color: var(--muted); }
 .bar-actions { display: flex; align-items: center; gap: 8px; }
 .icon-btn {
   width: 36px; height: 36px; display: grid; place-items: center;
@@ -406,12 +406,6 @@ kbd {
 .outcome b { color: var(--accent-2); font-weight: 600; }
 .work-list { display: grid; gap: 18px; }
 
-.filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 26px; }
-.filter { padding: 6px 13px; border-radius: 999px; border: 1px solid var(--line); font-size: .82rem; color: var(--text-2); transition: all .2s; }
-.filter:hover { color: var(--text); border-color: var(--line-2); }
-.filter[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
-.filter .n { opacity: .6; margin-left: 4px; }
-
 .lab-card { display: flex; flex-direction: column; gap: 12px; }
 .lab-type { display: flex; justify-content: space-between; font-size: .74rem; color: var(--muted); }
 .lab-type b { font-weight: 500; }
@@ -644,7 +638,7 @@ fieldset.field { border: 0; padding: 0; margin: 0; }
 .foot-bottom { margin-top: 36px; padding-top: 18px; border-top: 1px dashed var(--line); display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; font-size: .76rem; color: var(--muted); }
 .foot-bottom .status { display: inline-flex; align-items: center; gap: 8px; }
 
-.palette-back { position: fixed; inset: 0; z-index: 140; background: rgba(5, 7, 5, .6); backdrop-filter: blur(3px); display: none; }
+.palette-back { position: fixed; inset: 0; z-index: 140; background: rgba(0, 0, 0, .6); backdrop-filter: blur(3px); display: none; }
 .palette-back.open { display: block; animation: fade .15s; }
 .palette {
   position: fixed; z-index: 150; top: 14vh; left: 50%; transform: translateX(-50%);
@@ -1367,3 +1361,52 @@ router-outlet { display: none; }
   .ad-list { max-height: 260px; }
   .ws-sessions .search { min-width: 0 !important; width: 100%; }
 }
+
+/* ---------- Case-study architecture diagrams (shared/diagram.component.ts, core/data/diagrams) ---------- */
+.diagram { margin: 22px 0 6px; }
+.diagram-scroll { border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--panel); padding: 14px; overflow-x: auto; }
+.diagram-scroll:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.diagram-scroll svg { display: block; width: 100%; min-width: 640px; height: auto; font-family: var(--mono); }
+.diagram figcaption { margin-top: 10px; font-size: .86rem; color: var(--muted); }
+.diagram figcaption b { color: var(--text-2); font-weight: 500; }
+.dg-box { fill: var(--panel-2); stroke: var(--line-2); stroke-width: 1; }
+.dg-box-a { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 1.2; }
+.dg-box-w { fill: color-mix(in srgb, var(--amber) 10%, transparent); stroke: var(--amber); stroke-width: 1.2; }
+.dg-box-s { fill: color-mix(in srgb, var(--sky) 10%, transparent); stroke: var(--sky); stroke-width: 1.2; }
+.dg-box-v { fill: color-mix(in srgb, var(--violet) 10%, transparent); stroke: var(--violet); stroke-width: 1.2; }
+.dg-zone { fill: none; stroke: var(--muted); stroke-width: 1; stroke-dasharray: 5 4; }
+.dg-line { fill: none; stroke: var(--muted); stroke-width: 1.2; }
+.dg-flow { fill: none; stroke: var(--accent); stroke-width: 1.6; }
+.dg-dash { fill: none; stroke: var(--muted); stroke-width: 1.2; stroke-dasharray: 4 4; }
+.dg-head { fill: var(--muted); } .dg-head-a { fill: var(--accent); }
+.dg-t { fill: var(--text); font-size: 13px; }
+.dg-s { fill: var(--muted); font-size: 11px; }
+.dg-n { fill: var(--accent); font-size: 11px; }
+.dg-w { fill: var(--amber); font-size: 11px; }
+.dg-z { fill: var(--muted); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; }
+/* animated diagrams: the current step lights up, the rest fades back (text never dims) */
+.diagram [data-step] { transition: opacity .35s ease, stroke .35s ease, stroke-width .35s ease, filter .35s ease; }
+.diagram.stepping [data-step]:not(.is-on) { opacity: .3; }
+.diagram rect.is-on { stroke: var(--accent); stroke-width: 2; filter: drop-shadow(0 0 6px color-mix(in srgb, var(--accent) 45%, transparent)); }
+.diagram path.is-on, .diagram line.is-on { stroke: var(--accent); stroke-width: 2; }
+.diagram.playing path.is-on, .diagram.playing line.is-on { stroke-dasharray: 6 5; animation: dg-march .6s linear infinite; }
+.dg-packet { fill: var(--accent); stroke: var(--panel); stroke-width: 2; pointer-events: none; }
+@keyframes dg-march { to { stroke-dashoffset: -11; } }
+.dg-player { display: flex; align-items: center; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+.dg-player .icon-btn { font-size: 1.05rem; color: var(--text); }
+.dg-step { margin: 0 0 0 6px; flex: 1 1 220px; min-width: 0; font-size: .84rem; color: var(--text-2); }
+.dg-step b { font-family: var(--mono); font-weight: 500; color: var(--accent); margin-right: 6px; font-variant-numeric: tabular-nums; }
+@media (prefers-reduced-motion: reduce) {
+  .diagram [data-step] { transition: none; }
+  .diagram.playing path.is-on, .diagram.playing line.is-on { animation: none; stroke-dasharray: none; }
+}
+.prose .table-scroll { overflow-x: auto; }
+.prose ol { counter-reset: step; display: grid; gap: 8px; margin-top: 12px; }
+.prose ol > li { counter-increment: step; padding-left: 30px; position: relative; }
+.prose ol > li::before { content: counter(step, decimal-leading-zero); position: absolute; left: 0; color: var(--accent); font-family: var(--mono); font-size: .85em; top: .15em; }
+.prose .md-block ul { display: grid; gap: 8px; margin-top: 12px; }
+.prose .md-block ul > li { padding-left: 22px; position: relative; }
+.prose .md-block ul > li::before { content: "→"; position: absolute; left: 0; color: var(--accent); font-family: var(--mono); }
+.prose .md-block p { margin-top: 12px; }
+.prose .md-block strong { color: var(--cream); font-weight: 600; }
+.prose .md-block h3:first-child, .prose .md-block p:first-child { margin-top: 0; }

@@ -17,7 +17,7 @@ export interface Crumb {
   template: `
     <header class="page-head">
       <div class="wrap">
-        <nav class="crumbs" aria-label="Breadcrumb">~/@for (c of crumbs(); track $index) {@if ($index > 0) { / }@if (c.link && !$last) {<a [routerLink]="c.link">{{ c.label }}</a>} @else {<span>{{ c.label }}</span>}}</nav>
+        <nav class="crumbs" aria-label="Breadcrumb"><span aria-hidden="true">/</span>@for (c of crumbs(); track $index) {@if ($index > 0) {<span aria-hidden="true"> / </span>}@if (c.link && !$last) {<a [routerLink]="c.link">{{ c.label }}</a>} @else {<span [attr.aria-current]="$last ? 'page' : null">{{ c.label }}</span>}}</nav>
         @if (eyebrow()) {
           <p class="eyebrow" style="margin-bottom:10px"><b>{{ eyebrow() }}</b>{{ eyebrowRest() }}</p>
         }

@@ -53,7 +53,8 @@ so you do not need to rewrite it by hand.
 | `MAIL_HOST`, `MAIL_PORT`, `MAIL_USERNAME`, `MAIL_PASSWORD` | optional | SMTP for lead notifications (Gmail: use an App Password) |
 | `MAIL_FROM`, `NOTIFY_EMAIL`, `MAIL_ACK` | optional | Sender, where leads are emailed, and whether visitors get an acknowledgement |
 | `GITHUB_USERNAME`, `GITHUB_TOKEN` | optional | GitHub activity on the home page (token raises the rate limit). Unset = section hidden |
-| `AI_API_KEY`, `AI_BASE_URL`, `AI_MODEL` | optional | Any OpenAI-compatible endpoint (Groq by default). Without a key, answers are extractive |
+| `AI_API_KEY`, `AI_BASE_URL`, `AI_MODEL` | optional | Any OpenAI-compatible endpoint (Gemini `gemini-3.5-flash-lite` by default; key from Google AI Studio). Without a key, answers are extractive |
+| `AI_REASONING_EFFORT`, `AI_MAX_TOKENS` | optional | Thinking level sent as `reasoning_effort` (default `minimal`; set empty for models that reject it) and the output cap, thinking included (default `1024`) |
 | `PORT` | set by Render | HTTP port |
 
 ## Endpoints

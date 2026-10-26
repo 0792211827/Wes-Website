@@ -28,17 +28,32 @@ function inline(s: string): string {
 }
 
 /**
- * Markdown-lite used for articles and AI answers:
- * "## heading", paragraphs, "- bullets", "> quote" and ``` fenced code.
+ * Markdown-lite used for articles, case studies and AI answers:
+ * "## heading", "### subheading", paragraphs, "- bullets", "1. steps", "> quote", "| pipe | tables |" and ``` fenced code.
  */
 export function markdown(text: string): string {
   const lines = (text || '').replace(/\r\n/g, '\n').split('\n');
   const out: string[] = [];
   let para: string[] = [];
   let list: string[] = [];
+  let ordered = false;
+  let table: string[][] = [];
   let code: string[] | null = null;
   const flushPara = () => { if (para.length) { out.push('<p>' + inline(para.join(' ')) + '</p>'); para = []; } };
-  const flushList = () => { if (list.length) { out.push('<ul>' + list.map((li) => '<li>' + inline(li) + '</li>').join('') + '</ul>'); list = []; } };
+  const flushList = () => {
+    if (!list.length) return;
+    const tag = ordered ? 'ol' : 'ul';
+    out.push('<' + tag + '>' + list.map((li) => '<li>' + inline(li) + '</li>').join('') + '</' + tag + '>');
+    list = [];
+  };
+  const flushTable = () => {
+    if (!table.length) return;
+    const [head, ...rows] = table;
+    out.push('<div class="table-scroll"><table><thead><tr>' + head.map((c) => '<th>' + inline(c) + '</th>').join('') + '</tr></thead><tbody>' +
+      rows.map((r) => '<tr>' + r.map((c) => '<td>' + inline(c) + '</td>').join('') + '</tr>').join('') + '</tbody></table></div>');
+    table = [];
+  };
+  const flushAll = () => { flushPara(); flushList(); flushTable(); };
   for (const raw of lines) {
     const line = raw.trimEnd();
     if (code) {
@@ -48,16 +63,32 @@ export function markdown(text: string): string {
       } else code.push(raw);
       continue;
     }
-    if (line.trim().startsWith('```')) { flushPara(); flushList(); code = []; continue; }
-    if (!line.trim()) { flushPara(); flushList(); continue; }
+    if (line.trim().startsWith('```')) { flushAll(); code = []; continue; }
+    if (!line.trim()) { flushAll(); continue; }
+    if (line.trim().startsWith('|')) {
+      flushPara(); flushList();
+      const cells = line.trim().replace(/^\||\|$/g, '').split('|').map((c) => c.trim());
+      if (!cells.every((c) => /^:?-{2,}:?$/.test(c))) table.push(cells);
+      continue;
+    }
+    flushTable();
+    if (line.startsWith('### ')) { flushPara(); flushList(); out.push('<h3>' + inline(line.slice(4)) + '</h3>'); continue; }
     if (line.startsWith('## ')) { flushPara(); flushList(); out.push('<h2>' + inline(line.slice(3)) + '</h2>'); continue; }
     if (line.startsWith('> ')) { flushPara(); flushList(); out.push('<blockquote>' + inline(line.slice(2)) + '</blockquote>'); continue; }
-    if (line.startsWith('- ')) { flushPara(); list.push(line.slice(2)); continue; }
+    const li = line.match(/^(- |\d+\. )(.*)$/);
+    if (li) {
+      flushPara();
+      const isOl = li[1] !== '- ';
+      if (list.length && isOl !== ordered) flushList();
+      ordered = isOl;
+      list.push(li[2]);
+      continue;
+    }
     flushList();
     para.push(line.trim());
   }
   if (code) out.push('<div class="codeblock"><pre>' + highlight(code.join('\n')) + '</pre></div>');
-  flushPara(); flushList();
+  flushAll();
   return out.join('');
 }
 

@@ -33,7 +33,8 @@ See §8.
   His two roles so far were **internships** — never drop that word.
 - Never mention "Cassava AI" anywhere in content, copy, or metadata.
 - Don't tie the brand to a single employer, job title, tech stack, or AI model/provider.
-- Don't publish Wesley's phone number. `Wesley_Nyamosi_Resume.pdf` at the repo root is
+- Don't publish Wesley's phone number. (Exception Wesley chose on 2026-10-25: his GitHub username
+  `0792211827` is the same digits; he asked to link it anyway. Don't publish the number in any other form.) `Wesley_Nyamosi_Resume.pdf` at the repo root is
   gitignored for that reason; never commit it or copy it into `frontend/public`.
 - No fake data presented as real: if a live source (GitHub, analytics) fails, hide the
   section or label the fallback clearly. Never show invented numbers as Wesley's.
@@ -43,6 +44,9 @@ See §8.
 - Voice: technical, confident, precise, understated. No hype ("world-class",
   "revolutionary", "cutting-edge"). Show evidence, don't assert authority.
 - Dark-first, terminal-inspired design (monospace headings, green accent). Light theme exists.
+  Dark is always the default. Surfaces and text are neutral (Wesley, 2026-10-26): dark = black
+  background with white text, light = white background with black text. No tinted (olive, cream,
+  beige) backgrounds or text.
 - Animation communicates systems/data flow, not decoration: no particles, no "AI brain"
   imagery, no heavy 3D, no ambient looping decoration.
 - **Exception:** pointer-reactive motion (magnetic buttons, hover glow, card tilt) is
@@ -83,20 +87,6 @@ Vercel and Render must use **Root Directory** `frontend` and `backend` respectiv
 Secrets (admin password, token secret, DB, mail, AI key) live only in Render env vars;
 see `backend/README.md`.
 
-## 5. Where things live
-
-**Frontend (`frontend/src`)**
-- `styles.css` — the whole design system (tokens, components, motion, responsive). Numbered sections.
-- `app/app.routes.ts` — lazy-loaded pages. `app/pages/` — one file per page (`home/` has its own components).
-- `app/layout/` — top bar, footer, boot intro, command palette, floating assistant.
-- `app/shared/` — cards, section heads, chat, TOC, icons, SVG art, directives.
-- `app/core/` — services (`api`, `content`, `site`, `seo`, `analytics`, `motion`, `admin`), `models.ts`.
-- `app/core/data/` — bundled fallback content (`content.data.ts`), site copy (`site.data.ts`).
-
-**Backend (`backend/src/main/java/com/WesPortfolio`)**
-- `web/` controllers, `service/` logic, `domain/` JPA entities, `dto/` JSON records,
-  `security/` token auth + rate limits, `config/` properties + `SeedData.java` (starter content).
-
 ## 6. Rules that keep the two apps in sync
 
 Data is duplicated on purpose (offline fallback). When you change one copy, change all of them:
@@ -106,6 +96,9 @@ Data is duplicated on purpose (offline fallback). When you change one copy, chan
 | API shapes | `backend/.../dto/*.java` ⇄ `frontend/src/app/core/models.ts` ⇄ `docs/API_CONTRACT.md` |
 | Case studies, Lab, articles, Ask-AI knowledge | `backend/.../config/SeedData.java` ⇄ `frontend/src/app/core/data/content.data.ts` |
 | Default site settings (headline, links, section toggles…) | `backend/.../service/SiteService.java` `DEFAULTS` ⇄ `frontend/src/app/core/site.service.ts` `DEFAULT_SETTINGS` |
+
+Case-study diagrams are frontend-only: SVG in `frontend/src/app/core/data/diagrams/`, referenced from a project's
+markdown `body` by a `[[diagram:key]]` line (the API never carries SVG).
 
 Seed data only fills **empty** tables, so editing `SeedData.java` does not change the
 live database. Tell Wesley when a change also needs to be made in `/admin`.
@@ -129,25 +122,26 @@ live database. Tell Wesley when a change also needs to be made in `/admin`.
 ## 8. Open work (update this list as items close)
 
 1. Live site serves another person's photo and CV — Wesley must upload his own in `/admin`.
-2. GitHub: no real username yet, so GitHub links and the activity section are hidden. When known, set
-   `github`/`githubUser` defaults (both §6 copies) and Render env `GITHUB_USERNAME`.
-3. Replace sample case studies / Lab / articles with real, sourced work (§2).
+2. GitHub is `0792211827` (set in both §6 defaults 2026-10-25). Still to do: set Render env
+   `GITHUB_USERNAME=0792211827` and update `github`/`githubUser`/`x` in `/admin` (seed defaults don't change the live DB).
+3. Case studies replaced with Wesley's three real projects (2026-10-25). `DataSeeder` swaps the five old samples out of
+   an existing DB on the next deploy. Lab entries and articles are still sample content (§2).
+   Trimmed 2026-10-26 to Overview → Problem → Context → Architecture (animated diagrams) → Lessons; each `body` is now
+   just `## Architecture` + `[[diagram:…]]` lines. The detail page renders only those diagram lines from `body`
+   (other text is ignored), so a DB still holding the old long bodies shows the same five sections.
 4. Home page trimmed (2026-10-24, short about dropped 2026-10-25) to hero → AI Engineering areas → philosophy → Ask teaser → CTA
-   (~5,800px on mobile, was ~12,900px). The system trace and "What I build" moved to Work. The hero image defaults to
+   (~5,800px on mobile, was ~12,900px). The system trace moved to Work; "What I build" was removed 2026-10-25. The hero image defaults to
    a stock Unsplash photo (not a person) until Wesley uploads his own in `/admin`.
 5. Domain `wesleynyamosi.com` does not exist (NXDOMAIN) but is used for canonical URLs, sitemap and
    CORS. Replace with the real domain or the Vercel URL once decided.
 6. Admin password, DB password and old admin default were committed in git history: rotate them on Render.
+8. Ask-AI knowledge base rewritten to sourced facts (2026-10-26): no engagement steps, pricing, sprint lengths,
+   workshops or reply times; the "training" entry was removed; sources point at `/#contact`. `DataSeeder` replaces
+   entries in an existing DB that still carry the old phrases, so it needs a deploy, not an `/admin` edit.
 7. Render keeps existing env values: check `NOTIFY_EMAIL` is unset or the real address (else lead emails
-   go to the dead domain) and remove/replace `GITHUB_USERNAME=wesleynyamosi`.
-
-## 9. Subagents
-
-See `.claude/agents/`. Use them for their named job:
-
-- `content-writer` — drafts/edits case studies, Lab entries, articles and Ask-AI knowledge in both data copies (§6)
-- `code-reviewer` — reviews diffs against this file before commit
-- `seo-auditor` — checks titles, descriptions, canonicals, sitemap and robots
+   go to the dead domain) and replace `GITHUB_USERNAME=wesleynyamosi` with `0792211827`. For Ask-AI on Gemini (2026-10-26): set
+   `AI_API_KEY`, `AI_BASE_URL=https://generativelanguage.googleapis.com/v1beta/openai`, `AI_MODEL=gemini-3.5-flash-lite`,
+   `AI_REASONING_EFFORT=minimal` (the old Groq/Llama values stay until replaced).
 
 ## 10. Definition of done
 

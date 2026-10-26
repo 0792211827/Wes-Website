@@ -1,444 +1,292 @@
 // GENERATED from the shared content source (same data the API seeds into Postgres).
-// SAMPLE CONTENT: replace with Wesley's real projects, experiments and articles.
+// Projects are Wesley's real work (docs/source-material.md). LAB and POSTS are SAMPLE CONTENT: replace them.
 import { KnowledgeEntry, LabEntry, Post, Project } from '../models';
 
 export const PROJECTS: Project[] = [
   {
-    "slug": "enterprise-knowledge-assistant",
-    "title": "Enterprise Knowledge Assistant",
-    "category": "RAG & Knowledge Systems",
-    "cat": "rag",
-    "art": "rag",
+    "slug": "voice-agent-customer-service",
+    "title": "Voice Agent for Customer Service",
+    "category": "Voice AI · Agents",
+    "cat": "voice",
+    "art": "voice",
     "year": "2026",
-    "problem": "Staff spent hours searching policies, contracts and wikis spread across five systems, and answers were inconsistent.",
-    "outcome": "Grounded answers with citations in under two seconds, scoped to each user's document permissions.",
+    "problem": "Routine customer-service calls such as status checks, account changes and bookings wait in queues for human agents, while menu-driven phone systems cannot hold a natural conversation or act on an account safely.",
+    "outcome": "A voice agent that holds a natural phone conversation, resolves routine requests through tool calls after verifying the caller's identity, and hands off to a human with a summary when it cannot help.",
     "metric": {
-      "label": "time to answer",
-      "value": "-68%"
+      "label": "voice-to-voice latency target",
+      "value": "< 1 s"
     },
     "tech": [
       "Python",
-      "FastAPI",
-      "pgvector",
-      "BM25",
-      "Cross-encoder",
-      "vLLM",
-      "Langfuse"
+      "ElevenLabs",
+      "Voice cloning",
+      "Streaming STT",
+      "LLM function calling",
+      "Turn detection",
+      "WebSocket audio",
+      "Per-turn tracing"
     ],
-    "overview": "An internal assistant that answers questions from approved company knowledge, always cites its sources, and refuses when the evidence is not there.",
-    "context": "Knowledge lived in SharePoint, a legacy wiki, shared drives and two line-of-business systems. New staff took weeks to become productive and policy answers varied by who you asked. Leadership wanted AI, but compliance would not accept answers without provenance or that leaked documents across departments.",
+    "overview": "A real-time voice agent for customer service: it listens with streaming speech recognition, reasons and acts through tool calls, and speaks with ElevenLabs streaming text-to-speech in a cloned brand voice, all inside an explicit latency budget.",
+    "context": "Built for a customer-service setting where callers expect to be understood the first time and to hear a reply without awkward silence. In voice, latency is part of correctness: a reply that takes noticeably longer than a second feels broken, and an agent that ignores an interruption feels worse. The agent is designed to act on customer accounts, which requires identity checks and hard limits on what the model is allowed to do.",
     "requirements": [
-      "Every answer cites the documents it used",
-      "Respect existing document-level permissions",
-      "p95 latency under 3 seconds",
-      "Data stays inside the organization's cloud tenancy",
-      "Measurable quality before rollout"
+      "Voice-to-voice response inside a sub-second latency budget",
+      "Account actions only after the caller's identity is verified",
+      "Callers can interrupt the agent at any point (barge-in)",
+      "A consistent brand voice, cloned only with the speaker's consent and usage rights",
+      "Handoff to a human agent with a written call summary",
+      "Every turn, tool call and policy decision logged for review"
     ],
     "arch": [
-      "Connectors",
-      "Chunk + embed",
-      "Hybrid index",
-      "Re-ranker",
-      "LLM",
-      "Guardrails",
-      "Cited answer"
+      "Audio stream",
+      "Streaming ASR",
+      "Turn detection",
+      "LLM agent",
+      "Tool layer",
+      "ElevenLabs TTS",
+      "Human handoff"
     ],
-    "implementation": "Connectors sync documents nightly and on change events. Documents are chunked by structure (headings, tables, clauses) rather than fixed size, embedded, and stored in PostgreSQL with pgvector next to a BM25 index. Queries run hybrid retrieval, a cross-encoder re-ranks the top 40 to 8, and permission filters are applied before anything reaches the model. Responses stream with inline citations that open the source passage.",
+    "implementation": "Call audio is streamed in small frames to a streaming speech-to-text model, which returns partial transcripts while the caller is still speaking. A turn detector combines silence timing with the partial transcript to decide when the caller has finished, instead of waiting on a fixed silence timeout. The completed turn, the conversation history and a set of JSON function schemas (for example: verify identity, look up account, check order status, reschedule, open ticket, transfer to human) go to the LLM. The model proposes tool calls; a policy layer in code validates the arguments, confirms identity has been verified before any account action, and then executes or rejects the call. The reply is streamed sentence by sentence to ElevenLabs streaming text-to-speech in a cloned brand voice, so playback starts before the full response is written. If the caller speaks during playback, audio stops, the unspoken text is dropped from the history and the agent listens again. When a request is out of scope or the caller asks for a person, the call is transferred with a structured summary.",
     "challenges": [
-      "Tables in PDFs lost meaning when chunked naively; a layout-aware parser fixed most failures",
-      "Permission filtering after retrieval returned empty context too often; filters moved into the query itself",
-      "Users asked follow-ups that only made sense with history; a query-rewriting step resolved them"
+      "Latency compounds across stages, so each one gets its own budget (about 200 ms endpointing, 100 ms ASR finalisation, 300 ms LLM first token, 200 ms TTS first audio, 100 ms transport) and the total has to stay under a second",
+      "Callers pause mid-sentence: a short silence threshold cuts them off and a long one adds dead air, so end-of-turn detection uses the transcript as well as silence",
+      "Tool calls add round trips mid-turn; a short spoken acknowledgement covers slow lookups so the line does not go silent",
+      "Barge-in has to cancel TTS playback and pending LLM output together, and keep the history consistent with what the caller actually heard"
     ],
     "decisions": [
       {
-        "title": "pgvector instead of a dedicated vector database",
-        "body": "The team already ran PostgreSQL. One datastore for metadata, permissions and vectors kept operations simple.",
-        "tradeoff": "Slightly lower recall at very large scale; acceptable below ~10M chunks."
+        "title": "The model proposes, code decides",
+        "body": "The LLM chooses tools and fills their arguments, but a deterministic policy layer enforces identity verification, argument validation and action limits before anything runs.",
+        "tradeoff": "More code per tool, in exchange for account actions that no prompt can talk the agent into."
       },
       {
-        "title": "Open-weight model served with vLLM",
-        "body": "Data residency ruled out sending documents to an external API.",
-        "tradeoff": "GPU cost and on-call ownership in exchange for control."
+        "title": "Stream every stage",
+        "body": "Speech recognition, the LLM and ElevenLabs text-to-speech all stream, so each stage starts on partial input from the previous one instead of waiting for it to finish.",
+        "tradeoff": "More complex state handling (partial transcripts, cancellation) for a much shorter time to first audio."
       },
       {
-        "title": "Refuse instead of guess",
-        "body": "When retrieval confidence was low the assistant says so and links the closest documents.",
-        "tradeoff": "Lower answer rate, much higher trust."
+        "title": "Cloned brand voice with documented consent",
+        "body": "ElevenLabs voice cloning gives callers the same voice on every call. The voice is cloned only from a speaker who has given consent and agreed the usage rights.",
+        "tradeoff": "A consent and rights process before launch, and a dependency on one TTS provider for the voice."
       }
     ],
-    "evaluation": "A 420-question test set was written with subject-matter experts and covered lookups, multi-hop questions, permission edge cases and questions that should be refused. Faithfulness, answer relevance and citation precision were tracked per release, and a regression gate in CI blocked any change that lowered faithfulness.",
+    "evaluation": "Quality is measured in three layers. Components: word error rate for speech recognition on recorded test calls that include accents and background noise, and per-stage latency (p50 and p95) logged on every turn against the budget. Agent behaviour: a scripted scenario set covering routine requests, failed identity checks, ambiguous requests, interruptions and out-of-scope asks is replayed against the agent, checking that the right tool is called with valid arguments, that no account action runs without verification, and that handoff triggers when it should. Conversation quality: sampled calls are scored by reviewers for task completion, naturalness and the usefulness of handoff summaries.",
     "results": [
       {
-        "label": "faithfulness",
-        "value": "0.93"
+        "label": "voice-to-voice latency target",
+        "value": "< 1 s"
       },
       {
-        "label": "p95 latency",
-        "value": "1.8s"
-      },
-      {
-        "label": "time to answer",
-        "value": "-68%"
-      },
-      {
-        "label": "permission leaks in tests",
+        "label": "unverified account actions (target)",
         "value": "0"
-      }
-    ],
-    "lessons": [
-      "Retrieval quality decides answer quality; most gains came from parsing and re-ranking, not the model",
-      "An evaluation set agreed with the business is the fastest way to end opinion-driven debates",
-      "Refusals build trust when they still point people somewhere useful"
-    ],
-    "resources": [
-      "Architecture notes",
-      "Evaluation dataset schema",
-      "Related article"
-    ],
-    "featured": true,
-    "sortOrder": 1
-  },
-  {
-    "slug": "contract-intelligence-pipeline",
-    "title": "Contract Intelligence Pipeline",
-    "category": "Enterprise AI · Document AI",
-    "cat": "enterprise",
-    "art": "doc",
-    "year": "2025",
-    "problem": "Legal reviewed every supplier contract by hand to find renewal dates, liability caps and non-standard clauses.",
-    "outcome": "Structured extraction with confidence scores and a reviewer queue for anything uncertain.",
-    "metric": {
-      "label": "review throughput",
-      "value": "4×"
-    },
-    "tech": [
-      "Python",
-      "Layout parsing",
-      "Structured outputs",
-      "Celery",
-      "PostgreSQL",
-      "React"
-    ],
-    "overview": "A pipeline that turns contracts into structured, reviewable data and flags clauses that deviate from the standard playbook.",
-    "context": "Hundreds of contracts a month, inconsistent templates and scanned documents. Missed renewal dates were costing money and the legal team had no time for proactive work.",
-    "requirements": [
-      "Field-level confidence on every extraction",
-      "Human review for low-confidence fields",
-      "Clause comparison against the company playbook",
-      "Full audit trail"
-    ],
-    "arch": [
-      "Upload",
-      "OCR + layout",
-      "Classifier",
-      "Extractor",
-      "Validator",
-      "Review queue",
-      "Contract DB"
-    ],
-    "implementation": "Documents go through OCR and layout analysis, are classified by contract type, then extracted with schema-constrained outputs. Deterministic validators check dates, currencies and cross-field consistency. Anything below the confidence threshold goes to a review queue where a lawyer confirms or corrects the value, and each correction is stored as evaluation data.",
-    "challenges": [
-      "Scanned contracts with stamps and signatures over text",
-      "Clauses split across pages",
-      "Calibrating confidence so the review queue stayed small but safe"
-    ],
-    "decisions": [
-      {
-        "title": "Schema-constrained extraction",
-        "body": "Strict JSON schemas made outputs predictable and easy to validate.",
-        "tradeoff": "Less flexibility for unusual contract types."
       },
       {
-        "title": "Human review as a feature",
-        "body": "Reviewers handle uncertainty and their corrections feed evaluation.",
-        "tradeoff": "Not fully automated, by design."
-      }
-    ],
-    "evaluation": "Field-level precision and recall on 300 labelled contracts, measured per contract type, plus review-queue rate and time-to-review.",
-    "results": [
-      {
-        "label": "field precision",
-        "value": "0.96"
+        "label": "barge-in stop target",
+        "value": "< 200 ms"
       },
       {
-        "label": "throughput",
-        "value": "4×"
-      },
-      {
-        "label": "sent to review",
-        "value": "14%"
-      },
-      {
-        "label": "audit coverage",
+        "label": "handoffs with a call summary (target)",
         "value": "100%"
       }
     ],
     "lessons": [
-      "Confidence calibration matters more than raw accuracy",
-      "Reviewer corrections are the best evaluation data you will get"
+      "In voice, latency is a product requirement; it has to be budgeted per stage from the start, not optimised at the end",
+      "Turn detection shapes how a conversation feels as much as the choice of model does",
+      "Keeping authority in code rather than in the prompt is what makes a tool-calling agent testable"
     ],
-    "resources": [
-      "Pipeline diagram",
-      "Extraction schema example"
+    "resources": [],
+    "body": "## Architecture\n\n[[diagram:voice-architecture]]",
+    "featured": true,
+    "sortOrder": 1
+  },
+  {
+    "slug": "document-intelligence-retrieval",
+    "title": "Document Intelligence & Retrieval",
+    "category": "RAG · Document AI",
+    "cat": "rag",
+    "art": "doc",
+    "year": "2026",
+    "problem": "Organisations keep critical knowledge in PDFs, scans, tables and long reports. Keyword search misses questions phrased differently from the source, and generic chatbots answer confidently without showing where an answer came from.",
+    "outcome": "Turns mixed-format documents into structured, searchable passages and answers questions with citations to the exact source, declining when the evidence is weak.",
+    "metric": {
+      "label": "recall@10 target",
+      "value": "≥ 0.9"
+    },
+    "tech": [
+      "Python",
+      "OCR + layout parsing",
+      "Structure-aware chunking",
+      "Dense embeddings",
+      "BM25",
+      "Reciprocal rank fusion",
+      "Cross-encoder re-ranking",
+      "Citation checks",
+      "Retrieval evaluation"
     ],
+    "overview": "A document intelligence and retrieval system: it turns unstructured documents into clean passages with metadata, retrieves them with hybrid search and re-ranking, and generates answers that cite their sources.",
+    "context": "Built for an organisation whose documents arrive in mixed quality: native PDFs, scanned pages, tables and multi-column layouts. Answers drawn from those documents have to be checkable, because a wrong figure or clause quoted with confidence costs more than no answer. The quality of the final answer depends on what reaches the model, so the work centres on parsing and retrieval.",
+    "requirements": [
+      "Handle native PDFs, scanned pages, tables and multi-column layouts",
+      "Preserve document structure (sections, tables, page numbers) through chunking",
+      "Every answer cites the passages and pages it used",
+      "Match both paraphrased questions and exact terms such as codes, names and clause numbers",
+      "Decline to answer when retrieved evidence is weak",
+      "Retrieval and answer quality measured on a fixed test set"
+    ],
+    "arch": [
+      "Ingestion",
+      "OCR + layout",
+      "Chunk + metadata",
+      "Embed + index",
+      "Hybrid retrieval",
+      "Re-ranker",
+      "Cited answer"
+    ],
+    "implementation": "Documents enter through an ingestion step that records source, version and a content hash, so unchanged files are not reprocessed. Native PDFs are parsed directly; scanned pages go through OCR, and a layout parser reconstructs reading order, headings, tables and multi-column text. Chunking follows that structure: sections and tables stay intact, long sections are split at paragraph boundaries with a small overlap, and each chunk carries its heading path, page numbers and extracted metadata such as document type, title and date. Chunks are embedded with an embedding model and stored in a vector store alongside a keyword (BM25) index. At query time both indexes are searched, the result lists are merged with reciprocal rank fusion, and a cross-encoder re-ranker scores the top candidates against the question. The highest-scoring passages go to the LLM with instructions to answer only from them and cite each claim. If the re-ranker scores fall below a threshold, the system returns the closest passages and states that it found no supported answer.",
+    "challenges": [
+      "Tables and multi-column pages lose their meaning when text is extracted in raw order; layout parsing restores reading order before chunking",
+      "OCR errors on low-quality scans hurt keyword matching; dense retrieval compensates, and low-confidence pages are flagged",
+      "Fixed-size chunks split clauses and tables mid-way; structure-aware chunking keeps units of meaning together",
+      "The refusal threshold trades answer rate against unsupported answers and has to be tuned on the evaluation set"
+    ],
+    "decisions": [
+      {
+        "title": "Hybrid retrieval instead of dense-only",
+        "body": "Dense embeddings handle paraphrase; keyword search catches exact identifiers that embeddings tend to blur. Fusing both covers each method's blind spots.",
+        "tradeoff": "Two indexes to build and keep in sync."
+      },
+      {
+        "title": "Re-rank a wide candidate set",
+        "body": "First-stage retrieval casts a wide net; a cross-encoder reads each candidate together with the question and keeps only the best few for the prompt.",
+        "tradeoff": "Re-ranking latency on every query, in exchange for more relevant context and shorter prompts."
+      },
+      {
+        "title": "Refuse instead of guess",
+        "body": "When evidence is weak, the system says so and links the closest passages instead of generating an answer.",
+        "tradeoff": "A lower answer rate, in exchange for answers users can verify."
+      }
+    ],
+    "evaluation": "Evaluation separates retrieval from generation. A test set of questions is written from the documents themselves, each labelled with the passages that answer it, and includes paraphrased questions, exact-term lookups, table questions, multi-part questions and questions with no answer in the corpus. Retrieval is scored with recall@k and mean reciprocal rank; generation with faithfulness (every claim supported by a cited passage), citation precision and correct refusal on unanswerable questions. Parsing quality is spot-checked against source pages, with a focus on tables and scans. The same set is rerun after any change to parsing, chunking, retrieval or prompts.",
+    "results": [
+      {
+        "label": "recall@10 target",
+        "value": "≥ 0.9"
+      },
+      {
+        "label": "faithfulness target",
+        "value": "≥ 0.9"
+      },
+      {
+        "label": "answers with citations (target)",
+        "value": "100%"
+      },
+      {
+        "label": "p95 answer latency target",
+        "value": "< 3 s"
+      }
+    ],
+    "lessons": [
+      "Most retrieval failures start in parsing; fixing extraction does more than changing the model",
+      "Keyword search stays essential next to embeddings for identifiers and exact terms",
+      "Scoring retrieval separately from generation shows which stage to fix"
+    ],
+    "resources": [],
+    "body": "## Architecture\n\n[[diagram:doc-ingestion]]\n\n[[diagram:doc-query]]",
     "featured": true,
     "sortOrder": 2
   },
   {
-    "slug": "voice-agent-customer-support",
-    "title": "Voice Agent for Customer Support",
-    "category": "Voice AI",
-    "cat": "voice",
-    "art": "voice",
-    "year": "2025",
-    "problem": "Call queues peaked at 20+ minutes for routine requests such as balance checks and appointment changes.",
-    "outcome": "A phone agent that resolves routine calls end to end and hands off to a human with full context.",
-    "metric": {
-      "label": "median response",
-      "value": "780ms"
-    },
-    "tech": [
-      "Streaming ASR",
-      "TTS",
-      "WebRTC",
-      "SIP",
-      "Function calling",
-      "Redis"
-    ],
-    "overview": "A real-time voice agent that handles routine support calls, supports interruption, and escalates cleanly.",
-    "context": "Most calls were repetitive, but customers hated rigid IVR menus. The business needed natural conversation without risking wrong actions on accounts.",
-    "requirements": [
-      "Median response under one second",
-      "Barge-in (customer can interrupt)",
-      "Verified identity before any account action",
-      "Warm transfer with a summary"
-    ],
-    "arch": [
-      "Telephony",
-      "Streaming ASR",
-      "Turn detection",
-      "LLM + tools",
-      "Policy check",
-      "Streaming TTS",
-      "Caller"
-    ],
-    "implementation": "Audio streams through ASR with partial transcripts. A turn detector decides when the caller has finished. The model plans a reply and calls tools such as account lookup or rescheduling, which pass through a policy layer. TTS streams the first sentence while the rest is generated, and if the caller speaks, playback stops immediately.",
-    "challenges": [
-      "Latency stacked up across five services",
-      "Turn detection on noisy lines",
-      "Numbers and names misheard by ASR"
-    ],
-    "decisions": [
-      {
-        "title": "Stream everything",
-        "body": "Every stage streams, so the first audio plays before the full response exists.",
-        "tradeoff": "More complex orchestration and error handling."
-      },
-      {
-        "title": "Tool calls behind a policy layer",
-        "body": "The model proposes, deterministic code decides.",
-        "tradeoff": "Some flexibility lost for safety."
-      }
-    ],
-    "evaluation": "Latency budget per stage, task completion on scripted test calls, and blind human ratings of naturalness.",
-    "results": [
-      {
-        "label": "median response",
-        "value": "780ms"
-      },
-      {
-        "label": "calls fully resolved",
-        "value": "61%"
-      },
-      {
-        "label": "caller rating",
-        "value": "4.4/5"
-      },
-      {
-        "label": "wrong-action rate",
-        "value": "<2%"
-      }
-    ],
-    "lessons": [
-      "Latency is a product feature in voice",
-      "Design the handoff first; it builds trust"
-    ],
-    "resources": [
-      "Latency budget sheet",
-      "Call flow diagram"
-    ],
-    "featured": true,
-    "sortOrder": 3
-  },
-  {
-    "slug": "private-llm-inference-platform",
-    "title": "Private LLM Inference Platform",
-    "category": "Open-Weight LLMs · Infrastructure",
+    "slug": "local-rag-private-llm",
+    "title": "Local RAG on Private Infrastructure",
+    "category": "Private LLM · RAG",
     "cat": "infra",
     "art": "infra",
     "year": "2026",
-    "problem": "Several teams were calling external LLM APIs with sensitive data and unpredictable monthly costs.",
-    "outcome": "A shared, OpenAI-compatible inference platform for open-weight models on the organization's own GPUs.",
+    "problem": "Organisations with regulatory restrictions or strict data-handling rules cannot send documents or prompts to external AI APIs, yet still need assistants that answer from their own data.",
+    "outcome": "A self-hosted RAG stack (an open-weight LLM served with vLLM, local embeddings and retrieval, guardrails and an evaluation pipeline) that runs entirely inside a controlled environment.",
     "metric": {
-      "label": "cost per 1M tokens",
-      "value": "-57%"
+      "label": "data leaving the environment (target)",
+      "value": "0"
     },
     "tech": [
-      "vLLM",
-      "Kubernetes",
-      "AWQ",
-      "Prometheus",
-      "Grafana",
-      "LiteLLM"
-    ],
-    "overview": "Self-hosted serving for open-weight models with routing, quotas, observability and cost reporting per team.",
-    "context": "Usage was growing fast, API spend was unpredictable, and data governance needed models that ran inside the organization's boundary.",
-    "requirements": [
-      "OpenAI-compatible API for easy migration",
-      "Per-team keys, quotas and cost reports",
-      "Autoscaling on GPU nodes",
-      "Model rollouts without downtime"
-    ],
-    "arch": [
-      "Clients",
-      "API gateway",
-      "Router",
-      "vLLM pool",
-      "GPU nodes",
-      "Metrics",
-      "Cost reports"
-    ],
-    "implementation": "Models are served with vLLM on Kubernetes GPU node pools. A gateway handles auth, quotas and routing between model sizes. Quantized variants serve high-volume, low-complexity traffic. Prometheus collects tokens, latency and GPU utilisation, and Grafana dashboards show cost per team.",
-    "challenges": [
-      "Cold starts when scaling large models",
-      "Balancing throughput against latency with batching",
-      "Choosing quantization without hurting quality"
-    ],
-    "decisions": [
-      {
-        "title": "AWQ INT4 for the high-volume tier",
-        "body": "Benchmarks showed minimal quality loss for classification and extraction tasks.",
-        "tradeoff": "Kept FP16 for complex reasoning traffic."
-      },
-      {
-        "title": "OpenAI-compatible API",
-        "body": "Teams migrated by changing a base URL.",
-        "tradeoff": "Tied to that API shape."
-      }
-    ],
-    "evaluation": "Throughput and latency under load tests, task-level quality comparisons against the previous API, and monthly cost per million tokens.",
-    "results": [
-      {
-        "label": "cost / 1M tokens",
-        "value": "-57%"
-      },
-      {
-        "label": "throughput",
-        "value": "2.6×"
-      },
-      {
-        "label": "availability",
-        "value": "99.9%"
-      },
-      {
-        "label": "teams migrated",
-        "value": "6"
-      }
-    ],
-    "lessons": [
-      "Measure quality per task before choosing quantization",
-      "Cost visibility changes behaviour more than quotas"
-    ],
-    "resources": [
-      "Helm chart notes",
-      "Benchmark results (AI Lab)"
-    ],
-    "featured": true,
-    "sortOrder": 4
-  },
-  {
-    "slug": "agentic-operations-copilot",
-    "title": "Agentic Operations Copilot",
-    "category": "Agentic Systems",
-    "cat": "agents",
-    "art": "agent",
-    "year": "2026",
-    "problem": "Operations staff copied data between four internal systems to complete routine requests.",
-    "outcome": "An agent that drafts and executes multi-step workflows, with approval before any irreversible action.",
-    "metric": {
-      "label": "handling time",
-      "value": "-41%"
-    },
-    "tech": [
-      "Tool calling",
-      "State machine",
-      "Temporal",
       "Python",
-      "Audit log"
+      "vLLM",
+      "Open-weight LLM",
+      "GPU VM",
+      "Local embeddings",
+      "Vector store",
+      "Guardrails",
+      "RAG evaluation"
     ],
-    "overview": "A copilot that plans multi-step tasks across internal systems and asks a human before anything is changed.",
-    "context": "Routine but multi-system tasks took most of the team's day. Full automation was not acceptable to the business.",
+    "overview": "A retrieval-augmented generation system built end to end on private infrastructure: from provisioning a GPU virtual machine, through serving an open-weight model with vLLM, to retrieval, guardrails and an evaluation pipeline. Prompts, documents and outputs stay inside the environment.",
+    "context": "Built for an enterprise setting with data concerns and regulatory restrictions, where data-residency and confidentiality requirements rule out hosted model APIs. The goal was an LLM assistant over internal documents with full control over where data is stored, processed and logged. That moves the work from calling an API to owning the whole stack: hardware, model serving, retrieval, safety and quality measurement.",
     "requirements": [
-      "Every write action approved by a person",
-      "Full audit trail of plans and tool calls",
-      "Recoverable on failure",
-      "Scoped permissions per tool"
+      "All inference, embedding and retrieval run inside the controlled environment",
+      "An OpenAI-compatible API so applications are not tied to one model",
+      "Model sized to fit the available GPU memory with room for long contexts",
+      "Input and output guardrails, including PII detection and grounding checks",
+      "Answers grounded in retrieved internal documents, with citations",
+      "Repeatable evaluation before any model, prompt or retrieval change ships"
     ],
     "arch": [
-      "Request",
-      "Planner",
-      "Tool registry",
-      "Approval step",
-      "Executor",
-      "Audit log",
-      "Result"
+      "GPU VM",
+      "vLLM server",
+      "Open-weight LLM",
+      "Embeddings + retrieval",
+      "Guardrails",
+      "Evaluation"
     ],
-    "implementation": "The planner produces an explicit plan as structured steps. Read-only tools run directly, while write tools pause for approval. Execution runs as a durable workflow so failures can resume, and every step is logged.",
+    "implementation": "The work started with infrastructure: a GPU virtual machine provisioned inside the controlled environment, with GPU drivers installed and outbound network access restricted. vLLM was then deployed on it as an OpenAI-compatible server, which provides continuous batching and efficient KV-cache memory management while letting applications use a standard client. Next, an open-weight model was loaded, chosen against the GPU memory available: model size, quantization level and maximum context length all compete for the same VRAM, so they were sized together. The retrieval pipeline came after that: internal documents are parsed and chunked, embedded with a locally hosted embedding model and stored in a vector store on the same network; each query retrieves the most relevant chunks, which are passed to the model with instructions to answer only from them and cite them. Guardrails wrap the model on both sides: input checks for personal data and prompt injection, output checks for leaked personal data and for grounding against the retrieved passages. Finally, an evaluation pipeline runs a fixed question set through the full system and scores retrieval and answer quality, so changes are measured rather than judged by impression.",
     "challenges": [
-      "Plans that looped or over-reached",
-      "Tool errors mid-workflow",
-      "Keeping approval friction low"
+      "GPU memory is the binding constraint: weights, KV cache and concurrent requests share it, so a larger model or longer context means fewer simultaneous requests",
+      "Quantization reduces memory and cost but can degrade answers, so its effect has to be checked on the evaluation set rather than assumed",
+      "With no external services, every component (embeddings, safety checks, evaluation) also has to run locally within the same hardware budget",
+      "Guardrails add latency to every request and must be tuned to block real issues without rejecting legitimate questions"
     ],
     "decisions": [
       {
-        "title": "Explicit plans, not free-running loops",
-        "body": "Plans are visible, reviewable and testable.",
-        "tradeoff": "Less autonomy, more predictability."
+        "title": "vLLM as the inference engine",
+        "body": "vLLM serves open-weight models behind an OpenAI-compatible API with continuous batching and paged KV-cache management, which keeps throughput per GPU high and lets applications switch models by configuration.",
+        "tradeoff": "Ownership of GPU operations, upgrades and monitoring that a hosted API would otherwise cover."
       },
       {
-        "title": "Durable workflows",
-        "body": "Long tasks survive restarts and failures.",
-        "tradeoff": "An extra moving part to operate."
+        "title": "Size the model to the hardware",
+        "body": "Model size, quantization and context length were chosen together against the available VRAM, leaving headroom for the KV cache under concurrent load.",
+        "tradeoff": "A smaller or quantized model rather than the largest available, in exchange for stable latency and concurrency."
+      },
+      {
+        "title": "Evaluation as a release gate",
+        "body": "The evaluation pipeline runs on every change to the model, prompts or retrieval, and results are compared with the previous run before a change is promoted.",
+        "tradeoff": "Building and maintaining a test set up front, before user-facing features."
       }
     ],
-    "evaluation": "Scenario test suite of 150 tasks scored for plan correctness, tool-call accuracy and safe failure.",
+    "evaluation": "The evaluation pipeline runs inside the same environment, so test data never leaves it either. A question set built from internal documents covers direct lookups, multi-document questions, questions with no answer in the corpus, and adversarial inputs such as prompt-injection attempts and requests for personal data. Retrieval is scored with recall@k against labelled source passages; answers are scored for faithfulness to the retrieved context, answer relevance and correct refusal; guardrails are scored on how often they block what they should and how often they wrongly block legitimate questions. Serving is measured separately: time to first token, tokens per second and p95 latency under concurrent load on the provisioned GPU.",
     "results": [
       {
-        "label": "handling time",
-        "value": "-41%"
-      },
-      {
-        "label": "plan correctness",
-        "value": "92%"
-      },
-      {
-        "label": "unapproved writes",
+        "label": "data leaving the environment (target)",
         "value": "0"
       },
       {
-        "label": "test scenarios",
-        "value": "150"
+        "label": "faithfulness target",
+        "value": "≥ 0.9"
+      },
+      {
+        "label": "p95 time-to-first-token target",
+        "value": "< 1 s"
+      },
+      {
+        "label": "PII in outputs (target)",
+        "value": "0"
       }
     ],
     "lessons": [
-      "Agents need boundaries more than intelligence",
-      "Approval UX decides adoption"
+      "Most local-LLM constraints trace back to GPU memory, so sizing belongs at the start, not after the model is chosen",
+      "An OpenAI-compatible serving layer keeps the rest of the stack independent of any one model",
+      "In a regulated setting, the evaluation pipeline doubles as evidence that the system behaves as intended"
     ],
-    "resources": [
-      "Agent design notes"
-    ],
-    "featured": false,
-    "sortOrder": 5
+    "resources": [],
+    "body": "## Architecture\n\n[[diagram:local-request-flow]]",
+    "featured": true,
+    "sortOrder": 3
   }
 ];
 
@@ -903,25 +751,29 @@ export const POSTS: Post[] = [
 export const KNOWLEDGE: KnowledgeEntry[] = [
   {
     "key": "what-build",
-    "title": "What I Build",
-    "keywords": "build builds systems kind what does do areas expertise capabilities specialise specialize",
-    "answer": "Wesley designs and builds production AI systems in six areas:\n\n- AI strategy & architecture\n- Enterprise AI applications (assistants, copilots, document AI)\n- RAG and agentic systems\n- AI evaluation & benchmarking\n- Voice AI agents\n- Open-weight LLM deployment and AI infrastructure\n\nThe common thread is taking AI from prototype to something people can depend on.",
+    "title": "AI Engineering",
+    "keywords": "build builds systems kind what does do areas expertise capabilities specialise specialize focus",
+    "answer": "Wesley is an early-career AI engineer. He works hands-on in four areas:\n\n- AI agents and RAG, including evaluation harnesses\n- Open-weight LLMs deployed locally\n- Inference engines such as vLLM and Ollama\n- AI strategy, cost and consulting: where AI is worth it, hosted APIs or self-hosted models, and predictable inference costs\n\nThe Work page shows three systems he built.",
     "sources": [
       {
-        "label": "What I Build",
+        "label": "AI Engineering",
         "url": "/"
+      },
+      {
+        "label": "Work",
+        "url": "/work"
       }
     ]
   },
   {
     "key": "rag",
-    "title": "Enterprise Knowledge Assistant",
-    "keywords": "work rag retrieval augmented generation knowledge search documents vector embeddings chunk rerank re-rank hybrid bm25",
-    "answer": "RAG is one of Wesley's core areas. The Enterprise Knowledge Assistant case study shows a permission-aware assistant with hybrid retrieval, re-ranking and cited answers.",
+    "title": "Document Intelligence & Retrieval",
+    "keywords": "work rag retrieval augmented generation knowledge search documents document intelligence ocr parsing vector embeddings chunk rerank re-rank hybrid citations",
+    "answer": "RAG is one of Wesley's core areas. The Document Intelligence & Retrieval case study walks through parsing and OCR, structure-aware chunking, hybrid retrieval, re-ranking and answers that cite their sources.",
     "sources": [
       {
-        "label": "Enterprise Knowledge Assistant",
-        "url": "/work/enterprise-knowledge-assistant"
+        "label": "Document Intelligence & Retrieval",
+        "url": "/work/document-intelligence-retrieval"
       },
       {
         "label": "Building RAG that works",
@@ -931,17 +783,17 @@ export const KNOWLEDGE: KnowledgeEntry[] = [
   },
   {
     "key": "evaluate",
-    "title": "AI Evaluation service",
-    "keywords": "work evaluate evaluation eval benchmark test testing quality measure metrics audit assess our system help hallucination",
-    "answer": "Yes. AI evaluation is one of the services Wesley offers. A typical evaluation sprint covers:\n\n- A test set agreed with your domain experts\n- Quality metrics such as faithfulness and answer relevance\n- Latency, cost and safety checks\n- A prioritized list of fixes and a regression gate for CI\n\nIt usually takes two to three weeks. A short email describing the problem is the best place to start.",
+    "title": "Evaluation",
+    "keywords": "evaluate evaluation eval evals benchmark test testing quality measure metrics assess harness harnesses hallucination",
+    "answer": "Evaluation is part of Wesley's agents and RAG work: he builds evaluation harnesses that check whether a system actually answers well, rather than trusting a demo. The Local RAG on Private Infrastructure case study includes an evaluation pipeline.\n\nIf you want to talk about evaluating your own system, email Wesley.",
     "sources": [
       {
-        "label": "Contact",
-        "url": "/contact"
+        "label": "Local RAG on Private Infrastructure",
+        "url": "/work/local-rag-private-llm"
       },
       {
-        "label": "Evaluating LLM applications",
-        "url": "/blogs/evaluating-llm-applications"
+        "label": "Contact",
+        "url": "/#contact"
       }
     ]
   },
@@ -963,57 +815,57 @@ export const KNOWLEDGE: KnowledgeEntry[] = [
   },
   {
     "key": "infra",
-    "title": "Private LLM Inference Platform",
-    "keywords": "work open weight open-weight llm deploy deployment self host self-host hosting vllm gpu infrastructure quantization private on-prem premise kubernetes inference serving",
-    "answer": "Wesley deploys open-weight models on infrastructure the client controls, using tools such as vLLM, Kubernetes and quantization.\n\nThe Private LLM Inference Platform case study covers routing, quotas, observability and cost reporting.",
+    "title": "Local RAG on Private Infrastructure",
+    "keywords": "work open weight open-weight llm local deploy deployment self host self-host hosting vllm gpu vm infrastructure quantization private on-prem premise inference serving regulated regulation data residency guardrails",
+    "answer": "Wesley has built a local RAG stack on infrastructure the organisation controls. The Local RAG on Private Infrastructure case study goes from provisioning a GPU VM and serving a model with vLLM to the retrieval pipeline, guardrails and an evaluation pipeline, for organisations whose data cannot leave their environment.",
     "sources": [
       {
-        "label": "Private LLM Inference Platform",
-        "url": "/work/private-llm-inference-platform"
+        "label": "Local RAG on Private Infrastructure",
+        "url": "/work/local-rag-private-llm"
       }
     ]
   },
   {
     "key": "voice",
-    "title": "Voice Agent case study",
-    "keywords": "work voice speech phone call calls telephony asr tts audio conversational agent latency",
-    "answer": "Wesley builds real-time voice agents with streaming speech recognition, natural turn-taking, interruption support and clean human handoff.\n\nSee the Voice Agent case study.",
+    "title": "Voice Agent for Customer Service",
+    "keywords": "work voice speech phone call calls telephony asr tts audio conversational agent latency elevenlabs cloning clone",
+    "answer": "Wesley has built a real-time voice agent for customer service. The case study covers speech recognition, turn-taking and interruptions, tool calling, ElevenLabs speech and voice cloning, and the latency budget behind a natural conversation.",
     "sources": [
       {
-        "label": "Voice Agent case study",
-        "url": "/work/voice-agent-customer-support"
+        "label": "Voice Agent for Customer Service",
+        "url": "/work/voice-agent-customer-service"
       }
     ]
   },
   {
     "key": "agents",
-    "title": "Agentic Operations Copilot",
-    "keywords": "work agent agents agentic autonomous workflow workflows tools tool calling automation copilot",
-    "answer": "Wesley designs agentic systems with explicit plans, scoped tools and human approval before irreversible actions.\n\nThe Agentic Operations Copilot case study shows the approach: plans that are visible and testable, durable workflows and a full audit trail.",
+    "title": "Agents and tool calling",
+    "keywords": "work agent agents agentic autonomous workflow workflows tools tool calling function calling automation harness openclaw safe safety",
+    "answer": "Wesley builds agents that call tools with the model proposing and code deciding: typed tool schemas, checks before any account action, and a clean handoff to a person. The Voice Agent for Customer Service case study shows how this works in a voice conversation.",
     "sources": [
       {
-        "label": "Agentic Operations Copilot",
-        "url": "/work/agentic-operations-copilot"
+        "label": "Voice Agent for Customer Service",
+        "url": "/work/voice-agent-customer-service"
       }
     ]
   },
   {
     "key": "engage",
-    "title": "Working together",
-    "keywords": "hire engage engagement work with consult consulting price pricing cost rate process start how long project proposal",
-    "answer": "Engagements follow seven steps: Discover, Assess, Design, Build, Evaluate, Deploy and Optimize.\n\nFormats range from 2–4 week advisory work and evaluation sprints to 6–16 week builds and workshops. Pricing is fixed-scope for advisory work and milestone-based for builds, confirmed in a written proposal.",
+    "title": "Strategy, cost & consulting",
+    "keywords": "hire engage engagement work with consult consulting consultant advice advisory strategy cost costs price pricing rate start project help",
+    "answer": "Yes. Besides building systems, Wesley helps teams decide where AI is worth it, choose between hosted APIs and self-hosted models, and keep inference costs predictable.\n\nScope depends on the problem, so the best start is a short email describing what you're trying to solve.",
     "sources": [
       {
         "label": "Contact",
-        "url": "/contact"
+        "url": "/#contact"
       }
     ]
   },
   {
     "key": "portfolio",
     "title": "Selected work",
-    "keywords": "work projects project case studies study portfolio examples shipped built delivered past previous",
-    "answer": "Wesley's case studies cover:\n\n- Enterprise Knowledge Assistant (RAG)\n- Contract Intelligence Pipeline (document AI)\n- Voice Agent for Customer Support\n- Private LLM Inference Platform (open-weight models)\n- Agentic Operations Copilot\n\nEach one covers the problem, architecture, decisions and tradeoffs, evaluation and results.",
+    "keywords": "work projects project case studies portfolio examples built past previous",
+    "answer": "Wesley's case studies cover:\n\n- Voice Agent for Customer Service (tool calling, ElevenLabs)\n- Document Intelligence & Retrieval (RAG)\n- Local RAG on Private Infrastructure (vLLM, guardrails, evaluation)\n\nEach one covers the problem, its context, the architecture and the lessons learned.",
     "sources": [
       {
         "label": "Selected work",
@@ -1024,36 +876,24 @@ export const KNOWLEDGE: KnowledgeEntry[] = [
   {
     "key": "contact",
     "title": "Contact",
-    "keywords": "contact email reach talk call meeting available availability book touch",
-    "answer": "The best way to reach Wesley is email: write to nyamosiwesley02@gmail.com describing the problem you're trying to solve, and he usually replies within two working days.\n\nYou can also connect on LinkedIn.",
+    "keywords": "contact email reach talk call meeting available availability book touch linkedin",
+    "answer": "Email is the best way to reach Wesley: write to nyamosiwesley02@gmail.com describing the problem you're trying to solve.\n\nYou can also connect with him on LinkedIn.",
     "sources": [
       {
         "label": "Contact",
-        "url": "/contact"
+        "url": "/#contact"
       }
     ]
   },
   {
     "key": "stack",
-    "title": "Selected work",
-    "keywords": "stack technologies tools languages python framework frameworks tech use",
-    "answer": "Common tools in Wesley's work include Python, FastAPI, PostgreSQL with pgvector, vLLM, Kubernetes, Prometheus/Grafana, and observability tools for LLM tracing.\n\nEach case study lists the exact technologies used.",
+    "title": "Tools and stack",
+    "keywords": "stack technologies tools languages python framework frameworks tech use skills",
+    "answer": "Wesley works mainly in Python, with SQL and R. His AI work uses vLLM and Ollama for inference, open-weight models from Hugging Face, Docker, FastAPI, PyTorch and scikit-learn, and ElevenLabs for voice.\n\nEach case study describes the parts of the system it uses.",
     "sources": [
       {
         "label": "Selected work",
         "url": "/work"
-      }
-    ]
-  },
-  {
-    "key": "training",
-    "title": "Workshops & Training",
-    "keywords": "workshop workshops training teach team course session executive leadership",
-    "answer": "Yes. Wesley runs practical workshops for engineering teams (RAG, evaluation, deployment) and briefings for leadership on AI strategy, risk and value.",
-    "sources": [
-      {
-        "label": "Contact",
-        "url": "/contact"
       }
     ]
   },
@@ -1072,8 +912,8 @@ export const KNOWLEDGE: KnowledgeEntry[] = [
   {
     "key": "about",
     "title": "About",
-    "keywords": "who is wesley about background experience career bio himself",
-    "answer": "Wesley Nyamosi is an AI engineer and consultant who designs and builds production-ready AI systems and applications that solve real business problems.\n\nThe Work page shows the kinds of systems he builds.",
+    "keywords": "who is wesley about background experience career bio himself education degree university study statistics internship internships intern nita forage kenya",
+    "answer": "Wesley Nyamosi is an early-career AI engineer based in Kenya. He has a BSc in Statistics from Jomo Kenyatta University of Agriculture and Technology (2023).\n\nHe completed two internships: Data Analyst Intern at NITA (2023) and Data Science Intern with Forage (2024). He now builds AI agents, RAG and local LLM systems; the Work page shows three of them.",
     "sources": [
       {
         "label": "Work",

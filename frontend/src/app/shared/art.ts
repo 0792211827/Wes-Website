@@ -26,7 +26,7 @@ export function workArt(t: string): string {
     let bars = '';
     hs.forEach((h, i) => { bars += '<rect class="' + (i > 5 && i < 15 ? 'bar-a' : 'bar-m') + '" x="' + (22 + i * 8) + '" y="' + (62 - h / 2) + '" width="4" height="' + h + '" rx="2"/>'; });
     return S(bars + '<path class="l" d="M20 112h160"/><path class="l" d="M20 108v8M70 108v8M130 108v8M180 108v8"/>' +
-      '<text class="tx" x="20" y="130">0</text><text class="tx" x="118" y="130">780ms</text><rect class="f" x="70" y="104" width="60" height="16" rx="2" opacity=".5"/>');
+      '<text class="tx" x="20" y="130">0</text><text class="tx" x="156" y="130">1 s</text><rect class="f" x="70" y="104" width="60" height="16" rx="2" opacity=".5"/>');
   }
   if (t === 'infra') {
     let g = '';
@@ -37,7 +37,7 @@ export function workArt(t: string): string {
         '<rect class="bar-a" x="' + (x + 5) + '" y="' + (y + 35 - 28 * fills[i]) + '" width="22" height="' + (28 * fills[i]) + '" rx="1.5"/>';
     }
     return S(g + '<path class="l" d="M150 92a26 26 0 0 1 36-24"/><path class="a" d="M142 98a32 32 0 0 1 52-38" stroke-width="3"/>' +
-      '<path class="a" d="m168 92 12-16"/><circle class="dot-a" cx="168" cy="92" r="3"/><text class="tx" x="146" y="118">2.6× tok/s</text>');
+      '<path class="a" d="m168 92 12-16"/><circle class="dot-a" cx="168" cy="92" r="3"/><text class="tx" x="146" y="118">tok/s</text>');
   }
   return S(
     '<circle class="p" cx="26" cy="70" r="12"/><circle class="p" cx="76" cy="36" r="12"/><circle class="p" cx="76" cy="104" r="12"/>' +

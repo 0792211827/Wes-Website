@@ -72,7 +72,7 @@ function sessionId(): string {
               @if (m.sources.length) {
                 <div class="csrc">
                   @for (s of m.sources; track $index) {
-                    <a class="csrc-chip" [routerLink]="s.url" (click)="navigated.emit()">{{ s.label }}</a>
+                    <a class="csrc-chip" [routerLink]="s.url.split('#')[0] || '/'" [fragment]="s.url.split('#')[1]" (click)="navigated.emit()">{{ s.label }}</a>
                   }
                 </div>
               }
@@ -141,7 +141,7 @@ export class ChatComponent {
   constructor() {
     this.welcomeId = this.push({
       who: 'bot',
-      text: 'Hi! I\'m Wesley\'s assistant. Ask me about his work, services, experience or availability. I answer from this website only and link the pages I used.',
+      text: 'Hi! I\'m Wesley\'s assistant. Ask me about his work, background or approach. I answer from this website only and link the pages I used.',
       followUps: SUGGESTED
     });
     afterNextRender(() => {
@@ -185,8 +185,8 @@ export class ChatComponent {
     if (this.api.askRemaining() <= 0) {
       this.push({
         who: 'bot',
-        text: 'You\'ve reached the question limit for now. For anything else, please email Wesley; he replies within two working days.',
-        sources: [{ label: 'Contact', url: '/contact' }]
+        text: 'You\'ve reached the question limit for now. For anything else, please email Wesley.',
+        sources: [{ label: 'Contact', url: '/#contact' }]
       });
       return;
     }
